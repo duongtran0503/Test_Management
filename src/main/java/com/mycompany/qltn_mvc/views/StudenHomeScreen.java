@@ -20,7 +20,7 @@ public class StudenHomeScreen extends javax.swing.JFrame {
         initComponents();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null); 
-        new Toast(this, "Thông báo thành công! sdfsdfsdfsdfsfafasdfasdfs", 3,"success");
+        new Toast(this, "Chào mừng quay trở lại!", 3,"success");
     }
 
     /**

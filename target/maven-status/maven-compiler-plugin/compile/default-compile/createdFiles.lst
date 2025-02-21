@@ -1,4 +1,5 @@
 com\mycompany\qltn_mvc\dtos\ExamQuestionDTO.class
+com\mycompany\qltn_mvc\controllers\Response.class
 com\mycompany\qltn_mvc\views\StudentHomeMenuScreen$2.class
 com\mycompany\qltn_mvc\dtos\UserDTO.class
 com\mycompany\qltn_mvc\views\StudenHistoryExamScreen.class
@@ -23,6 +24,7 @@ com\mycompany\qltn_mvc\views\StudenHistoryExamScreen$2.class
 com\mycompany\qltn_mvc\views\StudenHomeScreen$4.class
 com\mycompany\qltn_mvc\dtos\ExamDTO.class
 com\mycompany\qltn_mvc\views\StudentExamScreen.class
+com\mycompany\qltn_mvc\views\Register$2.class
 com\mycompany\qltn_mvc\Main.class
 com\mycompany\qltn_mvc\dtos\QuestionDTO.class
 com\mycompany\qltn_mvc\views\Login$3.class
@@ -41,7 +43,10 @@ com\mycompany\qltn_mvc\views\StudenHistoryExamScreen$3.class
 com\mycompany\qltn_mvc\controllers\testController.class
 com\mycompany\qltn_mvc\views\Login$2.class
 com\mycompany\qltn_mvc\views\StudentHomeMenuScreen$4.class
+com\mycompany\qltn_mvc\controllers\Response$loginResult.class
 com\mycompany\qltn_mvc\views\Login$1.class
+com\mycompany\qltn_mvc\controllers\AuthController.class
+com\mycompany\qltn_mvc\controllers\Response$RegisterResult.class
 com\mycompany\qltn_mvc\views\StudentHomeMenuScreen$1.class
 com\mycompany\qltn_mvc\views\StudentResultExamScreen$1.class
 com\mycompany\qltn_mvc\views\AdminHomeScreen$6.class
@@ -49,4 +54,5 @@ com\mycompany\qltn_mvc\views\Login.class
 com\mycompany\qltn_mvc\views\StudentHomeMenuScreen$5.class
 com\mycompany\qltn_mvc\views\StudentExamScreen$2.class
 com\mycompany\qltn_mvc\views\StudenHomeScreen$2.class
+com\mycompany\qltn_mvc\models\AuthModel.class
 com\mycompany\qltn_mvc\views\AdminHomeScreen$3.class

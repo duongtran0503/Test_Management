@@ -14,7 +14,7 @@ public class UserDTO {
     private String password;
     private String email;
     private String role;
-
+ public  UserDTO(){};
     public void setUserId(int userId) {
         this.userId = userId;
     }

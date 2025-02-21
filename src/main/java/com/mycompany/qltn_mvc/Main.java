@@ -4,9 +4,7 @@
 
 package com.mycompany.qltn_mvc;
 
-import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
-import com.mycompany.qltn_mvc.UI.Toast;
 import com.mycompany.qltn_mvc.config.DatabaseConnection;
 import com.mycompany.qltn_mvc.views.Login;
 import java.sql.Connection;
