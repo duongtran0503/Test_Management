@@ -205,16 +205,11 @@ private boolean isValidEmail(String email) {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-//       StudenHomeScreen studenHomeScreen = new StudenHomeScreen();
-//       AdminHomeScreen adminHomeScreen = new AdminHomeScreen();
-//     
-//       if("admin".equals(userName.getText().trim())) {
-//            adminHomeScreen.setVisible(true);
-//       } else {
-//           studenHomeScreen.setVisible(true);
-//       }
-//       this.dispose();
-      validationLogin();
+
+//      validationLogin();
+   AdminHomeScreen adminHomeScreen = new AdminHomeScreen();
+   adminHomeScreen.setVisible(true);
+   dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void userNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userNameActionPerformed

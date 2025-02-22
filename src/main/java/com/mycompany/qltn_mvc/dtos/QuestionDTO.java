@@ -14,7 +14,7 @@ public class QuestionDTO {
     private String questionText;
     private String imageUrl;
     private String difficulty; // "easy", "medium" hoặc "difficult"   
-
+ public QuestionDTO() {};
     public void setQuestionId(int questionId) {
         this.questionId = questionId;
     }

@@ -12,6 +12,9 @@ public class TopicDTO {
      private int topicId;
     private String topicName;
 
+    public TopicDTO() {
+    }
+ 
     public void setTopicId(int topicId) {
         this.topicId = topicId;
     }
