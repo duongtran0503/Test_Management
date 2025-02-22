@@ -70,7 +70,7 @@ public class StudentHomeMenuScreen extends javax.swing.JFrame {
             }
         });
 
-        jButton4.setText("Lập trình Java");
+        jButton4.setText("Du lịch");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
