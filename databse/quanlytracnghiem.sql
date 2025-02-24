@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 22, 2025 at 11:12 AM
+-- Generation Time: Feb 24, 2025 at 03:36 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -144,10 +144,10 @@ INSERT INTO `options` (`option_id`, `question_id`, `option_text`, `is_correct`, 
 (58, 15, '5', 0, NULL),
 (59, 15, '6', 0, NULL),
 (60, 15, '7', 0, NULL),
-(61, 16, 'HyperText Markup Language', 1, NULL),
+(61, 16, 'Hyper Transfer Markup Language', 0, NULL),
 (62, 16, 'High Tech Modern Language', 0, NULL),
 (63, 16, 'Hyper Transfer Markup Language', 0, NULL),
-(64, 16, 'Home Tool Markup Language', 0, NULL),
+(64, 16, 'HyperText Markup Language', 1, NULL),
 (65, 17, 'Lặp qua danh sách', 1, NULL),
 (66, 17, 'Viết hàm', 0, NULL),
 (67, 17, 'Khai báo biến', 0, NULL),
@@ -183,7 +183,15 @@ INSERT INTO `options` (`option_id`, `question_id`, `option_text`, `is_correct`, 
 (97, 25, 'Peru', 1, NULL),
 (98, 25, 'Mexico', 0, NULL),
 (99, 25, 'Brazil', 0, NULL),
-(100, 25, 'Colombia', 0, NULL);
+(100, 25, 'Colombia', 0, NULL),
+(129, 123123126, 'dfasdfasd', 0, NULL),
+(130, 123123126, 'ádfas', 0, NULL),
+(131, 123123126, 'ádfasd', 0, NULL),
+(132, 123123126, 'ádfasdf', 1, NULL),
+(145, 123123125, 'fasdfasdf', 1, NULL),
+(146, 123123125, 'asdfasfasf', 0, NULL),
+(147, 123123125, 'fsadfasdsdfafsdfasdfs', 0, NULL),
+(148, 123123125, 'ádfadf', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -196,39 +204,45 @@ CREATE TABLE `questions` (
   `topic_id` int(11) DEFAULT NULL,
   `question_text` text DEFAULT NULL,
   `image_url` varchar(255) DEFAULT NULL,
-  `difficulty` enum('easy','medium','difficult') DEFAULT NULL
+  `difficulty` enum('easy','medium','difficult') DEFAULT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `updater` varchar(200) DEFAULT NULL,
+  `create_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `is_deleted` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `questions`
 --
 
-INSERT INTO `questions` (`question_id`, `topic_id`, `question_text`, `image_url`, `difficulty`) VALUES
-(1, 1, 'Ngôn ngữ lập trình nào phổ biến nhất hiện nay?', NULL, 'easy'),
-(2, 1, 'Cấu trúc dữ liệu nào dùng để lưu trữ dữ liệu dạng cặp khóa-giá trị?', NULL, 'medium'),
-(3, 2, 'Thủ đô của Pháp là gì?', NULL, 'easy'),
-(4, 2, 'Địa danh nào được gọi là thành phố ngàn hoa ở Việt Nam?', NULL, 'medium'),
-(5, 3, 'Kết quả của 2 + 2 * 2 là bao nhiêu?', NULL, 'easy'),
-(6, 1, 'Git là công cụ dùng để làm gì?', NULL, 'easy'),
-(7, 1, 'SQL dùng để làm gì trong cơ sở dữ liệu?', NULL, 'medium'),
-(8, 2, 'Đất nước nào có nhiều kim tự tháp cổ nhất?', NULL, 'medium'),
-(9, 2, 'Vịnh Hạ Long thuộc tỉnh nào của Việt Nam?', NULL, 'easy'),
-(10, 3, 'Số Pi có giá trị gần đúng là bao nhiêu?', NULL, 'medium'),
-(11, 3, 'Định lý Pitago áp dụng cho loại tam giác nào?', NULL, 'easy'),
-(12, 1, 'JavaScript có thể chạy ở đâu?', NULL, 'medium'),
-(13, 1, 'C++ là ngôn ngữ lập trình bậc nào?', NULL, 'medium'),
-(14, 2, 'Địa danh nào nổi tiếng với đấu trường Colosseum?', NULL, 'easy'),
-(15, 3, 'Giá trị của căn bậc hai của 16 là bao nhiêu?', NULL, 'easy'),
-(16, 1, 'HTML là viết tắt của gì?', NULL, 'easy'),
-(17, 1, 'Trong lập trình, vòng lặp for dùng để làm gì?', NULL, 'medium'),
-(18, 2, 'Thành phố nào được mệnh danh là thành phố không bao giờ ngủ?', NULL, 'easy'),
-(19, 2, 'Tháp Eiffel nằm ở đâu?', NULL, 'easy'),
-(20, 3, 'Kết quả của 10 / 2 là bao nhiêu?', NULL, 'easy'),
-(21, 3, 'Số nguyên tố nhỏ nhất là số nào?', NULL, 'medium'),
-(22, 1, 'Ngôn ngữ nào được dùng để lập trình Android?', NULL, 'medium'),
-(23, 1, 'Node.js được viết bằng ngôn ngữ nào?', NULL, 'medium'),
-(24, 2, 'Địa danh nào là kỳ quan thiên nhiên của thế giới ở Việt Nam?', NULL, 'medium'),
-(25, 2, 'Công trình Machu Picchu nằm ở quốc gia nào?', NULL, 'medium');
+INSERT INTO `questions` (`question_id`, `topic_id`, `question_text`, `image_url`, `difficulty`, `updated_at`, `updater`, `create_at`, `is_deleted`) VALUES
+(1, 1, 'Ngôn ngữ lập trình nào phổ biến nhất hiện nay?', NULL, 'easy', '2025-02-24 07:23:38', NULL, '2025-02-24 07:15:54', 1),
+(2, 1, 'Cấu trúc dữ liệu nào dùng để lưu trữ dữ liệu dạng cặp khóa-giá  trị?.', NULL, 'medium', '2025-02-24 08:18:18', NULL, '2025-02-24 07:15:54', 0),
+(3, 2, 'Thủ đô của Pháp là gì?', NULL, 'easy', '2025-02-23 08:18:34', NULL, '2025-02-24 07:15:54', 0),
+(4, 2, 'Địa danh nào được gọi là thành phố ngàn hoa ở Việt Nam?', NULL, 'medium', '2025-02-23 08:18:43', NULL, '2025-02-24 07:15:54', 0),
+(5, 3, 'Kết quả của 2 + 2 * 2 là bao nhiêu?', NULL, 'easy', '2025-02-23 08:18:47', NULL, '2025-02-24 07:15:54', 0),
+(6, 1, 'Git là công cụ dùng để làm gì?', NULL, 'easy', '2025-02-23 08:18:50', NULL, '2025-02-24 07:15:54', 0),
+(7, 1, 'SQL dùng để làm gì trong cơ sở dữ liệu?', NULL, 'medium', '2025-02-23 08:18:54', NULL, '2025-02-24 07:15:54', 0),
+(8, 2, 'Đất nước nào có nhiều kim tự tháp cổ nhất?', NULL, 'medium', '2025-02-23 08:19:00', NULL, '2025-02-24 07:15:54', 0),
+(9, 2, 'Vịnh Hạ Long thuộc tỉnh nào của Việt Nam?', NULL, 'easy', '2025-02-23 08:18:57', NULL, '2025-02-24 07:15:54', 0),
+(10, 3, 'Số Pi có giá trị gần đúng là bao nhiêu?', NULL, 'medium', '2025-02-23 08:19:03', NULL, '2025-02-24 07:15:54', 0),
+(11, 3, 'Định lý Pitago áp dụng cho loại tam giác nào?', NULL, 'easy', '2025-02-23 08:19:07', NULL, '2025-02-24 07:15:54', 0),
+(12, 1, 'JavaScript có thể chạy ở đâu?', NULL, 'medium', '2025-02-23 08:19:09', NULL, '2025-02-24 07:15:54', 0),
+(13, 1, 'C++ là ngôn ngữ lập trình bậc nào?', NULL, 'medium', '2025-02-23 08:19:13', NULL, '2025-02-24 07:15:54', 0),
+(14, 2, 'Địa danh nào nổi tiếng với đấu trường Colosseum?', NULL, 'easy', '2025-02-23 08:20:20', NULL, '2025-02-24 07:15:54', 0),
+(15, 3, 'Giá trị của căn bậc hai của 16 là bao nhiêu?', NULL, 'easy', '2025-02-23 08:19:17', NULL, '2025-02-24 07:15:54', 0),
+(16, 1, 'HTML là viết tắt của gì?', NULL, 'easy', '2025-02-23 08:19:20', NULL, '2025-02-24 07:15:54', 0),
+(17, 1, 'Trong lập trình, vòng lặp for dùng để làm gì?', NULL, 'medium', '2025-02-23 08:19:23', NULL, '2025-02-24 07:15:54', 0),
+(18, 2, 'Thành phố nào được mệnh danh là thành phố không bao giờ ngủ?', NULL, 'easy', '2025-02-23 08:19:25', NULL, '2025-02-24 07:15:54', 0),
+(19, 2, 'Tháp Eiffel nằm ở đâu?', NULL, 'easy', '2025-02-23 08:19:33', NULL, '2025-02-24 07:15:54', 0),
+(20, 3, 'Kết quả của 10 / 2 là bao nhiêu?', NULL, 'easy', '2025-02-23 08:19:35', NULL, '2025-02-24 07:15:54', 0),
+(21, 3, 'Số nguyên tố nhỏ nhất là số nào?', NULL, 'medium', '2025-02-23 08:19:37', NULL, '2025-02-24 07:15:54', 0),
+(22, 1, 'Ngôn ngữ nào được dùng để lập trình Android?', NULL, 'medium', '2025-02-23 08:19:40', NULL, '2025-02-24 07:15:54', 0),
+(23, 1, 'Node.js được viết bằng ngôn ngữ nào?', NULL, 'medium', '2025-02-23 08:19:43', NULL, '2025-02-24 07:15:54', 0),
+(24, 2, 'Địa danh nào là kỳ quan thiên nhiên của thế giới ở Việt Nam?', NULL, 'medium', '2025-02-23 08:19:45', NULL, '2025-02-24 07:15:54', 0),
+(25, 2, 'Công trình Machu Picchu nằm ở quốc gia nào?', NULL, 'medium', '2025-02-23 08:19:51', NULL, '2025-02-24 07:15:54', 0),
+(123123125, 1, 'sdfsdfasdfasfdasfasffs', 'akhEx6hDW6_Cover.png', 'medium', '2025-02-24 14:18:01', 'tran duong', '2025-02-24 13:39:31', 0),
+(123123126, 1, 'update 222222', NULL, 'medium', '2025-02-24 14:35:17', 'tran duong', '2025-02-24 14:05:30', 1);
 
 -- --------------------------------------------------------
 
@@ -422,13 +436,13 @@ ALTER TABLE `exam_questions`
 -- AUTO_INCREMENT for table `options`
 --
 ALTER TABLE `options`
-  MODIFY `option_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+  MODIFY `option_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=149;
 
 --
 -- AUTO_INCREMENT for table `questions`
 --
 ALTER TABLE `questions`
-  MODIFY `question_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `question_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=123123127;
 
 --
 -- AUTO_INCREMENT for table `results`

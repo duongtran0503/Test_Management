@@ -6,6 +6,7 @@ package com.mycompany.qltn_mvc;
 
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import com.mycompany.qltn_mvc.config.DatabaseConnection;
+import com.mycompany.qltn_mvc.dtos.UserDTO;
 import com.mycompany.qltn_mvc.views.Login;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -17,7 +18,7 @@ import javax.swing.UIManager;
  * @author ACER
  */
 public class Main {
-
+    public static UserDTO user = new UserDTO();
     public static void main(String[] args) {
          try {
             Connection conn = DatabaseConnection.getConnection();

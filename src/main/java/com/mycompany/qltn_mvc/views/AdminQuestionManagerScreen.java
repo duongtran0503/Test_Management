@@ -12,6 +12,7 @@ import com.mycompany.qltn_mvc.dtos.OptionDTO;
 import com.mycompany.qltn_mvc.dtos.QuestionDTO;
 import com.mycompany.qltn_mvc.dtos.TopicDTO;
 import java.awt.Color;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -27,36 +28,24 @@ import javax.swing.table.DefaultTableModel;
  */
 public class AdminQuestionManagerScreen extends javax.swing.JFrame {
 
-    public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
-    }
-
-    public void setQuestionsPerPage(int questionsPerPage) {
-        this.questionsPerPage = questionsPerPage;
-    }
-
-    /**
-     * Creates new form AdminQuestionManagerScreen
-     */
-    public void setCurrentQuestion(JLabel currentQuestion) {
-        this.currentQuestion = currentQuestion;
-    }
+  
 
      private int currentPage = 0;
     private int questionsPerPage = 20;
     private int totalQuestions = 0;
     private  QuestionController questionController;
-
+   private  ActionPanelEditor actionPanelEditor;
     
     public AdminQuestionManagerScreen() {
         this.questionController = new QuestionController();
+        
         initComponents();
         this.buttonExport.setBackground(Color.WHITE);
        this.buttonExport.setForeground(Color.BLACK);
          setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null); 
-            jTable1.getColumnModel().getColumn(4).setCellRenderer(new ActionPanelRenderer());
-    jTable1.getColumnModel().getColumn(4).setCellEditor(new ActionPanelEditor());
+           
+   
     jTable1.setSelectionBackground(Color.WHITE);
     jTable1.setSelectionForeground(Color.BLACK);
      DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
@@ -74,6 +63,7 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
         Response.TopicResult topicResult = questionController.getTopic();
         
         if(result.isIsSuccess() && topicResult.isIsSuccess()) {
+          
             displayDataOnTable(result, topicResult, page);
         } else {
             JOptionPane.showMessageDialog(this, result.getMessage());
@@ -83,9 +73,17 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
     }
     private  void  displayDataOnTable(Response.QuestoinResult result,Response.TopicResult  topicResult,int page) {
      ArrayList<QuestionDTO> questions = result.getQuestionList();
+     
             ArrayList<OptionDTO> options = result.getAnswerList();
+            this.actionPanelEditor = new ActionPanelEditor();
              DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
-              tableModel.setRowCount(0);
+             tableModel.setRowCount(0);
+             jTable1.getColumnModel().getColumn(5).setCellRenderer(new ActionPanelRenderer());
+             jTable1.getColumnModel().getColumn(5).setCellEditor(this.actionPanelEditor);
+            
+             
+              
+         
                for (QuestionDTO question : questions) {
                 StringBuilder answers = new StringBuilder();
                 String topicText = "";
@@ -104,16 +102,136 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
                 if (answers.length() > 2) {
                     answers.setLength(answers.length() - 2);
                 }
-               
-                tableModel.addRow(new Object[]{question.getQuestionText(), answers.toString(), question.getDifficulty(), topicText,"actoin"});
+                
+                tableModel.addRow(new Object[]{question.getQuestionId()+"",question.getQuestionText(), answers.toString(), question.getDifficulty(), topicText,""});
             }
                 currentPage = result.getCurrentPage() + 1;
+                System.out.println("current page"+this.currentPage);
             totalQuestions = result.getTotalQuestions();
             updateLoadedCountLabel(questions.size() + (page * questionsPerPage));
+            
+             this.actionPanelEditor.getPanel().getButtonEdit().addActionListener((e) -> {
+                    
+                  int indexItem =Integer.parseInt((String) tableModel.getValueAt(this.actionPanelEditor.getRow(), 0)); 
+                  QuestionDTO questionDTO  = new QuestionDTO();
+                 
+                  for(QuestionDTO question:questions) {
+                     if(question.getQuestionId()==indexItem) {
+                      questionDTO = question;
+                     }
+                  }
+                   ArrayList<OptionDTO> listAnswer = new ArrayList<>();
+                   int temp = 0;
+                   int indexResult = 0;
+                   for(OptionDTO optionDTO:options){
+                    if(optionDTO.getQuestionId()==questionDTO.getQuestionId()) {
+                        
+                        listAnswer.add(optionDTO);
+                        if(optionDTO.isIsCorrect()) {
+                          indexResult =temp;
+                        }
+                         temp++;
+                    }
+                   }
+                           System.out.println("row"+questionDTO.getQuestionId());   
+                             JFrame frame = new JFrame("Thêm câu hỏi");
+    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    frame.setSize(1080, 600); // Điều chỉnh kích thước
+      AdminModalQuestion updateQuestion = new AdminModalQuestion();
+      updateQuestion.setTask(AdminModalQuestion.MODAL_UPDATE);
+      updateQuestion.setValueQuestion(questionDTO, listAnswer, indexResult);
+    frame.add(updateQuestion); // Thêm JPanel vào JFrame
+    frame.setLocationRelativeTo(null); // Căn giữa màn hình
+    frame.setVisible(true);
+                           this.actionPanelEditor.fireEditStop();
+                      
+                });
+             
+             this.actionPanelEditor.getPanel().getButtonDelete().addActionListener((e)->{
+                   int confirm = JOptionPane.showConfirmDialog(
+        this, 
+        "Bạn có chắc chắn muốn xóa câu hỏi không?", 
+        "Xác nhận", 
+        JOptionPane.YES_NO_OPTION
+    );
+
+    if (confirm == JOptionPane.YES_OPTION) {
+            int indexItem =Integer.parseInt((String) tableModel.getValueAt(this.actionPanelEditor.getRow(), 0)); 
+                  QuestionDTO questionDTO  = new QuestionDTO();
+                 
+                  for(QuestionDTO question:questions) {
+                     if(question.getQuestionId()==indexItem) {
+                      questionDTO = question;
+                     }
+                  }
+                System.out.println("delete question id:"+questionDTO.getQuestionId());
+                
+                Response.QuestoinResult res = questionController.deleteQuestion(questionDTO.getQuestionId());
+                if(res.isIsSuccess()) {
+                  JOptionPane.showMessageDialog(null, res.getMessage());
+                }else {
+                
+                 JOptionPane.showMessageDialog(null, res.getMessage());
+                }
+    }
+      this.actionPanelEditor.fireEditStop();
+             
+             });
+             
      
     }
     private void updateLoadedCountLabel(int loadedCount) {
         currentQuestion.setText(loadedCount + "/" + totalQuestions + " câu hỏi");
+    }
+    private  void searchQuestion() {
+       String selectedValue  =(String)  selectQuery.getSelectedItem();
+        String searchKey = inputSearch.getText().trim();
+          Response.TopicResult topicResult = questionController.getTopic();
+       if(selectedValue.equalsIgnoreCase("Tất cả chủ đề")) {
+         Response.QuestoinResult res = questionController.searchQuestionByTitle(searchKey);
+         if(res.isIsSuccess()) {
+             displayDataOnTable(res, topicResult,0);
+         }else {
+           JOptionPane.showInternalMessageDialog(null, res.getMessage());
+         }
+       } else {
+         if(selectedValue.equalsIgnoreCase("Lập trình")) {
+           Response.QuestoinResult res = questionController.searchQuestionByTitleAndTopic(searchKey, 1);
+            if(res.isIsSuccess()) {
+             displayDataOnTable(res, topicResult,0);
+         }else {
+           JOptionPane.showInternalMessageDialog(null, res.getMessage());
+         }
+         } else if(selectedValue.equalsIgnoreCase("Du lịch")) {
+           Response.QuestoinResult res = questionController.searchQuestionByTitleAndTopic(searchKey, 2);
+           if(res.isIsSuccess()) {
+             displayDataOnTable(res, topicResult,0);
+         }else {
+           JOptionPane.showInternalMessageDialog(null, res.getMessage());
+         }
+         } else {
+           Response.QuestoinResult res = questionController.searchQuestionByTitleAndTopic(searchKey, 3);
+           if(res.isIsSuccess()) {
+             displayDataOnTable(res, topicResult,0);
+         }else {
+           JOptionPane.showInternalMessageDialog(null, res.getMessage());
+         }
+         }
+       }
+    }
+      public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
+    }
+
+    public void setQuestionsPerPage(int questionsPerPage) {
+        this.questionsPerPage = questionsPerPage;
+    }
+
+    /**
+     * Creates new form AdminQuestionManagerScreen
+     */
+    public void setCurrentQuestion(JLabel currentQuestion) {
+        this.currentQuestion = currentQuestion;
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -137,6 +255,7 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         currentQuestion = new javax.swing.JLabel();
+        buttonPrev = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(204, 204, 204));
@@ -204,17 +323,17 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Câu hỏi", "Đáp án", "Mức độ", "Chủ đề", "Thao tác"
+                "id", "Câu hỏi", "Đáp án", "Mức độ", "Chủ đề", "Thao tác"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -231,8 +350,20 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
         });
 
         jButton2.setText("Tải thêm dữ liệu");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         currentQuestion.setText("30/50 câu hỏi");
+
+        buttonPrev.setText("dữ liệu trước đó");
+        buttonPrev.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonPrevActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -244,7 +375,9 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(currentQuestion, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(325, 325, 325)
+                .addGap(164, 164, 164)
+                .addComponent(buttonPrev, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -256,7 +389,8 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(currentQuestion)))
+                        .addComponent(currentQuestion)
+                        .addComponent(buttonPrev)))
                 .addContainerGap())
         );
 
@@ -288,8 +422,8 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
                                          
     JFrame frame = new JFrame("Thêm câu hỏi");
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    frame.setSize(1070, 590); // Điều chỉnh kích thước
-    frame.add(new AdminAddQuestion()); // Thêm JPanel vào JFrame
+    frame.setSize(1080, 600); // Điều chỉnh kích thước
+    frame.add(new AdminModalQuestion()); // Thêm JPanel vào JFrame
     frame.setLocationRelativeTo(null); // Căn giữa màn hình
     frame.setVisible(true);
 
@@ -302,41 +436,25 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void buttonSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSearchActionPerformed
-       String selectedValue  =(String)  selectQuery.getSelectedItem();
-        String searchKey = inputSearch.getText().trim();
-          Response.TopicResult topicResult = questionController.getTopic();
-       if(selectedValue.equalsIgnoreCase("Tất cả chủ đề")) {
-         Response.QuestoinResult res = questionController.searchQuestionByTitle(searchKey);
-         if(res.isIsSuccess()) {
-             displayDataOnTable(res, topicResult,0);
-         }else {
-           JOptionPane.showInternalMessageDialog(null, res.getMessage());
-         }
-       } else {
-         if(selectedValue.equalsIgnoreCase("Lập trình")) {
-           Response.QuestoinResult res = questionController.searchQuestionByTitleAndTopic(searchKey, 1);
-            if(res.isIsSuccess()) {
-             displayDataOnTable(res, topicResult,0);
-         }else {
-           JOptionPane.showInternalMessageDialog(null, res.getMessage());
-         }
-         } else if(selectedValue.equalsIgnoreCase("Du lịch")) {
-           Response.QuestoinResult res = questionController.searchQuestionByTitleAndTopic(searchKey, 2);
-           if(res.isIsSuccess()) {
-             displayDataOnTable(res, topicResult,0);
-         }else {
-           JOptionPane.showInternalMessageDialog(null, res.getMessage());
-         }
-         } else {
-           Response.QuestoinResult res = questionController.searchQuestionByTitleAndTopic(searchKey, 3);
-           if(res.isIsSuccess()) {
-             displayDataOnTable(res, topicResult,0);
-         }else {
-           JOptionPane.showInternalMessageDialog(null, res.getMessage());
-         }
-         }
-       }
+       searchQuestion();
     }//GEN-LAST:event_buttonSearchActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+         if(this.currentPage*this.questionsPerPage <this.totalQuestions) {
+             setCurrentPage(this.currentPage);
+              loadQuestions(this.currentPage);
+         }else {
+          JOptionPane.showMessageDialog(null, "Đã tài hết câu hỏi");
+         }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void buttonPrevActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPrevActionPerformed
+      
+    
+        loadQuestions(0);
+    
+  
+    }//GEN-LAST:event_buttonPrevActionPerformed
 
     /**
      * @param args the command line arguments
@@ -346,6 +464,7 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonAdd;
     private javax.swing.JButton buttonExport;
+    private javax.swing.JButton buttonPrev;
     private javax.swing.JButton buttonSearch;
     private javax.swing.JLabel currentQuestion;
     private javax.swing.JTextField inputSearch;

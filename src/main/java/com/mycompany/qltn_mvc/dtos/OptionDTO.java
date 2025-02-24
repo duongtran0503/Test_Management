@@ -14,7 +14,9 @@ public class OptionDTO {
     private String optionText;
     private boolean isCorrect;
     private String imageUrl;
-  public OptionDTO(){};
+  public OptionDTO(){
+      this.isCorrect = false;
+  };
     public void setOptionId(int optionId) {
         this.optionId = optionId;
     }

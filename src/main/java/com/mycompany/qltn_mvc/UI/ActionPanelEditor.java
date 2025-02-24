@@ -7,29 +7,53 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.EventObject;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.EventListenerList;
 
 public class ActionPanelEditor extends AbstractCellEditor implements TableCellEditor {
+
+    public ButtonActionPanel getPanel() {
+        return panel;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public EventListenerList getListenerList() {
+        return listenerList;
+    }
+
+    public ChangeEvent getChangeEvent() {
+        return changeEvent;
+    }
+
+    public void setPanel(ButtonActionPanel panel) {
+        this.panel = panel;
+    }
+
+    public void setRow(int row) {
+        this.row = row;
+    }
+
+    public void setListenerList(EventListenerList listenerList) {
+        this.listenerList = listenerList;
+    }
+
+    public void setChangeEvent(ChangeEvent changeEvent) {
+        this.changeEvent = changeEvent;
+    }
 
     private ButtonActionPanel panel;
     private int row;
 
     public ActionPanelEditor() {
         panel = new ButtonActionPanel();
-        panel.getButtonEdit().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Edit button clicked in editor for row: " + row);
-                fireEditingStopped();
-            }
-        });
-        panel.getButtonDelete().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Delete button clicked in editor for row: " + row);
-                fireEditingStopped();
-            }
-        });
+        
     }
+     public void fireEditStop() {
+      fireEditingStopped();
+     }
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
