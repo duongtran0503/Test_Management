@@ -609,5 +609,151 @@ if (timestampCreated != null) {
         }
      
      }
-  
+     
+     public Response.QuestoinResult getQuestionDeleted() {
+        Connection conn = null;
+        PreparedStatement questionStmt = null;
+        PreparedStatement answerStmt = null;
+        Response.QuestoinResult res = new Response.QuestoinResult();
+
+        try {
+            conn = DatabaseConnection.getConnection();
+      
+            String questionSql = "SELECT * FROM questions WHERE is_deleted = 1"; 
+            questionStmt = conn.prepareStatement(questionSql);
+          
+            ResultSet questionRs = questionStmt.executeQuery();
+
+            ArrayList<QuestionDTO> questionList = new ArrayList<>();
+            while (questionRs.next()) {
+                System.out.println("run");
+                QuestionDTO questionDTO = new QuestionDTO();
+                questionDTO.setQuestionId(questionRs.getInt("question_id")); 
+                questionDTO.setQuestionText(questionRs.getString("question_text")); 
+               questionDTO.setImageUrl(questionRs.getString("image_url"));
+               questionDTO.setDifficulty(questionRs.getString("difficulty"));
+               questionDTO.setTopicId(questionRs.getInt("topic_id"));
+               questionDTO.setUpdater(questionRs.getString("updater"));
+               
+            
+           Timestamp timestampUpdated = questionRs.getTimestamp("updated_at");
+
+if (timestampUpdated != null) {
+
+    LocalDateTime localDateTimeUpdated = timestampUpdated.toLocalDateTime();
+
+    if (localDateTimeUpdated.equals(LocalDateTime.MIN)) {
+
+        questionDTO.setUpdated_at(null); 
+    } else {
+        questionDTO.setUpdated_at(localDateTimeUpdated);
+    }
+} else {
+    questionDTO.setUpdated_at(null);
+}
+
+Timestamp timestampCreated = questionRs.getTimestamp("create_at");
+if (timestampCreated != null) {
+    LocalDateTime localDateTimeCreated = timestampCreated.toLocalDateTime();
+    if (localDateTimeCreated.equals(LocalDateTime.MIN)) {
+        questionDTO.setCreate_ar(null); // Hoặc xử lý giá trị "zero date"
+    } else {
+        questionDTO.setCreate_ar(localDateTimeCreated);
+    }
+} else {
+    questionDTO.setCreate_ar(null);
+}
+                questionList.add(questionDTO);
+            }
+            res.setQuestionList(questionList);
+
+           
+            ArrayList<OptionDTO> answerList = new ArrayList<>();
+            for (QuestionDTO question : questionList) {
+                String answerSql = "SELECT * FROM options WHERE question_id = ? "; 
+                answerStmt = conn.prepareStatement(answerSql);
+                answerStmt.setInt(1, question.getQuestionId());
+                ResultSet answerRs = answerStmt.executeQuery();
+
+                while (answerRs.next()) {
+                    OptionDTO optionDTO = new OptionDTO();
+                    optionDTO.setOptionId(answerRs.getInt("option_id")); 
+                    optionDTO.setOptionText(answerRs.getString("option_text")); 
+                    optionDTO.setQuestionId(question.getQuestionId());
+                    optionDTO.setIsCorrect(answerRs.getBoolean("is_correct"));
+                    optionDTO.setImageUrl(answerRs.getString("image_url"));
+                    
+                    answerList.add(optionDTO);
+                }
+            }
+            res.setAnswerList(answerList);
+
+            res.setIsSuccess(true);
+            res.setMessage("Lấy dữ liệu thành công!");
+
+        } catch (SQLException e) {
+            res.setIsSuccess(false);
+            res.setMessage("Lỗi lấy dữ liệu: " + e.getMessage());
+        } finally {
+            try {
+                if (questionStmt != null) questionStmt.close();
+                if (answerStmt != null) answerStmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException ex) {
+            }
+        }
+
+        return res;
+     }
+    public Response.QuestoinResult recoverQuestion(int id){
+        Response.QuestoinResult res = new Response.QuestoinResult();
+        res.setIsSuccess(false);
+        Connection conn = null;
+        PreparedStatement questionStmt = null;
+
+        try {
+            conn = DatabaseConnection.getConnection();
+            if (conn == null) {
+                res.setMessage("Lỗi kết nối database!");
+                return res;
+            }
+            conn.setAutoCommit(false); // Start transaction
+
+            // Update Question
+            String sqlUpdateQuestion = "UPDATE questions SET is_deleted = ? ,updater = ? WHERE question_id = ?";
+            questionStmt = conn.prepareStatement(sqlUpdateQuestion);
+            questionStmt.setBoolean(1, false);
+            questionStmt.setString(2, Main.user.getUsername());
+            questionStmt.setInt(3, id);
+            questionStmt.executeUpdate();
+            conn.commit();
+            res.setIsSuccess(true);
+            res.setMessage("Khôi phục câu hỏi thành công.");
+            return res;
+
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                }
+            }
+            res.setMessage("Lỗi Khôi phục câu hỏi: " + e.getMessage());
+            return res;
+        } finally {
+            if (questionStmt != null) {
+                try {
+                    questionStmt.close();
+                } catch (SQLException e) {
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                }
+            }
+        }
+    }
 }

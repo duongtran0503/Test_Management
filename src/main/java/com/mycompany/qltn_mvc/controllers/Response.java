@@ -4,8 +4,11 @@
  */
 package com.mycompany.qltn_mvc.controllers;
 
+import com.mycompany.qltn_mvc.dtos.ExamDTO;
+import com.mycompany.qltn_mvc.dtos.ExamQuestionDTO;
 import com.mycompany.qltn_mvc.dtos.OptionDTO;
 import com.mycompany.qltn_mvc.dtos.QuestionDTO;
+import com.mycompany.qltn_mvc.dtos.TestDTO;
 import com.mycompany.qltn_mvc.dtos.TopicDTO;
 import com.mycompany.qltn_mvc.dtos.UserDTO;
 import java.util.ArrayList;
@@ -164,5 +167,52 @@ public class Response {
        private  ArrayList<TopicDTO> topicList = new ArrayList<>();
        private  boolean  isSuccess;
        private  String message;
+     }
+     public static class ExamResult {
+       private  ArrayList<TestDTO> testLists;
+       private  ArrayList<ExamDTO> examList;
+       private  ArrayList<ExamQuestionDTO> questoinList;
+       private  String message;
+       private  boolean  isSuccess;
+
+        public ArrayList<TestDTO> getTestLists() {
+            return testLists;
+        }
+
+        public void setTestLists(ArrayList<TestDTO> testLists) {
+            this.testLists = testLists;
+        }
+
+        public ArrayList<ExamDTO> getExamList() {
+            return examList;
+        }
+
+        public void setExamList(ArrayList<ExamDTO> examList) {
+            this.examList = examList;
+        }
+
+        public ArrayList<ExamQuestionDTO> getQuestoinList() {
+            return questoinList;
+        }
+
+        public void setQuestoinList(ArrayList<ExamQuestionDTO> questoinList) {
+            this.questoinList = questoinList;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public boolean isIsSuccess() {
+            return isSuccess;
+        }
+
+        public void setIsSuccess(boolean isSuccess) {
+            this.isSuccess = isSuccess;
+        }
      }
 }

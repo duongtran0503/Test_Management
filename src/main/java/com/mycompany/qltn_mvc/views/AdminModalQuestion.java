@@ -67,6 +67,7 @@ public class AdminModalQuestion extends javax.swing.JPanel {
          modelAnswer.addElement("D");
         this.selectAnswer.setModel(modelAnswer);
              setupImageChooser();
+             
        
     }
     

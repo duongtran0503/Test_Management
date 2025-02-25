@@ -15,6 +15,9 @@ public class TestDTO {
     private int testTime;
     private int numLimit;
 
+    public TestDTO() {
+    }
+   
     public void setTestId(int testId) {
         this.testId = testId;
     }

@@ -20,15 +20,7 @@ import javax.swing.UIManager;
 public class Main {
     public static UserDTO user = new UserDTO();
     public static void main(String[] args) {
-         try {
-            Connection conn = DatabaseConnection.getConnection();
-            if (conn != null) {
-                // Sử dụng kết nối ở đây (ví dụ: thực hiện truy vấn SQL)
-                conn.close(); // Đóng kết nối khi hoàn thành
-            }
-        } catch (SQLException e) {
-            System.err.println("Lỗi: " + e.getMessage());
-        }
+        
        try {
             // Cài đặt giao diện FlatLaf
             UIManager.setLookAndFeel(new FlatMacLightLaf());

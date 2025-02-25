@@ -36,7 +36,7 @@ public class ExamDTO {
     public String getExamCode() {
         return examCode;
     }
-
+   public ExamDTO() {};
     public ExamDTO(int examId, int testId, String examCode) {
         this.examId = examId;
         this.testId = testId;

@@ -6,6 +6,7 @@ package com.mycompany.qltn_mvc.views;
 
 import com.mycompany.qltn_mvc.UI.ActionPanelRenderer;
 import com.mycompany.qltn_mvc.UI.ActionPanelEditor;
+import com.mycompany.qltn_mvc.UI.PopupSelectAddQuestion;
 import com.mycompany.qltn_mvc.controllers.QuestionController;
 import com.mycompany.qltn_mvc.controllers.Response;
 import com.mycompany.qltn_mvc.dtos.OptionDTO;
@@ -13,13 +14,16 @@ import com.mycompany.qltn_mvc.dtos.QuestionDTO;
 import com.mycompany.qltn_mvc.dtos.TopicDTO;
 import java.awt.Color;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -35,10 +39,12 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
     private int totalQuestions = 0;
     private  QuestionController questionController;
    private  ActionPanelEditor actionPanelEditor;
-    
+    private  ArrayList<QuestionDTO> questionDATA;
+    private  ArrayList<OptionDTO> listAnswerData;
     public AdminQuestionManagerScreen() {
         this.questionController = new QuestionController();
-        
+        this.questionDATA = new ArrayList<>();
+        this.listAnswerData = new ArrayList<>();
         initComponents();
         this.buttonExport.setBackground(Color.WHITE);
        this.buttonExport.setForeground(Color.BLACK);
@@ -75,6 +81,8 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
      ArrayList<QuestionDTO> questions = result.getQuestionList();
      
             ArrayList<OptionDTO> options = result.getAnswerList();
+            this.questionDATA =questions;
+            this.listAnswerData = options;
             this.actionPanelEditor = new ActionPanelEditor();
              DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
              tableModel.setRowCount(0);
@@ -143,7 +151,10 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
     frame.add(updateQuestion); // Thêm JPanel vào JFrame
     frame.setLocationRelativeTo(null); // Căn giữa màn hình
     frame.setVisible(true);
+  
                            this.actionPanelEditor.fireEditStop();
+                            loadQuestions(1);
+                            
                       
                 });
              
@@ -169,12 +180,21 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
                 Response.QuestoinResult res = questionController.deleteQuestion(questionDTO.getQuestionId());
                 if(res.isIsSuccess()) {
                   JOptionPane.showMessageDialog(null, res.getMessage());
+                 
                 }else {
                 
                  JOptionPane.showMessageDialog(null, res.getMessage());
                 }
     }
       this.actionPanelEditor.fireEditStop();
+              if(page==1) {
+                loadQuestions(1);
+              }else if(page >1) {
+                  loadQuestions(1);
+              } else {
+                  loadQuestions(0);
+               }
+             
              
              });
              
@@ -232,6 +252,35 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
      */
     public void setCurrentQuestion(JLabel currentQuestion) {
         this.currentQuestion = currentQuestion;
+    }
+     private void exportExcel() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Chọn vị trí lưu file Excel");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx"));
+
+        int userSelection = fileChooser.showSaveDialog(this);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+            String filePath = fileToSave.getAbsolutePath();
+
+            // Thêm đuôi .xlsx nếu người dùng không nhập
+            if (!filePath.toLowerCase().endsWith(".xlsx")) {
+                filePath += ".xlsx";
+            }
+
+          
+            ArrayList<QuestionDTO> questionList = this.questionDATA;
+            ArrayList<OptionDTO> answerLists = this.listAnswerData;
+               Response.QuestoinResult res = questionController.exportToExcel(questionList, answerLists, filePath);
+          if(res.isIsSuccess()) {
+            JOptionPane.showMessageDialog(null, res.getMessage());
+          } else {
+          JOptionPane.showMessageDialog(null, res.getMessage());
+          }        
+           
+          
+        }
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -415,17 +464,15 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportActionPerformed
-        // TODO add your handling code here:
+    exportExcel();
     }//GEN-LAST:event_buttonExportActionPerformed
 
     private void buttonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddActionPerformed
                                          
-    JFrame frame = new JFrame("Thêm câu hỏi");
-    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    frame.setSize(1080, 600); // Điều chỉnh kích thước
-    frame.add(new AdminModalQuestion()); // Thêm JPanel vào JFrame
-    frame.setLocationRelativeTo(null); // Căn giữa màn hình
-    frame.setVisible(true);
+
+        PopupSelectAddQuestion popupSelectAddQuestion = new PopupSelectAddQuestion();
+        popupSelectAddQuestion.setVisible(true);
+        
 
     }//GEN-LAST:event_buttonAddActionPerformed
 
