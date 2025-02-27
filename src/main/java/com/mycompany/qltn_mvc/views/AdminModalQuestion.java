@@ -4,6 +4,7 @@
  */
 package com.mycompany.qltn_mvc.views;
 
+import com.mycompany.qltn_mvc.controllers.ExamController;
 import com.mycompany.qltn_mvc.controllers.QuestionController;
 import com.mycompany.qltn_mvc.controllers.Response;
 import com.mycompany.qltn_mvc.dtos.OptionDTO;
@@ -37,11 +38,16 @@ public class AdminModalQuestion extends javax.swing.JPanel {
 
     public static final String MODAL_ADD="add";
     public static  final  String MODAL_UPDATE ="update";
+    public static final  String MODAL_ADD_FOR_EXAM ="exam";
     private  int questionId;
     private String task = "add";
     private  QuestionController questionController;
     private  String imagePath;
+    private ExamController examController;
+  
+    private  int examCode;
     public AdminModalQuestion() {
+        this.examController = new ExamController();
         questionController = new QuestionController();
         initComponents();
         this.buttonCancel.setBackground(Color.red);
@@ -84,7 +90,7 @@ public class AdminModalQuestion extends javax.swing.JPanel {
                  case "difficult" -> this.selectLever.setSelectedIndex(2);
             
         }
-        this.selectLever.setSelectedIndex(questionDTO.getTopicId());
+        this.selectTopic.setSelectedIndex(questionDTO.getTopicId()-1);
        if(questionDTO.getImageUrl()!=null) {
            displayImagePreviewFromResource(questionDTO.getImageUrl());
        }
@@ -101,7 +107,13 @@ private void closeParentFrame() {
         parent.dispose(); // Đóng cửa sổ chứa JPanel
     }
 }
+  public int getExamCode() {
+        return examCode;
+    }
 
+    public void setExamCode(int examCode) {
+        this.examCode = examCode;
+    }
 private void validationData() {
     int selectTopicValue =  this.selectTopic.getSelectedIndex()+1;
     String selectLeverValue = (String) this.selectLever.getSelectedItem();
@@ -177,10 +189,15 @@ private void validationData() {
            
         }
         
-        Response.QuestoinResult res;
+        Response.QuestoinResult res = new Response.QuestoinResult();
         if(MODAL_ADD.equalsIgnoreCase(this.task)) {
            res =  questionController.addQuestoin(questionDTO, listAnswer);
-        }else {
+        }else if(MODAL_ADD_FOR_EXAM.equalsIgnoreCase(this.task)) {
+              res =  questionController.addQuestoin(questionDTO, listAnswer);
+              Response.ExamResult result = examController.addQuestionToTheTest(res.getQuestionList(), examCode);
+             res.setMessage(result.getMessage());
+             res.setIsSuccess(result.isIsSuccess());
+        } else {
           res = questionController.updateQuestoin(questionDTO, listAnswer);
         }
          if(res.isIsSuccess()) {

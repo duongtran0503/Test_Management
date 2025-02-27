@@ -273,43 +273,22 @@ if (timestampCreated != null) {
         return res;
       
      }
-     
-     public Response.QuestoinResult searchQuestionByTitleAndTopic(String title,int topic) {
-        Connection conn = null;
+      public Response.QuestoinResult getQuestionById(int id) {
+       Connection conn = null;
         PreparedStatement questionStmt = null;
         PreparedStatement answerStmt = null;
         Response.QuestoinResult res = new Response.QuestoinResult();
 
         try {
             conn = DatabaseConnection.getConnection();
-              String searchText = "%" + title + "%";
-         
-          String countSql = "SELECT COUNT(*) FROM questions WHERE LOWER(question_text) LIKE LOWER(?) AND topic_id = ? AND is_deleted = 0 ";
-            PreparedStatement countStmt = conn.prepareStatement(countSql);
-             countStmt.setString(1, searchText);
-             countStmt.setInt(2, topic);
-            ResultSet countRs = countStmt.executeQuery();
-            if (countRs.next()) {
-                res.setTotalQuestions(countRs.getInt(1));
-                if(res.getTotalQuestions()==0) {
-                  res.setIsSuccess(false);
-                  res.setMessage("Không tìm thấy kết quả");
-                  return  res;
-                }
-            }
-            countStmt.close();
-
-            // 2. Lấy danh sách câu hỏi theo trang
-          
-          String questionSql = "SELECT * FROM questions WHERE LOWER(question_text) LIKE LOWER(?) AND topic_id = ? AND is_deleted = 0 LIMIT 8";
+          String questionSql = "SELECT * FROM questions WHERE question_id = ? ";
             questionStmt = conn.prepareStatement(questionSql);
-            questionStmt.setString(1, searchText);
-            questionStmt.setInt(2, topic);
+            questionStmt.setInt(1, id);
            
             ResultSet questionRs = questionStmt.executeQuery();
 
             ArrayList<QuestionDTO> questionList = new ArrayList<>();
-            while (questionRs.next()) {
+            if (questionRs.next()) {
                 System.out.println("run");
                 QuestionDTO questionDTO = new QuestionDTO();
                 questionDTO.setQuestionId(questionRs.getInt("question_id")); 
@@ -318,8 +297,7 @@ if (timestampCreated != null) {
                questionDTO.setDifficulty(questionRs.getString("difficulty"));
                questionDTO.setTopicId(questionRs.getInt("topic_id"));
                questionDTO.setUpdater(questionRs.getString("updater"));
-           Timestamp timestampUpdated = questionRs.getTimestamp("updated_at");
-           
+            Timestamp timestampUpdated = questionRs.getTimestamp("updated_at");
 if (timestampUpdated != null) {
     LocalDateTime localDateTimeUpdated = timestampUpdated.toLocalDateTime();
     if (localDateTimeUpdated.equals(LocalDateTime.MIN)) {
@@ -332,7 +310,6 @@ if (timestampUpdated != null) {
 }
 
 Timestamp timestampCreated = questionRs.getTimestamp("create_at");
-
 if (timestampCreated != null) {
     LocalDateTime localDateTimeCreated = timestampCreated.toLocalDateTime();
     if (localDateTimeCreated.equals(LocalDateTime.MIN)) {
@@ -385,10 +362,102 @@ if (timestampCreated != null) {
         }
 
         return res;
+      
+     }
+     
+     public Response.QuestoinResult searchQuestionByTitleAndTopic(String title,int topic) {
+        Connection conn = null;
+        PreparedStatement questionStmt = null;
+        PreparedStatement answerStmt = null;
+        Response.QuestoinResult res = new Response.QuestoinResult();
+
+        try {
+            conn = DatabaseConnection.getConnection();
+              String searchText = "%" + title + "%";
+         
+          String countSql = "SELECT COUNT(*) FROM questions WHERE LOWER(question_text) LIKE LOWER(?) AND topic_id = ? AND is_deleted = 0 ";
+            PreparedStatement countStmt = conn.prepareStatement(countSql);
+             countStmt.setString(1, searchText);
+             countStmt.setInt(2, topic);
+            ResultSet countRs = countStmt.executeQuery();
+            if (countRs.next()) {
+                res.setTotalQuestions(countRs.getInt(1));
+                if(res.getTotalQuestions()==0) {
+                  res.setIsSuccess(false);
+                  res.setMessage("Không tìm thấy kết quả");
+                  return  res;
+                }
+            }
+            countStmt.close();
+
+            // 2. Lấy danh sách câu hỏi theo trang
+          
+          String questionSql = "SELECT * FROM questions WHERE LOWER(question_text) LIKE LOWER(?) AND topic_id = ? AND is_deleted = 0 LIMIT 8";
+            questionStmt = conn.prepareStatement(questionSql);
+            questionStmt.setString(1, searchText);
+            questionStmt.setInt(2, topic);
+           
+            ResultSet questionRs = questionStmt.executeQuery();
+
+            ArrayList<QuestionDTO> questionList = new ArrayList<>();
+            while (questionRs.next()) {
+                System.out.println("run");
+                QuestionDTO questionDTO = new QuestionDTO();
+                questionDTO.setQuestionId(questionRs.getInt("question_id")); 
+                questionDTO.setQuestionText(questionRs.getString("question_text")); 
+               questionDTO.setImageUrl(questionRs.getString("image_url"));
+               questionDTO.setDifficulty(questionRs.getString("difficulty"));
+               questionDTO.setTopicId(questionRs.getInt("topic_id"));
+               questionDTO.setUpdater(questionRs.getString("updater"));
+                questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
+                    questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
+                questionList.add(questionDTO);
+            }
+            res.setQuestionList(questionList);
+
+           
+            ArrayList<OptionDTO> answerList = new ArrayList<>();
+            for (QuestionDTO question : questionList) {
+                String answerSql = "SELECT * FROM options WHERE question_id = ?"; 
+                answerStmt = conn.prepareStatement(answerSql);
+                answerStmt.setInt(1, question.getQuestionId());
+                ResultSet answerRs = answerStmt.executeQuery();
+
+                while (answerRs.next()) {
+                    OptionDTO optionDTO = new OptionDTO();
+                    optionDTO.setOptionId(answerRs.getInt("option_id")); 
+                    optionDTO.setOptionText(answerRs.getString("option_text")); 
+                    optionDTO.setQuestionId(question.getQuestionId());
+                    optionDTO.setIsCorrect(answerRs.getBoolean("is_correct"));
+                    optionDTO.setImageUrl(answerRs.getString("image_url"));
+                    
+                    answerList.add(optionDTO);
+                }
+            }
+            res.setAnswerList(answerList);
+
+            res.setIsSuccess(true);
+            res.setMessage("Lấy dữ liệu thành công!");
+        
+
+        } catch (SQLException e) {
+            res.setIsSuccess(false);
+            res.setMessage("Lỗi lấy dữ liệu: " + e.getMessage());
+        } finally {
+            try {
+                if (questionStmt != null) questionStmt.close();
+                if (answerStmt != null) answerStmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException ex) {
+            }
+        }
+
+        return res;
      }
    public Response.QuestoinResult AddQuestoin(QuestionDTO questionDTO, ArrayList<OptionDTO> listOption) {
         Response.QuestoinResult res = new Response.QuestoinResult();
         res.setIsSuccess(false);
+        res.setQuestionList(new ArrayList<>());
         Connection conn = null;
         PreparedStatement questionStmt = null;
 
@@ -429,6 +498,7 @@ if (timestampCreated != null) {
             }
 
             conn.commit();
+            res.getQuestionList().add(questionDTO);
             res.setIsSuccess(true);
             res.setMessage("Thêm câu hỏi thành công.");
             return res;
@@ -634,35 +704,10 @@ if (timestampCreated != null) {
                questionDTO.setDifficulty(questionRs.getString("difficulty"));
                questionDTO.setTopicId(questionRs.getInt("topic_id"));
                questionDTO.setUpdater(questionRs.getString("updater"));
-               
+                questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
+                    questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
             
-           Timestamp timestampUpdated = questionRs.getTimestamp("updated_at");
-
-if (timestampUpdated != null) {
-
-    LocalDateTime localDateTimeUpdated = timestampUpdated.toLocalDateTime();
-
-    if (localDateTimeUpdated.equals(LocalDateTime.MIN)) {
-
-        questionDTO.setUpdated_at(null); 
-    } else {
-        questionDTO.setUpdated_at(localDateTimeUpdated);
-    }
-} else {
-    questionDTO.setUpdated_at(null);
-}
-
-Timestamp timestampCreated = questionRs.getTimestamp("create_at");
-if (timestampCreated != null) {
-    LocalDateTime localDateTimeCreated = timestampCreated.toLocalDateTime();
-    if (localDateTimeCreated.equals(LocalDateTime.MIN)) {
-        questionDTO.setCreate_ar(null); // Hoặc xử lý giá trị "zero date"
-    } else {
-        questionDTO.setCreate_ar(localDateTimeCreated);
-    }
-} else {
-    questionDTO.setCreate_ar(null);
-}
+          
                 questionList.add(questionDTO);
             }
             res.setQuestionList(questionList);
@@ -755,5 +800,16 @@ if (timestampCreated != null) {
                 }
             }
         }
+    }
+     private LocalDateTime convertTimestampToLocalDateTime(Timestamp timestamp) {
+        if (timestamp != null) {
+            LocalDateTime localDateTime = timestamp.toLocalDateTime();
+            if (localDateTime.equals(LocalDateTime.MIN)) {
+                return null;
+            } else {
+                return localDateTime;
+            }
+        }
+        return null;
     }
 }

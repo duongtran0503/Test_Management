@@ -18,8 +18,9 @@ import java.util.ArrayList;
  * @author ACER
  */
 public class Response {
-     public static  class loginResult {
-       private UserDTO user;
+     public static  class  BaseResponse {
+       private  String message;
+        private boolean  isSuccess;
 
         public String getMessage() {
             return message;
@@ -28,25 +29,33 @@ public class Response {
         public void setMessage(String message) {
             this.message = message;
         }
-       private  String message;
-       private  boolean  isSuccess;
 
-        public void setUser(UserDTO user) {
-            this.user = user;
+        public boolean isIsSuccess() {
+            return isSuccess;
         }
 
         public void setIsSuccess(boolean isSuccess) {
             this.isSuccess = isSuccess;
         }
+     }
+    
+     public static  class loginResult extends  BaseResponse{
+       private UserDTO user;
+
+     
+    
+
+        public void setUser(UserDTO user) {
+            this.user = user;
+        }
+
+       
 
         public UserDTO getUser() {
             return user;
         }
 
-        public boolean isIsSuccess() {
-            return isSuccess;
-        }
-  
+      
 
    
      }
@@ -73,7 +82,7 @@ public class Response {
        
         
       }
-     public static class QuestoinResult {
+     public static class QuestoinResult extends  BaseResponse{
 
         public ArrayList<QuestionDTO> getQuestionList() {
             return questionList;
@@ -95,13 +104,7 @@ public class Response {
             return totalQuestions;
         }
 
-        public boolean isIsSuccess() {
-            return isSuccess;
-        }
-
-        public String getMessage() {
-            return message;
-        }
+    
 
         public void setQuestionList(ArrayList<QuestionDTO> questionList) {
             this.questionList = questionList;
@@ -123,57 +126,44 @@ public class Response {
             this.totalQuestions = totalQuestions;
         }
 
-        public void setIsSuccess(boolean isSuccess) {
-            this.isSuccess = isSuccess;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
+      
     private  ArrayList<QuestionDTO> questionList = new ArrayList<>();
     private   ArrayList<OptionDTO>  answerList = new ArrayList<>();
     private int currentPage ;
     private int questionsPerPage ;
     private int totalQuestions ;
-    private  boolean  isSuccess;
-    private  String message;
+ 
     
      }
-     public static class TopicResult {
+     public static class TopicResult extends  BaseResponse{
 
         public ArrayList<TopicDTO> getTopicList() {
             return topicList;
-        }
-
-        public boolean isIsSuccess() {
-            return isSuccess;
-        }
-
-        public String getMessage() {
-            return message;
         }
 
         public void setTopicList(ArrayList<TopicDTO> topicList) {
             this.topicList = topicList;
         }
 
-        public void setIsSuccess(boolean isSuccess) {
-            this.isSuccess = isSuccess;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
+      
+    
        private  ArrayList<TopicDTO> topicList = new ArrayList<>();
-       private  boolean  isSuccess;
-       private  String message;
+     
      }
-     public static class ExamResult {
+     public static class ExamResult extends  BaseResponse{
        private  ArrayList<TestDTO> testLists;
        private  ArrayList<ExamDTO> examList;
-       private  ArrayList<ExamQuestionDTO> questoinList;
-       private  String message;
-       private  boolean  isSuccess;
+    
+
+        public QuestoinResult getListQestionOfExam() {
+            return listQestionOfExam;
+        }
+
+        public void setListQestionOfExam(QuestoinResult listQestionOfExam) {
+            this.listQestionOfExam = listQestionOfExam;
+        }
+       private  Response.QuestoinResult listQestionOfExam;
+   
 
         public ArrayList<TestDTO> getTestLists() {
             return testLists;
@@ -191,28 +181,6 @@ public class Response {
             this.examList = examList;
         }
 
-        public ArrayList<ExamQuestionDTO> getQuestoinList() {
-            return questoinList;
-        }
-
-        public void setQuestoinList(ArrayList<ExamQuestionDTO> questoinList) {
-            this.questoinList = questoinList;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
-
-        public boolean isIsSuccess() {
-            return isSuccess;
-        }
-
-        public void setIsSuccess(boolean isSuccess) {
-            this.isSuccess = isSuccess;
-        }
+     
      }
 }

@@ -4,12 +4,16 @@
  */
 package com.mycompany.qltn_mvc.views;
 
+import com.mycompany.qltn_mvc.UI.ActionPanelRenderer;
 import com.mycompany.qltn_mvc.UI.ButtonRecoverEdit;
 import com.mycompany.qltn_mvc.UI.ButtonRecoverRender;
+import com.mycompany.qltn_mvc.controllers.ExamController;
 import com.mycompany.qltn_mvc.controllers.QuestionController;
 import com.mycompany.qltn_mvc.controllers.Response;
+import com.mycompany.qltn_mvc.dtos.ExamDTO;
 import com.mycompany.qltn_mvc.dtos.OptionDTO;
 import com.mycompany.qltn_mvc.dtos.QuestionDTO;
+import com.mycompany.qltn_mvc.dtos.TestDTO;
 import com.mycompany.qltn_mvc.dtos.TopicDTO;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -31,10 +35,16 @@ public class AdminQuestionRecovery extends javax.swing.JFrame {
     private  QuestionController questionController;
     private  ButtonRecoverEdit buttonRecoverEdit;
     private   ArrayList<QuestionDTO> questionsData  ;
+    private  Response.ExamResult examData;
+    private  ExamController examController;
+    private  ButtonRecoverEdit buttonRecoverTest;
     public AdminQuestionRecovery() {
+        this.examController = new ExamController();
+        this.examData = new Response.ExamResult();
         this.questionsData = new ArrayList<>();
         this.questionController = new QuestionController();
         this.buttonRecoverEdit = new ButtonRecoverEdit();
+        this.buttonRecoverTest = new  ButtonRecoverEdit();
         initComponents();
         jTable1.setSelectionBackground(Color.WHITE);
     jTable1.setSelectionForeground(Color.BLACK);
@@ -104,7 +114,55 @@ public class AdminQuestionRecovery extends javax.swing.JFrame {
            
      
     }
- 
+    private  void  displayDataOnTableTest(Response.ExamResult result,Response.TopicResult  topicResult) {
+       ArrayList<TestDTO> testList = result.getTestLists();
+       ArrayList<ExamDTO> exmList = result.getExamList();
+        this.examData = result;
+           String[] columnNames = { "Mã đề", "Tên bài thi","Chủ đề","Thời gian thi", "Khôi phục"};
+             DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
+                tableModel.setColumnIdentifiers(columnNames);
+             tableModel.setRowCount(0);
+                   jTable1.getColumnModel().getColumn(4).setCellRenderer(new ButtonRecoverRender());
+             jTable1.getColumnModel().getColumn(4).setCellEditor(this.buttonRecoverTest);
+              
+            
+              
+         
+               for (ExamDTO exam:exmList) {
+                String topic = "";
+                String testName ="";
+                String testTime = "";
+                int  topicID =1;
+                 for(TestDTO test:testList) {
+                    if(test.getTestId() ==exam.getTestId()) {
+                      testName = test.getTestName();
+                      testTime =test.getTestTime()+"";
+                      topicID = test.getTopicId();
+                    }
+                 }
+                 for(TopicDTO top: topicResult.getTopicList()) {
+                   if(top.getTopicId()==topicID) {
+                    topic = top.getTopicName();
+                   }
+                 }
+                tableModel.addRow(new Object[]{exam.getExamCode(), testName, topic, testTime +" phút"});
+            }
+               
+            
+         
+    
+             
+     
+    }
+    private  void loadExams() {
+       Response.ExamResult res = examController.getExamDeletedResult();
+       Response.TopicResult topicResult = questionController.getTopic();
+       if(res.isIsSuccess()) {
+           displayDataOnTableTest(res, topicResult);
+       }else {
+          JOptionPane.showMessageDialog(null, res.getMessage());
+       }
+    }
   private  void loadQuestions() {
     Response.QuestoinResult result  = questionController.getQuestionDeleted();
         Response.TopicResult topicResult = questionController.getTopic();
@@ -130,6 +188,7 @@ public class AdminQuestionRecovery extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
@@ -146,6 +205,13 @@ public class AdminQuestionRecovery extends javax.swing.JFrame {
             }
         });
 
+        jButton2.setText("Khôi phục đề thi");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -154,6 +220,8 @@ public class AdminQuestionRecovery extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(40, 40, 40)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -163,7 +231,9 @@ public class AdminQuestionRecovery extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
+                            .addComponent(jButton2))
                         .addGap(7, 7, 7))
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -228,6 +298,10 @@ public class AdminQuestionRecovery extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+          loadExams();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -265,6 +339,7 @@ public class AdminQuestionRecovery extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

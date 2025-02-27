@@ -36,7 +36,7 @@ public class ExamQuestionDTO {
     public int getQuestionId() {
         return questionId;
     }
-
+  public ExamQuestionDTO() {}
     public ExamQuestionDTO(int examQuestionId, int examId, int questionId) {
         this.examQuestionId = examQuestionId;
         this.examId = examId;

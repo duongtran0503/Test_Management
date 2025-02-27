@@ -141,7 +141,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Segoe UI" size="14" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="C&#xe2;u h&#x1ecf;i &#x111;&#xe3; x&#xf3;a"/>
+            <Property name="text" type="java.lang.String" value="Kh&#xf4;i ph&#x1ee5;c d&#x1eef; li&#x1ec7;u"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton4ActionPerformed"/>

@@ -33,7 +33,9 @@ public class AdminCreateTest extends javax.swing.JFrame {
     private final  ExamController examController;
    private  ActionPanelEditor actionPanelEditor;
    private final  QuestionController questionControllerl;
+   private  Response.ExamResult examData;
     public AdminCreateTest() {
+        this.examData = new Response.ExamResult();
         this.questionControllerl = new  QuestionController();
         this.examController = new ExamController();
         this.actionPanelEditor = new ActionPanelEditor();
@@ -50,12 +52,40 @@ public class AdminCreateTest extends javax.swing.JFrame {
     jTable1.setSelectionForeground(Color.BLACK);
      jTable1.setFocusable(false);
       this.actionPanelEditor.getPanel().getButtonEdit().addActionListener((e) -> {
-                    
+                       int row  = this.actionPanelEditor.getRow();
+                      int idTest =   this.examData.getExamList().get(row).getTestId();
+                      String examCode = this.examData.getExamList().get(row).getExamCode();
                           AdminModalExam adminModalExam = new AdminModalExam();
+                          adminModalExam.displayDataEdit(idTest, examCode);
                           adminModalExam.setVisible(true);
                            this.actionPanelEditor.fireEditStop();
                        
                             
+                      
+                });
+      this.actionPanelEditor.getPanel().getButtonDelete().addActionListener((e) -> {
+                       int row  = this.actionPanelEditor.getRow();
+                      int idTest =   this.examData.getExamList().get(row).getTestId();
+                          int confirm = JOptionPane.showConfirmDialog(
+        this, 
+        "Bạn có chắc chắn muốn xóa bài thi không?", 
+        "Xác nhận", 
+        JOptionPane.YES_NO_OPTION
+    );
+
+    if (confirm == JOptionPane.YES_OPTION) { 
+          Response.BaseResponse res = examController.deleteTest(idTest);
+          if(res.isIsSuccess()) {
+           JOptionPane.showMessageDialog(null, res.getMessage());
+        
+          } else {
+            JOptionPane.showMessageDialog(null, res.getMessage());
+          }
+    }
+                     
+                       
+              this.actionPanelEditor.fireEditStop();
+                 loadExams();
                       
                 });
     }
@@ -71,7 +101,7 @@ public class AdminCreateTest extends javax.swing.JFrame {
     private  void  displayDataOnTable(Response.ExamResult result,Response.TopicResult  topicResult) {
        ArrayList<TestDTO> testList = result.getTestLists();
        ArrayList<ExamDTO> exmList = result.getExamList();
-     
+        this.examData = result;
              DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
              tableModel.setRowCount(0);
              jTable1.getColumnModel().getColumn(5).setCellRenderer(new ActionPanelRenderer());
@@ -121,7 +151,6 @@ public class AdminCreateTest extends javax.swing.JFrame {
         selectTopic = new javax.swing.JComboBox<>();
         buttonSearchj = new javax.swing.JButton();
         buttonCreateTest = new javax.swing.JButton();
-        ButtonExport = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -137,8 +166,6 @@ public class AdminCreateTest extends javax.swing.JFrame {
         buttonSearchj.setText("search");
 
         buttonCreateTest.setText("Tạo đề thi");
-
-        ButtonExport.setText("xuất file excel");
 
         jButton4.setText(" Trở lại");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -162,23 +189,21 @@ public class AdminCreateTest extends javax.swing.JFrame {
                 .addComponent(buttonSearchj, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(50, 50, 50)
                 .addComponent(buttonCreateTest, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(ButtonExport, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 91, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 233, Short.MAX_VALUE)
                 .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(inputSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(selectTopic, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(buttonSearchj, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(buttonCreateTest, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ButtonExport, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(inputSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(selectTopic, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(buttonCreateTest, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -275,7 +300,6 @@ public class AdminCreateTest extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton ButtonExport;
     private javax.swing.JButton buttonCreateTest;
     private javax.swing.JButton buttonSearchj;
     private javax.swing.JTextField inputSearch;
