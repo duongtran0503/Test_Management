@@ -77,6 +77,29 @@ public class AdminQuestionRecovery extends javax.swing.JFrame {
                this.buttonRecoverEdit.fireEditStop();
                loadQuestions();
      });
+         
+       this.buttonRecoverTest.getPanel().getjButton1().addActionListener((ActionEvent e) -> { 
+          int row = this.buttonRecoverTest.getRow();
+          int testid = this.examData.getExamList().get(row).getTestId();
+         int confirm = JOptionPane.showConfirmDialog(
+        this, 
+        "Bạn có chắc chắn muốn khôi phục đề thi ?", 
+        "Xác nhận", 
+        JOptionPane.YES_NO_OPTION
+    );
+         if(confirm ==JOptionPane.YES_OPTION) {
+           Response.BaseResponse res = examController.recoverTest(testid);
+           if(res.isIsSuccess()) {
+             JOptionPane.showMessageDialog(null, res.getMessage()); 
+           }else {
+            JOptionPane.showMessageDialog(null, res.getMessage());
+           }
+         }
+         this.buttonRecoverTest.fireEditStop();
+         loadExams();
+       });
+      
+       
     }
  private  void  displayDataOnTable(Response.QuestoinResult result,Response.TopicResult  topicResult) {
      ArrayList<QuestionDTO> questions = result.getQuestionList();

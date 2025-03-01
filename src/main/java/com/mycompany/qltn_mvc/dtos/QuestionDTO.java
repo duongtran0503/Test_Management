@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
  * @author ACER
  */
 public class QuestionDTO {
+    public static String EASY="easy";
+    public static String MEDIUM ="medium";
+    public static String DIFFICULT = "difficult";
  private int questionId;
     private int topicId;
     private String questionText;

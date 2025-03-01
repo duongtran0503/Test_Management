@@ -61,33 +61,8 @@ public class QuestionModel {
                questionDTO.setUpdater(questionRs.getString("updater"));
                 System.out.println("errr");
             
-           Timestamp timestampUpdated = questionRs.getTimestamp("updated_at");
-
-if (timestampUpdated != null) {
-
-    LocalDateTime localDateTimeUpdated = timestampUpdated.toLocalDateTime();
-
-    if (localDateTimeUpdated.equals(LocalDateTime.MIN)) {
-
-        questionDTO.setUpdated_at(null); // Hoặc xử lý giá trị "zero date"
-    } else {
-        questionDTO.setUpdated_at(localDateTimeUpdated);
-    }
-} else {
-    questionDTO.setUpdated_at(null);
-}
-
-Timestamp timestampCreated = questionRs.getTimestamp("create_at");
-if (timestampCreated != null) {
-    LocalDateTime localDateTimeCreated = timestampCreated.toLocalDateTime();
-    if (localDateTimeCreated.equals(LocalDateTime.MIN)) {
-        questionDTO.setCreate_ar(null); // Hoặc xử lý giá trị "zero date"
-    } else {
-        questionDTO.setCreate_ar(localDateTimeCreated);
-    }
-} else {
-    questionDTO.setCreate_ar(null);
-}
+             questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
+                    questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
                 questionList.add(questionDTO);
             }
             res.setQuestionList(questionList);
@@ -206,29 +181,8 @@ if (timestampCreated != null) {
                questionDTO.setDifficulty(questionRs.getString("difficulty"));
                questionDTO.setTopicId(questionRs.getInt("topic_id"));
                questionDTO.setUpdater(questionRs.getString("updater"));
-            Timestamp timestampUpdated = questionRs.getTimestamp("updated_at");
-if (timestampUpdated != null) {
-    LocalDateTime localDateTimeUpdated = timestampUpdated.toLocalDateTime();
-    if (localDateTimeUpdated.equals(LocalDateTime.MIN)) {
-        questionDTO.setUpdated_at(null); // Hoặc xử lý giá trị "zero date"
-    } else {
-        questionDTO.setUpdated_at(localDateTimeUpdated);
-    }
-} else {
-    questionDTO.setUpdated_at(null);
-}
-
-Timestamp timestampCreated = questionRs.getTimestamp("create_at");
-if (timestampCreated != null) {
-    LocalDateTime localDateTimeCreated = timestampCreated.toLocalDateTime();
-    if (localDateTimeCreated.equals(LocalDateTime.MIN)) {
-        questionDTO.setCreate_ar(null); // Hoặc xử lý giá trị "zero date"
-    } else {
-        questionDTO.setCreate_ar(localDateTimeCreated);
-    }
-} else {
-    questionDTO.setCreate_ar(null);
-}
+              questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
+                    questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
                 questionList.add(questionDTO);
             }
             res.setQuestionList(questionList);
@@ -297,29 +251,8 @@ if (timestampCreated != null) {
                questionDTO.setDifficulty(questionRs.getString("difficulty"));
                questionDTO.setTopicId(questionRs.getInt("topic_id"));
                questionDTO.setUpdater(questionRs.getString("updater"));
-            Timestamp timestampUpdated = questionRs.getTimestamp("updated_at");
-if (timestampUpdated != null) {
-    LocalDateTime localDateTimeUpdated = timestampUpdated.toLocalDateTime();
-    if (localDateTimeUpdated.equals(LocalDateTime.MIN)) {
-        questionDTO.setUpdated_at(null); // Hoặc xử lý giá trị "zero date"
-    } else {
-        questionDTO.setUpdated_at(localDateTimeUpdated);
-    }
-} else {
-    questionDTO.setUpdated_at(null);
-}
-
-Timestamp timestampCreated = questionRs.getTimestamp("create_at");
-if (timestampCreated != null) {
-    LocalDateTime localDateTimeCreated = timestampCreated.toLocalDateTime();
-    if (localDateTimeCreated.equals(LocalDateTime.MIN)) {
-        questionDTO.setCreate_ar(null); // Hoặc xử lý giá trị "zero date"
-    } else {
-        questionDTO.setCreate_ar(localDateTimeCreated);
-    }
-} else {
-    questionDTO.setCreate_ar(null);
-}
+              questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
+                    questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
                 questionList.add(questionDTO);
             }
             res.setQuestionList(questionList);
@@ -800,6 +733,61 @@ if (timestampCreated != null) {
                 }
             }
         }
+    }
+    
+    public  Response.QuestoinResult filterQuestionBydifficulty(String difficulty,int topicId){
+        Connection conn = null;
+        PreparedStatement questionStmt = null;
+        PreparedStatement answerStmt = null;
+        Response.QuestoinResult res = new Response.QuestoinResult();
+
+        try {
+            conn = DatabaseConnection.getConnection();
+           
+            String questionSql = "SELECT * FROM questions WHERE is_deleted = 0 AND difficulty = ? ";
+             if(topicId!=-1) {
+               questionSql +="AND topic_id = ?";
+             }
+            questionStmt = conn.prepareStatement(questionSql);
+            questionStmt.setString(1, difficulty);
+            if(topicId!=-1) {
+             questionStmt.setInt(2, topicId);
+            }
+            ResultSet questionRs = questionStmt.executeQuery();
+
+            ArrayList<QuestionDTO> questionList = new ArrayList<>();
+            while (questionRs.next()) {
+                System.out.println("run");
+                QuestionDTO questionDTO = new QuestionDTO();
+                questionDTO.setQuestionId(questionRs.getInt("question_id")); 
+                questionDTO.setQuestionText(questionRs.getString("question_text")); 
+               questionDTO.setImageUrl(questionRs.getString("image_url"));
+               questionDTO.setDifficulty(questionRs.getString("difficulty"));
+               questionDTO.setTopicId(questionRs.getInt("topic_id"));
+               questionDTO.setUpdater(questionRs.getString("updater"));
+                questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
+                    questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
+            
+          
+                questionList.add(questionDTO);
+            }
+            res.setQuestionList(questionList);
+            res.setIsSuccess(true);
+            res.setMessage("Lấy dữ liệu thành công!");
+
+        } catch (SQLException e) {
+            res.setIsSuccess(false);
+            res.setMessage("Lỗi lấy dữ liệu: " + e.getMessage());
+        } finally {
+            try {
+                if (questionStmt != null) questionStmt.close();
+                if (answerStmt != null) answerStmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException ex) {
+            }
+        }
+
+        return res; 
     }
      private LocalDateTime convertTimestampToLocalDateTime(Timestamp timestamp) {
         if (timestamp != null) {

@@ -25,7 +25,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author ACER
  */
-public class AdminCreateTest extends javax.swing.JFrame {
+public class AdminManagerTest extends javax.swing.JFrame {
 
     /**
      * Creates new form AdminCreateTest
@@ -34,7 +34,7 @@ public class AdminCreateTest extends javax.swing.JFrame {
    private  ActionPanelEditor actionPanelEditor;
    private final  QuestionController questionControllerl;
    private  Response.ExamResult examData;
-    public AdminCreateTest() {
+    public AdminManagerTest() {
         this.examData = new Response.ExamResult();
         this.questionControllerl = new  QuestionController();
         this.examController = new ExamController();
@@ -136,6 +136,42 @@ public class AdminCreateTest extends javax.swing.JFrame {
              
      
     }
+     private  void searchTest() {
+       String selectedValue  =(String)  this.selectTopic.getSelectedItem();
+        String searchKey = inputSearch.getText().trim();
+          Response.TopicResult topicResult = questionControllerl.getTopic();
+       if(selectedValue.equalsIgnoreCase("Tất cả chủ đề")) {
+         Response.ExamResult res = examController.search(0, searchKey, -1);
+         if(res.isIsSuccess()) {
+             displayDataOnTable(res, topicResult);
+         }else {
+           JOptionPane.showInternalMessageDialog(null, res.getMessage());
+         }
+       } else {
+         if(selectedValue.equalsIgnoreCase("Lập trình")) {
+            Response.ExamResult res = examController.search(0, searchKey, 1);
+            if(res.isIsSuccess()) {
+          displayDataOnTable(res, topicResult);
+         }else {
+           JOptionPane.showInternalMessageDialog(null, res.getMessage());
+         }
+         } else if(selectedValue.equalsIgnoreCase("Du lịch")) {
+         Response.ExamResult res = examController.search(0, searchKey, 2);
+           if(res.isIsSuccess()) {
+            displayDataOnTable(res, topicResult);
+         }else {
+           JOptionPane.showInternalMessageDialog(null, res.getMessage());
+         }
+         } else {
+           Response.ExamResult res = examController.search(0, searchKey, 3);
+           if(res.isIsSuccess()) {
+                 displayDataOnTable(res, topicResult);
+         }else {
+           JOptionPane.showInternalMessageDialog(null, res.getMessage());
+         }
+         }
+       }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -164,8 +200,18 @@ public class AdminCreateTest extends javax.swing.JFrame {
         selectTopic.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         buttonSearchj.setText("search");
+        buttonSearchj.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonSearchjActionPerformed(evt);
+            }
+        });
 
         buttonCreateTest.setText("Tạo đề thi");
+        buttonCreateTest.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonCreateTestActionPerformed(evt);
+            }
+        });
 
         jButton4.setText(" Trở lại");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -264,6 +310,16 @@ public class AdminCreateTest extends javax.swing.JFrame {
           dispose();
     }//GEN-LAST:event_jButton4ActionPerformed
 
+    private void buttonCreateTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCreateTestActionPerformed
+       AdminCreateTestScreen adminCreateTestScreen = new AdminCreateTestScreen();
+        adminCreateTestScreen.setLocationRelativeTo(null);
+        adminCreateTestScreen.setVisible(true);
+    }//GEN-LAST:event_buttonCreateTestActionPerformed
+
+    private void buttonSearchjActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSearchjActionPerformed
+       searchTest();
+    }//GEN-LAST:event_buttonSearchjActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -281,20 +337,21 @@ public class AdminCreateTest extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AdminCreateTest.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AdminManagerTest.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AdminCreateTest.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AdminManagerTest.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AdminCreateTest.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AdminManagerTest.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AdminCreateTest.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AdminManagerTest.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AdminCreateTest().setVisible(true);
+                new AdminManagerTest().setVisible(true);
             }
         });
     }

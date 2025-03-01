@@ -210,6 +210,7 @@ public class AdminModalExam extends javax.swing.JFrame {
         });
 
         jButton2.setText("xuất file  docs");
+        jButton2.setPreferredSize(new java.awt.Dimension(104, 35));
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);

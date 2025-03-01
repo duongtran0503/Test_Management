@@ -202,7 +202,7 @@ public class AdminHomeScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-       AdminCreateTest adminCreateTest = new AdminCreateTest();
+       AdminManagerTest adminCreateTest = new AdminManagerTest();
           adminCreateTest.setLocationRelativeTo(null);
         adminCreateTest.setVisible(true);
      

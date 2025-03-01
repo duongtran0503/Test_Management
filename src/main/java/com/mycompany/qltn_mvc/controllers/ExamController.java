@@ -2,6 +2,7 @@ package com.mycompany.qltn_mvc.controllers;
 
 import com.mycompany.qltn_mvc.dtos.OptionDTO;
 import com.mycompany.qltn_mvc.dtos.QuestionDTO;
+import com.mycompany.qltn_mvc.dtos.TestDTO;
 import com.mycompany.qltn_mvc.models.ExamModel;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -33,15 +34,28 @@ public class ExamController {
        Response.ExamResult res = examModel.getExamResult(0);
        return  res;
       }
+       public Response.ExamResult search(int status,String title,int topicId) {
+         return  examModel.searchExam(status, title, topicId);
+       }
       
         public Response.ExamResult getExamDeletedResult() {
        Response.ExamResult res = examModel.getExamResult(1);
        return  res;
       }
+        
+        public Response.BaseResponse recoverTest(int id) {
+           Response.BaseResponse res = examModel.recoverTest(id);
+           return  res;
+        }
       
       public Response.ExamResult getTestByIdAndExamCode(int id , String code) {
         Response.ExamResult res = examModel.getTestByIdAndExamCode(id, code);
         return  res;
+      }
+      
+      public Response.ExamResult getTests() {
+          Response.ExamResult res = examModel.getTestResult();
+          return res;
       }
       
       public Response.ExamResult addQuestionToTheTest(ArrayList<QuestionDTO> questons , int examQuestionCode) {
@@ -141,5 +155,15 @@ public class ExamController {
       Response.BaseResponse res = examModel.deleteTest(id);
       return  res;
     }
-      
+    
+    public Response.BaseResponse createNewTest(TestDTO test,String topicName,ArrayList<String> examCodeList,int easyQ,int mediQ,int diffQ) {
+      Response.BaseResponse res= examModel.createNewTest(test, topicName, examCodeList, easyQ, mediQ, diffQ);
+      return  res;
+    }
+    
+     public Response.BaseResponse addNewExamCode(TestDTO test,ArrayList<String> examCodeList,int easyQ,int mediQ,int diffQ) {
+      Response.BaseResponse res= examModel.addNewExamCode(test, examCodeList, easyQ, mediQ, diffQ);
+      return  res;
+    }
+    
 }

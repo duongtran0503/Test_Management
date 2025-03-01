@@ -217,5 +217,10 @@ public class QuestionController {
       Response.QuestoinResult res = questionModel.recoverQuestion(id);
       return  res;
     }
+    
+    public Response.QuestoinResult filterQuestionsResult(String difficulty,int TopicId) {
+      Response.QuestoinResult res = questionModel.filterQuestionBydifficulty(difficulty, TopicId);
+      return  res;
+    }
    
 }
