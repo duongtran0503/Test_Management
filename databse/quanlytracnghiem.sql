@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 24, 2025 at 03:36 PM
+-- Generation Time: Mar 02, 2025 at 10:34 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -30,17 +30,23 @@ SET time_zone = "+00:00";
 CREATE TABLE `exams` (
   `exam_id` int(11) NOT NULL,
   `test_id` int(11) DEFAULT NULL,
-  `exam_code` varchar(255) DEFAULT NULL
+  `exam_code` varchar(255) DEFAULT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `exams`
 --
 
-INSERT INTO `exams` (`exam_id`, `test_id`, `exam_code`) VALUES
-(1, 1, 'A'),
-(2, 2, 'B'),
-(3, 3, 'C');
+INSERT INTO `exams` (`exam_id`, `test_id`, `exam_code`, `updated_at`) VALUES
+(1, 1, 'A', '2025-02-25 08:44:35'),
+(2, 2, 'B', '2025-02-25 08:44:35'),
+(3, 3, 'C', '2025-02-25 08:44:35'),
+(4, 4, 'qq', '2025-03-01 08:12:33'),
+(5, 5, '123', '2025-03-01 08:15:53'),
+(6, 1, '123', '2025-03-01 09:05:52'),
+(7, 1, '123', '2025-03-01 09:12:34'),
+(8, 3, 'b', '2025-03-01 09:17:01');
 
 -- --------------------------------------------------------
 
@@ -63,7 +69,31 @@ INSERT INTO `exam_questions` (`exam_question_id`, `exam_id`, `question_id`) VALU
 (2, 1, 2),
 (3, 2, 3),
 (4, 2, 4),
-(5, 3, 5);
+(5, 3, 5),
+(6, 3, 15),
+(7, 3, 20),
+(8, 1, 0),
+(9, 1, 123123128),
+(10, 4, 11),
+(11, 4, 12),
+(12, 4, 24),
+(13, 5, 6),
+(14, 5, 22),
+(15, 5, 1),
+(16, 5, 2),
+(17, 5, 3),
+(18, 5, 4),
+(19, 5, 5),
+(20, 5, 8),
+(21, 6, 16),
+(22, 6, 1),
+(23, 6, 6),
+(24, 7, 16),
+(25, 7, 6),
+(26, 7, 1),
+(27, 7, 123123128),
+(28, 8, 10),
+(29, 8, 21);
 
 -- --------------------------------------------------------
 
@@ -92,10 +122,6 @@ INSERT INTO `options` (`option_id`, `question_id`, `option_text`, `is_correct`, 
 (6, 2, 'Array', 0, NULL),
 (7, 2, 'Queue', 0, NULL),
 (8, 2, 'Stack', 0, NULL),
-(9, 3, 'Paris', 1, NULL),
-(10, 3, 'London', 0, NULL),
-(11, 3, 'Berlin', 0, NULL),
-(12, 3, 'Rome', 0, NULL),
 (13, 4, 'Đà Lạt', 1, NULL),
 (14, 4, 'Hà Nội', 0, NULL),
 (15, 4, 'Huế', 0, NULL),
@@ -191,7 +217,19 @@ INSERT INTO `options` (`option_id`, `question_id`, `option_text`, `is_correct`, 
 (145, 123123125, 'fasdfasdf', 1, NULL),
 (146, 123123125, 'asdfasfasf', 0, NULL),
 (147, 123123125, 'fsadfasdsdfafsdfasdfs', 0, NULL),
-(148, 123123125, 'ádfadf', 0, NULL);
+(148, 123123125, 'ádfadf', 0, NULL),
+(149, 123123127, 'kiểu chuổi', 0, NULL),
+(150, 123123127, 'ký tự ', 0, NULL),
+(151, 123123127, 'số nguyên', 1, NULL),
+(152, 123123127, 'văn bản', 0, NULL),
+(157, 3, 'Paris', 1, NULL),
+(158, 3, 'London', 0, NULL),
+(159, 3, 'Berlin', 0, NULL),
+(160, 3, 'Rome', 0, NULL),
+(161, 123123128, 'sdfsdfas', 1, NULL),
+(162, 123123128, 'asdfasdfasf', 0, NULL),
+(163, 123123128, 'fsadfasdfas', 0, NULL),
+(164, 123123128, 'fdasdfasf', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -216,17 +254,17 @@ CREATE TABLE `questions` (
 --
 
 INSERT INTO `questions` (`question_id`, `topic_id`, `question_text`, `image_url`, `difficulty`, `updated_at`, `updater`, `create_at`, `is_deleted`) VALUES
-(1, 1, 'Ngôn ngữ lập trình nào phổ biến nhất hiện nay?', NULL, 'easy', '2025-02-24 07:23:38', NULL, '2025-02-24 07:15:54', 1),
+(1, 1, 'Ngôn ngữ lập trình nào phổ biến nhất hiện nay?', NULL, 'easy', '2025-02-25 07:53:15', 'tran duong', '2025-02-24 07:15:54', 0),
 (2, 1, 'Cấu trúc dữ liệu nào dùng để lưu trữ dữ liệu dạng cặp khóa-giá  trị?.', NULL, 'medium', '2025-02-24 08:18:18', NULL, '2025-02-24 07:15:54', 0),
-(3, 2, 'Thủ đô của Pháp là gì?', NULL, 'easy', '2025-02-23 08:18:34', NULL, '2025-02-24 07:15:54', 0),
+(3, 2, 'Thủ đô của Pháp là gì?', 'aWQQt5fPuk_Cover.png', 'easy', '2025-02-27 13:54:22', 'tran duong', '2025-02-24 07:15:54', 0),
 (4, 2, 'Địa danh nào được gọi là thành phố ngàn hoa ở Việt Nam?', NULL, 'medium', '2025-02-23 08:18:43', NULL, '2025-02-24 07:15:54', 0),
 (5, 3, 'Kết quả của 2 + 2 * 2 là bao nhiêu?', NULL, 'easy', '2025-02-23 08:18:47', NULL, '2025-02-24 07:15:54', 0),
 (6, 1, 'Git là công cụ dùng để làm gì?', NULL, 'easy', '2025-02-23 08:18:50', NULL, '2025-02-24 07:15:54', 0),
 (7, 1, 'SQL dùng để làm gì trong cơ sở dữ liệu?', NULL, 'medium', '2025-02-23 08:18:54', NULL, '2025-02-24 07:15:54', 0),
 (8, 2, 'Đất nước nào có nhiều kim tự tháp cổ nhất?', NULL, 'medium', '2025-02-23 08:19:00', NULL, '2025-02-24 07:15:54', 0),
-(9, 2, 'Vịnh Hạ Long thuộc tỉnh nào của Việt Nam?', NULL, 'easy', '2025-02-23 08:18:57', NULL, '2025-02-24 07:15:54', 0),
-(10, 3, 'Số Pi có giá trị gần đúng là bao nhiêu?', NULL, 'medium', '2025-02-23 08:19:03', NULL, '2025-02-24 07:15:54', 0),
-(11, 3, 'Định lý Pitago áp dụng cho loại tam giác nào?', NULL, 'easy', '2025-02-23 08:19:07', NULL, '2025-02-24 07:15:54', 0),
+(9, 2, 'Vịnh Hạ Long thuộc tỉnh nào của Việt Nam?', NULL, 'easy', '2025-02-25 07:53:05', 'tran duong', '2025-02-24 07:15:54', 0),
+(10, 3, 'Số Pi có giá trị gần đúng là bao nhiêu?', NULL, 'medium', '2025-02-25 07:52:59', 'tran duong', '2025-02-24 07:15:54', 0),
+(11, 3, 'Định lý Pitago áp dụng cho loại tam giác nào?', NULL, 'easy', '2025-02-25 07:52:56', 'tran duong', '2025-02-24 07:15:54', 0),
 (12, 1, 'JavaScript có thể chạy ở đâu?', NULL, 'medium', '2025-02-23 08:19:09', NULL, '2025-02-24 07:15:54', 0),
 (13, 1, 'C++ là ngôn ngữ lập trình bậc nào?', NULL, 'medium', '2025-02-23 08:19:13', NULL, '2025-02-24 07:15:54', 0),
 (14, 2, 'Địa danh nào nổi tiếng với đấu trường Colosseum?', NULL, 'easy', '2025-02-23 08:20:20', NULL, '2025-02-24 07:15:54', 0),
@@ -234,15 +272,17 @@ INSERT INTO `questions` (`question_id`, `topic_id`, `question_text`, `image_url`
 (16, 1, 'HTML là viết tắt của gì?', NULL, 'easy', '2025-02-23 08:19:20', NULL, '2025-02-24 07:15:54', 0),
 (17, 1, 'Trong lập trình, vòng lặp for dùng để làm gì?', NULL, 'medium', '2025-02-23 08:19:23', NULL, '2025-02-24 07:15:54', 0),
 (18, 2, 'Thành phố nào được mệnh danh là thành phố không bao giờ ngủ?', NULL, 'easy', '2025-02-23 08:19:25', NULL, '2025-02-24 07:15:54', 0),
-(19, 2, 'Tháp Eiffel nằm ở đâu?', NULL, 'easy', '2025-02-23 08:19:33', NULL, '2025-02-24 07:15:54', 0),
-(20, 3, 'Kết quả của 10 / 2 là bao nhiêu?', NULL, 'easy', '2025-02-23 08:19:35', NULL, '2025-02-24 07:15:54', 0),
-(21, 3, 'Số nguyên tố nhỏ nhất là số nào?', NULL, 'medium', '2025-02-23 08:19:37', NULL, '2025-02-24 07:15:54', 0),
-(22, 1, 'Ngôn ngữ nào được dùng để lập trình Android?', NULL, 'medium', '2025-02-23 08:19:40', NULL, '2025-02-24 07:15:54', 0),
-(23, 1, 'Node.js được viết bằng ngôn ngữ nào?', NULL, 'medium', '2025-02-23 08:19:43', NULL, '2025-02-24 07:15:54', 0),
+(19, 2, 'Tháp Eiffel nằm ở đâu?', NULL, 'easy', '2025-02-25 08:02:50', 'tran duong', '2025-02-24 07:15:54', 0),
+(20, 3, 'Kết quả của 10 / 2 là bao nhiêu?', NULL, 'easy', '2025-02-25 08:02:47', 'tran duong', '2025-02-24 07:15:54', 0),
+(21, 3, 'Số nguyên tố nhỏ nhất là số nào?', NULL, 'medium', '2025-02-25 08:02:45', 'tran duong', '2025-02-24 07:15:54', 0),
+(22, 1, 'Ngôn ngữ nào được dùng để lập trình Android?', NULL, 'medium', '2025-02-25 08:02:42', 'tran duong', '2025-02-24 07:15:54', 0),
+(23, 1, 'Node.js được viết bằng ngôn ngữ nào?', NULL, 'medium', '2025-02-25 07:59:35', 'tran duong', '2025-02-24 07:15:54', 0),
 (24, 2, 'Địa danh nào là kỳ quan thiên nhiên của thế giới ở Việt Nam?', NULL, 'medium', '2025-02-23 08:19:45', NULL, '2025-02-24 07:15:54', 0),
 (25, 2, 'Công trình Machu Picchu nằm ở quốc gia nào?', NULL, 'medium', '2025-02-23 08:19:51', NULL, '2025-02-24 07:15:54', 0),
-(123123125, 1, 'sdfsdfasdfasfdasfasffs', 'akhEx6hDW6_Cover.png', 'medium', '2025-02-24 14:18:01', 'tran duong', '2025-02-24 13:39:31', 0),
-(123123126, 1, 'update 222222', NULL, 'medium', '2025-02-24 14:35:17', 'tran duong', '2025-02-24 14:05:30', 1);
+(123123125, 1, 'sdfsdfasdfasfdasfasffs', 'akhEx6hDW6_Cover.png', 'medium', '2025-02-25 08:03:03', 'tran duong', '2025-02-24 13:39:31', 1),
+(123123126, 1, 'update 222222', NULL, 'medium', '2025-02-25 08:03:01', 'tran duong', '2025-02-24 14:05:30', 1),
+(123123127, 1, ' int là kiểu dữ liêu gì', 'null', 'easy', '2025-02-25 08:02:58', 'tran duong', '2025-02-25 04:24:40', 1),
+(123123128, 1, 'sadASDFASDFSDFrsdfsdf', NULL, 'easy', '2025-02-28 06:38:15', 'tran duong', '2025-02-27 09:45:22', 0);
 
 -- --------------------------------------------------------
 
@@ -303,17 +343,21 @@ CREATE TABLE `tests` (
   `topic_id` int(11) DEFAULT NULL,
   `test_name` varchar(255) DEFAULT NULL,
   `test_time` int(11) DEFAULT NULL,
-  `num_limit` int(11) DEFAULT NULL
+  `num_limit` int(11) DEFAULT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `is_deleted` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tests`
 --
 
-INSERT INTO `tests` (`test_id`, `topic_id`, `test_name`, `test_time`, `num_limit`) VALUES
-(1, 1, 'Bài kiểm tra lập trình cơ bản', 30, 3),
-(2, 2, 'Bài kiểm tra kiến thức du lịch', 25, 2),
-(3, 3, 'Bài kiểm tra toán học', 20, 5);
+INSERT INTO `tests` (`test_id`, `topic_id`, `test_name`, `test_time`, `num_limit`, `updated_at`, `is_deleted`) VALUES
+(1, 1, 'Bài kiểm tra lập trình cơ bản 1', 30, 3, '2025-03-01 09:13:59', 1),
+(2, 2, 'Bài kiểm tra kiến thức du lịch', 25, 2, '2025-03-01 09:34:05', 0),
+(3, 3, 'Bài kiểm tra toán học', 20, 5, '2025-02-28 06:37:50', 0),
+(4, 1, 'test', 12, NULL, '2025-03-01 08:15:21', 1),
+(5, 1, 'fsadfas', 12, NULL, '2025-03-01 09:13:04', 1);
 
 -- --------------------------------------------------------
 
@@ -346,17 +390,21 @@ CREATE TABLE `users` (
   `password` varchar(255) DEFAULT NULL,
   `fullname` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
-  `role` enum('student','admin') DEFAULT NULL
+  `role` enum('student','admin') DEFAULT NULL,
+  `is_deleted` tinyint(1) NOT NULL DEFAULT 0,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `updater` varchar(200) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `password`, `fullname`, `email`, `role`) VALUES
-(1, '1', 'tran duong', 'admin@gmail.com', 'admin'),
-(2, '1', 'abc', 'a@gmail.com', 'student'),
-(3, '1', 'nam', 'nam@gmail.com', 'student');
+INSERT INTO `users` (`user_id`, `password`, `fullname`, `email`, `role`, `is_deleted`, `updated_at`, `updater`) VALUES
+(1, NULL, 'tran duong 2', 'admin@gmail.com', 'student', 0, '2025-03-02 09:11:05', 'tran duong'),
+(2, '1', 'abc', 'a@gmail.com', 'student', 0, '2025-03-02 06:58:12', ''),
+(3, '1', 'nam', 'nam@gmail.com', 'student', 0, '2025-03-02 06:58:12', ''),
+(4, '123', 'dasd', 'sd@gmail.com', 'student', 1, '2025-03-02 09:15:13', 'tran duong');
 
 --
 -- Indexes for dumped tables
@@ -424,25 +472,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `exams`
 --
 ALTER TABLE `exams`
-  MODIFY `exam_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `exam_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `exam_questions`
 --
 ALTER TABLE `exam_questions`
-  MODIFY `exam_question_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `exam_question_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `options`
 --
 ALTER TABLE `options`
-  MODIFY `option_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=149;
+  MODIFY `option_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=165;
 
 --
 -- AUTO_INCREMENT for table `questions`
 --
 ALTER TABLE `questions`
-  MODIFY `question_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=123123127;
+  MODIFY `question_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=123123129;
 
 --
 -- AUTO_INCREMENT for table `results`
@@ -460,7 +508,7 @@ ALTER TABLE `result_details`
 -- AUTO_INCREMENT for table `tests`
 --
 ALTER TABLE `tests`
-  MODIFY `test_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `test_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `topics`
@@ -472,7 +520,7 @@ ALTER TABLE `topics`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
