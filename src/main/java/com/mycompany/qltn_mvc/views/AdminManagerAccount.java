@@ -6,6 +6,7 @@ package com.mycompany.qltn_mvc.views;
 
 import com.mycompany.qltn_mvc.UI.ActionPanelEditor;
 import com.mycompany.qltn_mvc.UI.ActionPanelRenderer;
+import com.mycompany.qltn_mvc.UI.PopupSelectAddUser;
 import com.mycompany.qltn_mvc.controllers.Response;
 import com.mycompany.qltn_mvc.controllers.UserController;
 import com.mycompany.qltn_mvc.dtos.OptionDTO;
@@ -300,11 +301,8 @@ public class AdminManagerAccount extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-      AdminModalUser adminModalUser = new AdminModalUser();
-      adminModalUser.setLocationRelativeTo(null);
-      
-      adminModalUser.setModalHandle(AdminModalUser.ADD_MODAL);
-      adminModalUser.setVisible(true);
+      PopupSelectAddUser popupSelectAddUser = new PopupSelectAddUser();
+       popupSelectAddUser.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**

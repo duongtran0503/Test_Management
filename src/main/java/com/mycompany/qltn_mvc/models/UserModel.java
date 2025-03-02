@@ -221,4 +221,46 @@ public class UserModel {
 
         return response;
     }
+           public BaseResponse resetPassword( int userId) {
+        BaseResponse response = new BaseResponse();
+        try (Connection conn = DatabaseConnection.getConnection()) {
+        
+            String checkPasswordSql = "SELECT * FROM users WHERE user_id = ?";
+            try (PreparedStatement checkPasswordStmt = conn.prepareStatement(checkPasswordSql)) {
+                checkPasswordStmt.setInt(1, userId);
+                try (ResultSet rs = checkPasswordStmt.executeQuery()) {
+                    if (!rs.next()) {
+                     response.setIsSuccess(false);
+                        response.setMessage("Không tìm thấy người dùng với ID: " + userId);
+                        return response; 
+                   
+                }
+            }
+            }
+
+      
+            String updatePasswordSql = "UPDATE users SET password = ?, updater = ? WHERE user_id = ?";
+            try (PreparedStatement updatePasswordStmt = conn.prepareStatement(updatePasswordSql)) {
+                updatePasswordStmt.setString(1, 1+"");
+                updatePasswordStmt.setString(2, App.user.getUsername()); 
+                updatePasswordStmt.setInt(3, userId);
+
+                int rowsAffected = updatePasswordStmt.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    response.setIsSuccess(true);
+                    response.setMessage("Mật khẩu đã được cập nhật thành công.");
+                } else {
+                    response.setIsSuccess(false);
+                    response.setMessage("Không tìm thấy người dùng với ID: " + userId);
+                }
+            }
+
+        } catch (SQLException e) {
+            response.setIsSuccess(false);
+            response.setMessage("Lỗi cập nhật mật khẩu: " + e.getMessage());
+        }
+
+        return response;
+    }
 }

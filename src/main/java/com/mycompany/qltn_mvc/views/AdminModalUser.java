@@ -38,6 +38,7 @@ public class AdminModalUser extends javax.swing.JFrame {
          this.lablePassword.setText("Xác nhận mật khẩu");
          this.lableNewPasswordConfirm.setVisible(false);
          this.confirmNewPassword.setVisible(false);
+         this.buttonResetPassword.setVisible(false);
         }
     }
     private  String  ModalHandle ;
@@ -105,6 +106,7 @@ public class AdminModalUser extends javax.swing.JFrame {
          user.setEmail(email);
          user.setUsername(name);
          user.setRole(role);
+         user.setPassword(this.userData.getPassword());
          Response.BaseResponse res = userController.updateUser(user);
            if(res.isIsSuccess()) {
            JOptionPane.showMessageDialog(null, res.getMessage());
@@ -155,6 +157,7 @@ public class AdminModalUser extends javax.swing.JFrame {
         lableNewPasswordConfirm = new javax.swing.JLabel();
         confirmNewPassword = new javax.swing.JTextField();
         buttonUdatePassword = new javax.swing.JButton();
+        buttonResetPassword = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -227,10 +230,10 @@ public class AdminModalUser extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(54, 54, 54)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(94, Short.MAX_VALUE))
+                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(99, Short.MAX_VALUE))
         );
 
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -245,9 +248,18 @@ public class AdminModalUser extends javax.swing.JFrame {
         lableNewPasswordConfirm.setText("Xác nhận mật khẩu");
 
         buttonUdatePassword.setText("Câp nhập mật khẩu");
+        buttonUdatePassword.setPreferredSize(new java.awt.Dimension(72, 23));
         buttonUdatePassword.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonUdatePasswordActionPerformed(evt);
+            }
+        });
+
+        buttonResetPassword.setText("Đật lại mật khẩu");
+        buttonResetPassword.setPreferredSize(new java.awt.Dimension(72, 23));
+        buttonResetPassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonResetPasswordActionPerformed(evt);
             }
         });
 
@@ -268,8 +280,10 @@ public class AdminModalUser extends javax.swing.JFrame {
                             .addComponent(lableNewPasswordConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(confirmNewPassword)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(56, 56, 56)
-                        .addComponent(buttonUdatePassword, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(24, 24, 24)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(buttonUdatePassword, javax.swing.GroupLayout.DEFAULT_SIZE, 231, Short.MAX_VALUE)
+                            .addComponent(buttonResetPassword, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(22, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -290,7 +304,9 @@ public class AdminModalUser extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(confirmNewPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(58, 58, 58)
-                .addComponent(buttonUdatePassword, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(buttonUdatePassword, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(buttonResetPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -354,6 +370,21 @@ public class AdminModalUser extends javax.swing.JFrame {
           }
     }//GEN-LAST:event_buttonUdatePasswordActionPerformed
 
+    private void buttonResetPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetPasswordActionPerformed
+         int confirm = JOptionPane.showConfirmDialog(
+        this, 
+        "Lưu ý: khi reset password mặc định sẽ là 1", 
+        "Xác nhận", 
+        JOptionPane.YES_NO_OPTION
+    );
+
+    if (confirm == JOptionPane.YES_OPTION) {
+    
+       Response.BaseResponse res = userController.resetPassword(this.userData.getUserId());
+       JOptionPane.showMessageDialog(null, res.getMessage());
+    }
+    }//GEN-LAST:event_buttonResetPasswordActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -391,6 +422,7 @@ public class AdminModalUser extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonResetPassword;
     private javax.swing.JButton buttonUdatePassword;
     private javax.swing.JTextField confirmNewPassword;
     private javax.swing.JTextField inputCurrentPassword;
