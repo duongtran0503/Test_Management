@@ -4,7 +4,7 @@
  */
 package com.mycompany.qltn_mvc.models;
 
-import com.mycompany.qltn_mvc.Main;
+import com.mycompany.qltn_mvc.App;
 import com.mycompany.qltn_mvc.config.DatabaseConnection;
 import com.mycompany.qltn_mvc.controllers.Response;
 import com.mycompany.qltn_mvc.dtos.OptionDTO;
@@ -486,7 +486,7 @@ public class QuestionModel {
             questionStmt.setString(2, questionDTO.getQuestionText());
             questionStmt.setString(3, questionDTO.getImageUrl());
             questionStmt.setString(4, questionDTO.getDifficulty());
-            questionStmt.setString(5, Main.user.getUsername());
+            questionStmt.setString(5, App.user.getUsername());
             questionStmt.setInt(6, questionDTO.getQuestionId()); // Where clause
             int rowsAffected = questionStmt.executeUpdate();
 
@@ -567,7 +567,7 @@ public class QuestionModel {
             String sqlUpdateQuestion = "UPDATE questions SET is_deleted = ? ,updater = ? WHERE question_id = ?";
             questionStmt = conn.prepareStatement(sqlUpdateQuestion);
            questionStmt.setBoolean(1, true);
-            questionStmt.setString(2, Main.user.getUsername());
+            questionStmt.setString(2, App.user.getUsername());
             questionStmt.setInt(3, id);
             int rowsAffected = questionStmt.executeUpdate();
 
@@ -701,7 +701,7 @@ public class QuestionModel {
             String sqlUpdateQuestion = "UPDATE questions SET is_deleted = ? ,updater = ? WHERE question_id = ?";
             questionStmt = conn.prepareStatement(sqlUpdateQuestion);
             questionStmt.setBoolean(1, false);
-            questionStmt.setString(2, Main.user.getUsername());
+            questionStmt.setString(2, App.user.getUsername());
             questionStmt.setInt(3, id);
             questionStmt.executeUpdate();
             conn.commit();

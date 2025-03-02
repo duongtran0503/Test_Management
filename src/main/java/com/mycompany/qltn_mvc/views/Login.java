@@ -4,7 +4,7 @@
  */
 package com.mycompany.qltn_mvc.views;
 
-import com.mycompany.qltn_mvc.Main;
+import com.mycompany.qltn_mvc.App;
 import com.mycompany.qltn_mvc.UI.RoundedFlatBorder;
 import com.mycompany.qltn_mvc.controllers.AuthController;
 import com.mycompany.qltn_mvc.controllers.Response;
@@ -46,7 +46,7 @@ public class Login extends javax.swing.JFrame {
     } else {
        
         Response.loginResult res = authController.login(email, password);
-            Main.user = res.getUser();
+            App.user = res.getUser();
         if (res.isIsSuccess()) {
            if(res.getUser().getRole().equalsIgnoreCase("admin")) {
             AdminHomeScreen adminHomeScreen = new AdminHomeScreen();
@@ -210,7 +210,7 @@ private boolean isValidEmail(String email) {
 // bật lên để login
 //      validationLogin();
 // hiện giao diện admin ko loggin
- Main.user.setUsername("tran duong");
+ App.user.setUsername("tran duong");
    AdminHomeScreen adminHomeScreen = new AdminHomeScreen();
    adminHomeScreen.setVisible(true);
    dispose();

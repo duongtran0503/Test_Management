@@ -183,4 +183,15 @@ public class Response {
 
      
      }
+     public static class UserResult  extends  BaseResponse{
+
+        public ArrayList<UserDTO> getUserList() {
+            return userList;
+        }
+
+        public void setUserList(ArrayList<UserDTO> userList) {
+            this.userList = userList;
+        }
+       private ArrayList<UserDTO> userList;  
+     }
 }

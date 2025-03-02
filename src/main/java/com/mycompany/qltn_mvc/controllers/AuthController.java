@@ -34,9 +34,9 @@ public class AuthController {
           return  res;
      }
      public Response.RegisterResult register(UserDTO userDTO) {
-       Response.RegisterResult res;
-         userDTO.setRole("student");
-        res = authModel.register(userDTO);
-         return  res;
+    
+     
+    
+         return   authModel.register(userDTO);
      }
 }

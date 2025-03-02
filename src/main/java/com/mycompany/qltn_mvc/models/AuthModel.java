@@ -96,7 +96,7 @@ public class AuthModel {
         } catch (SQLException e) {
          
             res.setIsSuccess(false);
-            res.setMessage("Lỗi đăng ký: "); 
+            res.setMessage("Lỗi đăng ký: "+e.getMessage()); 
             return res;
         } 
     } 

@@ -17,7 +17,7 @@ import javax.swing.UIManager;
  *
  * @author ACER
  */
-public class Main {
+public class App {
     public static UserDTO user = new UserDTO();
     public static void main(String[] args) {
         

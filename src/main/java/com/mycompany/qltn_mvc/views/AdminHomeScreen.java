@@ -168,7 +168,10 @@ public class AdminHomeScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-      
+          AdminStaticsScreen adminStaticsScreen  = new AdminStaticsScreen();
+          adminStaticsScreen.setLocationRelativeTo(null);
+          adminStaticsScreen.setVisible(true);
+           dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jPanel1ComponentHidden(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_jPanel1ComponentHidden
@@ -183,7 +186,11 @@ public class AdminHomeScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // TODO add your handling code here:
+      AdminManagerAccount adminManagerAccount = new AdminManagerAccount();
+      adminManagerAccount.setLocationRelativeTo(null);
+      adminManagerAccount.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+      adminManagerAccount.setVisible(true);
+      dispose();
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed

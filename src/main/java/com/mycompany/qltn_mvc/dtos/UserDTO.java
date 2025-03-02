@@ -4,17 +4,50 @@
  */
 package com.mycompany.qltn_mvc.dtos;
  
+import java.time.LocalDateTime;
+
 /**
  *
  * @author ACER
  */
 public class UserDTO {
+    public static int IS_DELETED_TRUE = 1;
+    public static int IS_DELETED_FALSE =0;
      private int userId;
     private String username;
     private String password;
     private String email;
     private String role;
- public  UserDTO(){};
+    private LocalDateTime updated_at;
+      private String updater;
+      private  boolean is_deleted;
+    public LocalDateTime getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(LocalDateTime updated_at) {
+        this.updated_at = updated_at;
+    }
+
+    public String getUpdater() {
+        return updater;
+    }
+
+    public void setUpdater(String updater) {
+        this.updater = updater;
+    }
+
+    public boolean isIs_deleted() {
+        return is_deleted;
+    }
+
+    public void setIs_deleted(boolean is_deleted) {
+        this.is_deleted = is_deleted;
+    }
+   
+ public  UserDTO(){
+     this.role = "student";
+ };
     public void setUserId(int userId) {
         this.userId = userId;
     }
