@@ -63,6 +63,7 @@ com\mycompany\qltn_mvc\models\ExamModel.class
 com\mycompany\qltn_mvc\views\AdminCreateTestScreen$5.class
 com\mycompany\qltn_mvc\views\Login.class
 com\mycompany\qltn_mvc\views\AdminQuestionSelectScreen.class
+com\mycompany\qltn_mvc\controllers\Response$TestResult.class
 com\mycompany\qltn_mvc\views\AdminManagerTest$2.class
 com\mycompany\qltn_mvc\UI\PopupSelectAddUser.class
 com\mycompany\qltn_mvc\models\AuthModel.class

@@ -166,4 +166,11 @@ public class ExamController {
       return  res;
     }
     
+     public Response.TestResult  getTestsResult(int examId){
+        return  examModel.getTestsResult(examId);
+       }
+    public Response.ExamResult getExamById(int id) {
+     return examModel.getExamById(id);
+    }
+    
 }

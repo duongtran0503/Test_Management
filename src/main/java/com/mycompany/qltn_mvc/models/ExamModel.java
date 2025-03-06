@@ -10,6 +10,8 @@ import com.mycompany.qltn_mvc.dtos.ExamDTO;
 import com.mycompany.qltn_mvc.dtos.ExamQuestionDTO;
 import com.mycompany.qltn_mvc.dtos.OptionDTO;
 import com.mycompany.qltn_mvc.dtos.QuestionDTO;
+import com.mycompany.qltn_mvc.dtos.ResultDTO;
+import com.mycompany.qltn_mvc.dtos.ResultDetailDTO;
 import com.mycompany.qltn_mvc.dtos.TestDTO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,6 +21,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 /**
@@ -80,16 +83,17 @@ public class ExamModel {
         try {
             conn = DatabaseConnection.getConnection();
                String searchText = "%" + title + "%";
-                String sql =" SELECT * FROM tests WHERE is_deleted =  ? AND test_name LIKE ? ";
+                String sql =" SELECT * FROM tests WHERE is_deleted =  ?  ";
+                if(title.length()!=0 || !title.trim().isEmpty()) {
+                 sql +=" AND test_name LIKE " +searchText;
+                }
                  if(topicId !=-1) {
-                   sql+=" AND topic_id = ?";
+                   sql+=" AND topic_id = " +topicId;
                  }
                 PreparedStatement testStmt = conn.prepareStatement(sql);
                 testStmt.setBoolean(1,status==1);
-                testStmt.setString(2, searchText);
-                if(topicId != -1) {
-                  testStmt.setInt(3, topicId);
-                }
+                
+               
                 ResultSet testRs = testStmt.executeQuery();
                 while (testRs.next()) {                
                     TestDTO testDTO = new TestDTO();
@@ -329,6 +333,37 @@ public class ExamModel {
          return  res;
        
      }
+               public Response.ExamResult getExamById(int id) {
+        Connection conn = null;
+        PreparedStatement testStmt = null;
+     
+        Response.ExamResult res = new Response.ExamResult();
+        res.setExamList(new ArrayList<>());
+         try {
+            conn = DatabaseConnection.getConnection();
+            String sql = "SELECT * FROM exams WHERE exam_id = ?";
+             testStmt = conn.prepareStatement(sql);
+             testStmt.setInt(1, id);
+             ResultSet examRs = testStmt.executeQuery();
+                      
+             while (examRs.next()) {                 
+                ExamDTO examDTO = new ExamDTO();
+                 examDTO.setExamCode(examRs.getString("exam_code"));
+                 examDTO.setExamId(examRs.getInt("exam_id"));
+                 res.getExamList().add(examDTO);
+             }
+             
+             res.setMessage("Lấy bài thi thành công!");
+             res.setIsSuccess(true);
+               return  res;
+             
+         } catch (Exception e) {
+             res.setIsSuccess(false);
+             res.setMessage("Lỗi tải dữ liệu!");
+         }
+         return  res;
+       
+     }
       public Response.BaseResponse createNewTest(TestDTO test, String topic_name, ArrayList<String> examCodeList, int easyQ, int mediumQ, int diffQ) {
         Response.BaseResponse res = new Response.BaseResponse();
         try (Connection conn = DatabaseConnection.getConnection()) {
@@ -501,8 +536,67 @@ public class ExamModel {
          return res;
      }
      
-     
-     
+          public Response.TestResult getTestsResult(int examId) {
+        Response.TestResult res = new Response.TestResult();
+        res.setTestResultList(new ArrayList<>());
+        res.setTestResultDetailList(new HashMap<>()); 
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM results");
+            if (examId != -1) {
+                sqlBuilder.append(" WHERE exam_id = ?");
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(sqlBuilder.toString())) {
+                if (examId != -1) {
+                    stmt.setInt(1, examId);
+                }
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        ResultDTO resultDTO = new ResultDTO();
+                        resultDTO.setResultId(rs.getInt("result_id"));
+                        resultDTO.setUserId(rs.getInt("user_id"));
+                        resultDTO.setEndTime(convertTimestampToLocalDateTime(rs.getTimestamp("end_time")));
+                        resultDTO.setStartTime(convertTimestampToLocalDateTime(rs.getTimestamp("start_time")));
+                        resultDTO.setScore(rs.getInt("score"));
+                        resultDTO.setCorrect(rs.getDouble("correct"));
+                        resultDTO.setExamId(rs.getInt("exam_id"));
+                        res.getTestResultList().add(resultDTO);
+
+                  
+                    }
+                }
+            }
+
+            for (ResultDTO resultDTO : res.getTestResultList()) {
+                try (PreparedStatement statement = conn.prepareStatement("SELECT * FROM result_details WHERE result_id = ?")) {
+                    statement.setInt(1, resultDTO.getResultId());
+                    try (ResultSet rsDetailRs = statement.executeQuery()) {
+                        while (rsDetailRs.next()) {
+                            ResultDetailDTO resultDetailDTO = new ResultDetailDTO();
+                            resultDetailDTO.setResultDetailId(rsDetailRs.getInt("result_detail_id"));
+                            resultDetailDTO.setOptionId(rsDetailRs.getInt("option_id"));
+                            resultDetailDTO.setResultId(rsDetailRs.getInt("result_id"));
+                            resultDetailDTO.setQuestionId(rsDetailRs.getInt("question_id"));
+                            res.getTestResultDetailList().put(resultDetailDTO.getResultId(), resultDetailDTO);
+                        }
+                    }
+                }
+            }
+
+            res.setIsSuccess(true);
+            res.setMessage("Lấy dữ liệu thành công!");
+
+        } catch (SQLException e) {
+            res.setIsSuccess(false);
+            res.setMessage("Lỗi lấy dữ liệu: " + e.getMessage());
+        }
+
+        return res;
+    }
+
+    
     private  int getRadomNumber(int upperBound) {
         if(upperBound <=0 ) return  0 ;
         Random random = new Random();
@@ -519,4 +613,5 @@ public class ExamModel {
         }
         return null;
     }
+   
 }

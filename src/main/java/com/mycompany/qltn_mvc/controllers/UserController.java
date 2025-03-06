@@ -203,4 +203,8 @@ public class UserController {
     return userModel.resetPassword(id);
            
    } 
+   
+   public Response.UserResult getUserById(int id) {
+    return  userModel.getUserById(id);
+   }
 }

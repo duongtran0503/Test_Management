@@ -56,6 +56,38 @@ public class UserModel {
         return result;
     }
       
+        public Response.UserResult getUserById(int id) {
+             Response.UserResult res = new Response.UserResult();
+             res.setUserList(new ArrayList<>());
+            try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM users WHERE user_id = ?")) {
+
+            pstmt.setInt(1, id);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                   UserDTO user = new UserDTO();
+                    user.setUserId(rs.getInt("user_id"));
+                    user.setUsername(rs.getString("fullname"));
+                    user.setPassword(rs.getString("password"));
+                    user.setEmail(rs.getString("email"));
+                    user.setRole(rs.getString("role"));
+                    user.setUpdater(rs.getString("updater"));
+                    user.setUpdated_at(convertTimestampToLocalDateTime(rs.getTimestamp("updated_at")));
+                    res.getUserList().add(user);
+                }
+            }
+            res.setIsSuccess(true);
+            res.setMessage("Lấy dữ liệu thành công!");
+            return res;
+
+        } catch (SQLException e) {
+         res.setIsSuccess(false);
+         res.setMessage("lỗi"+ e.getMessage());
+        }
+        return res;
+    }
+      
        public BaseResponse deleteUser(int userId) {
         BaseResponse response = new BaseResponse();
         try (Connection conn = DatabaseConnection.getConnection();

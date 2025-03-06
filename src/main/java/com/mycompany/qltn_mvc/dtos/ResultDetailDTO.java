@@ -13,7 +13,7 @@ public class ResultDetailDTO {
     private int resultId;
     private int questionId;
     private int optionId; 
-
+  public ResultDetailDTO(){}
     public void setResultDetailId(int resultDetailId) {
         this.resultDetailId = resultDetailId;
     }

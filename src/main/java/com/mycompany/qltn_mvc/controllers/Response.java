@@ -8,10 +8,13 @@ import com.mycompany.qltn_mvc.dtos.ExamDTO;
 import com.mycompany.qltn_mvc.dtos.ExamQuestionDTO;
 import com.mycompany.qltn_mvc.dtos.OptionDTO;
 import com.mycompany.qltn_mvc.dtos.QuestionDTO;
+import com.mycompany.qltn_mvc.dtos.ResultDTO;
+import com.mycompany.qltn_mvc.dtos.ResultDetailDTO;
 import com.mycompany.qltn_mvc.dtos.TestDTO;
 import com.mycompany.qltn_mvc.dtos.TopicDTO;
 import com.mycompany.qltn_mvc.dtos.UserDTO;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
@@ -193,5 +196,28 @@ public class Response {
             this.userList = userList;
         }
        private ArrayList<UserDTO> userList;  
+     }
+     public static class TestResult extends BaseResponse{
+      private  ArrayList<ResultDTO> testResultList;
+     private  HashMap<Integer,ResultDetailDTO> testResultDetailList;
+
+        public HashMap<Integer, ResultDetailDTO> getTestResultDetailList() {
+            return testResultDetailList;
+        }
+
+        public void setTestResultDetailList(HashMap<Integer, ResultDetailDTO> testResultDetailList) {
+            this.testResultDetailList = testResultDetailList;
+        }
+  
+        public ArrayList<ResultDTO> getTestResultList() {
+            return testResultList;
+        }
+
+        public void setTestResultList(ArrayList<ResultDTO> testResultList) {
+            this.testResultList = testResultList;
+        }
+
+      
+      
      }
 }
