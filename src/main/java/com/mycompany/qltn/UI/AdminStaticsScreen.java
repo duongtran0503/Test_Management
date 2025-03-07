@@ -12,9 +12,12 @@ import com.mycompany.qltn.dto.ExamDTO;
 import com.mycompany.qltn.dto.ResultDTO;
 import com.mycompany.qltn.dto.TestDTO;
 import com.mycompany.qltn.dto.TopicDTO;
+import java.awt.event.ItemEvent;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.table.DefaultTableModel;
 
@@ -31,28 +34,55 @@ public class AdminStaticsScreen extends javax.swing.JFrame {
     private final  ExamBLL examBLL;
     private final  QuestionBLL questionBLL;
     private final  UserBLL userBLL;
+    private  ExamDTO examDTOData;
+    private  ArrayList<TestDTO> testData;
     public AdminStaticsScreen() {
+        this.testData = new ArrayList<>();
+        this.examDTOData = new ExamDTO();
         this.userBLL = new UserBLL();
         this.examResultData = new Response.ExamResult();
         this.questionBLL = new QuestionBLL();
         this.examBLL = new ExamBLL();
         initComponents();
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setValueTestNameSelectResult();
-        setValueStaticsView();
+        setValueTestNameSelectResult(1);
+        setValueStaticsView(1);
         loadDataOnTable();
            jTable1.setRowHeight(50);
         jTable1.setFocusable(false);
+       addEventOnChangeForSelect();
+       addEventOnChangeForTestNameSelect();
     }
-   private void setValueStaticsView(){
-      Response.ExamResult resultExam = examBLL.search(0,"", 1);
+   private  void addEventOnChangeForTestNameSelect() {
+     this.testNameSelect.addItemListener(((e) -> {
+        if(e.getStateChange() ==ItemEvent.SELECTED) {
+           int index = this.testNameSelect.getSelectedIndex();
+            displayDataOnTable(this.testData.get(index).getTestId());
+            
+        }
+     }));
+   }
+   private  void addEventOnChangeForSelect() {
+    this.topicSelect.addItemListener(((e) -> {
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+            int index = this.topicSelect.getSelectedIndex();
+            System.out.println("item slec"+index);
+            Response.ExamResult resultExam = examBLL.search(0,"", index+1);
+           
+            updateValueTestNameSelect(resultExam.getTestLists());
+           
+        }
+    }));
+   }
+   private void setValueStaticsView(int topicId){
+      Response.ExamResult resultExam = examBLL.search(0,"", topicId);
       int examId =0;
       for(ExamDTO exam:resultExam.getExamList()){
          if(exam.getTestId()==resultExam.getTestLists().getFirst().getTestId()) {
            examId = exam.getExamId();
          }
       }
-       System.out.println("examId"+examId);
+       this.examDTOData.setExamId(examId);
       Response.TestResult result = examBLL.getTestsResult(examId);
        this.totalStudent.setText(result.getTestResultList().size()+"");
        int totalCompleted = 0;
@@ -66,49 +96,78 @@ public class AdminStaticsScreen extends javax.swing.JFrame {
       this.totalCompleted.setText(totalCompleted+"");
       this.totalUnfinished.setText(totalUnfinished+"");
    }  
-  private  void setValueTestNameSelectResult(){
+ private void updateValueTestNameSelect(ArrayList<TestDTO> testList) {
+       DefaultComboBoxModel<String> modelTestName = new DefaultComboBoxModel<>();
+       this.testData = new ArrayList<>();
+     for(TestDTO test:testList) {
+        modelTestName.addElement(test.getTestName());
+        this.testData.add(test);
+     }
+     this.testNameSelect.setModel(modelTestName);
+      displayDataOnTable(testList.getFirst().getTestId());
+      setValueStaticsView(testList.getFirst().getTopicId());
+ }
+  private  void setValueTestNameSelectResult(int topicId){
            DefaultComboBoxModel<String> modelTopic = new DefaultComboBoxModel<>();
           DefaultComboBoxModel<String> modelTestName = new DefaultComboBoxModel<>();
   Response.TopicResult topics = this.questionBLL.getTopic();
   for(TopicDTO topic: topics.getTopicList()) {
        modelTopic.addElement(topic.getTopicName());
   }
-   Response.ExamResult result = examBLL.search(0,"", 1);
+   Response.ExamResult result = examBLL.search(0,"",topicId );
       System.out.println("le:"+result.getTestLists().size());
    for(TestDTO test: result.getTestLists()) {
        
      modelTestName.addElement(test.getTestName());
+     this.testData.add(test);
    }
    this.topicSelect.setModel(modelTopic);
    this.testNameSelect.setModel(modelTestName);
   }
   
-  private void displayDataOnTable(int examId){
+  private void displayDataOnTable(int testId){
         DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
              tableModel.setRowCount(0);
              
-       Response.TestResult result = examBLL.getTestsResult(examId);
-       Response.ExamResult examResult =examBLL.getExamById(examId);
-       for(ResultDTO resultDTO:result.getTestResultList()){
+        Response.ExamResult  listExam= examBLL.getTestById(testId);
+        Response.TestResult  testResult = new Response.TestResult();
+        testResult.setTestResultList(new ArrayList<>());
+        testResult.setTestResultDetailList(new HashMap<>());
+        Response.ContestAntResult antResult = examBLL.getUserContestAntResult(testId);
+        int totalUser= antResult.getTotal();
+        int totalCompleted = antResult.getCompleted();
+        int totalUnfinished = antResult.getTotal() -antResult.getCompleted();
+        this.totalStudent.setText(totalUser+"");
+        this.totalCompleted.setText(totalCompleted+"");
+        this.totalUnfinished.setText(totalUnfinished+"");
+        for(ExamDTO exam:listExam.getExamList()) {
+            ArrayList<ResultDTO> listResult = examBLL.getTestsResult(exam.getExamId()).getTestResultList();
+           for(ResultDTO rs:listResult) {
+               testResult.getTestResultList().add(rs);
+           }
+        }
+        
+       for(ResultDTO resultDTO:testResult.getTestResultList()){
            System.out.println("id"+resultDTO.getUserId());
          Response.UserResult user = userBLL.getUserById(resultDTO.getUserId());
            System.out.println("ủe"+user.getUserList().getFirst().getUsername());
           DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
            Duration duration = Duration.between(resultDTO.getStartTime(), resultDTO.getEndTime());
            String time = duration.toHours()+"h:"+duration.toMinutesPart()+"p:"+duration.toSecondsPart();
-             tableModel.addRow(new Object[]{user.getUserList().getFirst().getUsername(),examResult.getExamList().getFirst().getExamCode(),resultDTO.getCorrect() +"%",resultDTO.getScore()+"/100",time,resultDTO.getStartTime().format(formatter)});
+           String examCode = "";
+           for(ExamDTO exam:listExam.getExamList()) {
+              if(exam.getExamId() == resultDTO.getExamId()){
+                examCode = exam.getExamCode();
+              }
+           }
+             tableModel.addRow(new Object[]{user.getUserList().getFirst().getUsername(),examCode,resultDTO.getCorrect() +"%",resultDTO.getScore()+"/100",time,resultDTO.getStartTime().format(formatter)});
        }
         
   }  
   private  void loadDataOnTable() {
     Response.ExamResult resultExam = examBLL.search(0,"", 1);
-      int examId =0;
-      for(ExamDTO exam:resultExam.getExamList()){
-         if(exam.getTestId()==resultExam.getTestLists().getFirst().getTestId()) {
-           examId = exam.getExamId();
-         }
-      }
-      displayDataOnTable(examId);
+      
+      displayDataOnTable(resultExam.getTestLists().getFirst().getTestId());
   }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -125,7 +184,6 @@ public class AdminStaticsScreen extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         testNameSelect = new javax.swing.JComboBox<>();
-        jButton2 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
@@ -158,9 +216,6 @@ public class AdminStaticsScreen extends javax.swing.JFrame {
         testNameSelect.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         testNameSelect.setPreferredSize(new java.awt.Dimension(72, 30));
 
-        jButton2.setText("Thông kê");
-        jButton2.setPreferredSize(new java.awt.Dimension(79, 30));
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -176,8 +231,6 @@ public class AdminStaticsScreen extends javax.swing.JFrame {
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(testNameSelect, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -189,8 +242,7 @@ public class AdminStaticsScreen extends javax.swing.JFrame {
                     .addComponent(topicSelect, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel3)
-                    .addComponent(testNameSelect, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(testNameSelect, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -349,7 +401,6 @@ public class AdminStaticsScreen extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;

@@ -172,5 +172,11 @@ public class ExamBLL {
     public Response.ExamResult getExamById(int id) {
      return examDAL.getExamById(id);
     }
+    public Response.ExamResult getTestById(int id) {
+      return  examDAL.getTestResultById(0, id);
+    }
+    public Response.ContestAntResult getUserContestAntResult(int testId){
+     return  examDAL.getContestAntResult(testId);
+    }
     
 }

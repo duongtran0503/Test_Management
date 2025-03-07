@@ -5,11 +5,8 @@
 package com.mycompany.qltn;
 
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
-import com.mycompany.qltn.config.DatabaseConnection;
 import com.mycompany.qltn.dto.UserDTO;
 import com.mycompany.qltn.UI.Login;
-import java.sql.Connection;
-import java.sql.SQLException;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
@@ -24,12 +21,11 @@ public class App {
        try {
             // Cài đặt giao diện FlatLaf
             UIManager.setLookAndFeel(new FlatMacLightLaf());
-            UIManager.put("Button.arc", 20); // Bo góc button
+            UIManager.put("Button.arc", 30); // Bo góc button
             UIManager.put("Button.background", new java.awt.Color(100, 150, 255));
             UIManager.put("Button.foreground", java.awt.Color.WHITE);
 
         } catch (Exception e) {
-            e.printStackTrace();
         }
        Login login = new Login();
       

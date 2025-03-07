@@ -31,6 +31,7 @@ public class Login extends javax.swing.JFrame {
         this.setBackground(Color.white);
         containerFormLogin.setBorder(new RoundedFlatBorder(15, Color.WHITE, 2)); // Bo góc 15px, viền đen, dày 2px
         containerFormLogin.setBackground(Color.WHITE);
+        this.setSize(410, 604);
          
     }
    private void validationLogin() {

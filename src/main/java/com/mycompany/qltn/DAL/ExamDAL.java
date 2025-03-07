@@ -75,6 +75,49 @@ public class ExamDAL {
 
         return res;   
        }
+        public Response.ExamResult getTestResultById(int status,int id) {
+                 Connection conn = null;
+        Response.ExamResult res = new Response.ExamResult();
+       res.setTestLists(new ArrayList<>());
+       res.setExamList(new ArrayList<>());
+        try {
+            conn = DatabaseConnection.getConnection();
+                String sql =" SELECT * FROM tests WHERE is_deleted =  ? AND test_id = ? ";
+                PreparedStatement testStmt = conn.prepareStatement(sql);
+                testStmt.setBoolean(1,status==1);
+                testStmt.setInt(2, id);
+                ResultSet testRs = testStmt.executeQuery();
+                while (testRs.next()) {                
+                    TestDTO testDTO = new TestDTO();
+                    testDTO.setTopicId(testRs.getInt("topic_id"));
+                    testDTO.setTestName(testRs.getString("test_name"));
+                    testDTO.setTestId(testRs.getInt("test_id"));
+                    testDTO.setTestTime(testRs.getInt("test_time"));
+                   res.getTestLists().add(testDTO);
+            }
+           for(TestDTO test:res.getTestLists()) {
+            String sqlgetExam = "SELECT * FROM exams WHERE test_id = ?";
+            PreparedStatement examStmt = conn.prepareStatement(sqlgetExam);
+            examStmt.setInt(1, test.getTestId());
+            ResultSet rs= examStmt.executeQuery();
+            while(rs.next()) {
+               ExamDTO examDTO = new ExamDTO();
+               examDTO.setTestId(test.getTestId());
+               examDTO.setExamId(rs.getInt("exam_id"));
+               examDTO.setExamCode(rs.getString("exam_code"));
+               res.getExamList().add(examDTO);
+            }
+           }
+         res.setMessage("Lấy dữ liệu thành công!");
+         res.setIsSuccess(true);
+         return  res;
+        } catch (SQLException e) {
+            res.setIsSuccess(false);
+            res.setMessage("Lỗi lấy dữ liệu: " + e.getMessage());
+        } 
+
+        return res;   
+       }
         public Response.ExamResult searchExam(int status,String title ,int topicId) {
                  Connection conn = null;
         Response.ExamResult res = new Response.ExamResult();
@@ -382,11 +425,12 @@ public class ExamDAL {
                 }
             }
 
-            String insert = "INSERT INTO tests(test_name,topic_id,test_time) VALUES(?,?,?)";
+            String insert = "INSERT INTO tests(test_name,topic_id,test_time,num_limit) VALUES(?,?,?,?)";
             try (PreparedStatement testStmt = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS)) {
                 testStmt.setString(1, test.getTestName());
                 testStmt.setInt(2, test.getTopicId());
                 testStmt.setInt(3, test.getTestTime());
+                testStmt.setInt(4, test.getNumLimit());
                 testStmt.executeUpdate();
 
                 try (ResultSet generatedKeys = testStmt.getGeneratedKeys()) {
@@ -542,11 +586,11 @@ public class ExamDAL {
         res.setTestResultDetailList(new HashMap<>()); 
 
         try (Connection conn = DatabaseConnection.getConnection()) {
-            StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM results");
+            StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM results ");
             if (examId != -1) {
                 sqlBuilder.append(" WHERE exam_id = ?");
             }
-
+             sqlBuilder.append("  ORDER BY correct DESC");
             try (PreparedStatement stmt = conn.prepareStatement(sqlBuilder.toString())) {
                 if (examId != -1) {
                     stmt.setInt(1, examId);
@@ -595,7 +639,27 @@ public class ExamDAL {
 
         return res;
     }
-
+    public Response.ContestAntResult getContestAntResult(int testId){
+        Response.ContestAntResult res = new Response.ContestAntResult();
+        try {
+            String sql = "SELECT t.test_id, COUNT(DISTINCT r.user_id) AS total_users, SUM(CASE WHEN r.correct > 50 THEN 1 ELSE 0 END) AS users_above_50_percent"
+                    + " FROM Tests t"
+                    + " JOIN Exams e ON t.test_id = e.test_id JOIN Results r ON e.exam_id = r.exam_id WHERE t.test_id = ? GROUP BY t.test_id"  ;
+           Connection conn = DatabaseConnection.getConnection();
+           PreparedStatement stmt = conn.prepareStatement(sql);
+           stmt.setInt(1, testId);
+           ResultSet rs = stmt.executeQuery();
+           if(rs.next()) {
+              res.setTotal(rs.getInt("total_users"));
+              res.setCompleted(rs.getInt("users_above_50_percent"));
+           }
+           res.setIsSuccess(true);
+           
+        } catch (SQLException e) {
+            res.setIsSuccess(false);
+        }
+        return  res;
+    }
     
     private  int getRadomNumber(int upperBound) {
         if(upperBound <=0 ) return  0 ;
