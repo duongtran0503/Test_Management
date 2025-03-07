@@ -9,7 +9,7 @@ import com.mycompany.qltn.BLL.QuestionBLL;
 import com.mycompany.qltn.BLL.Response;
 import com.mycompany.qltn.dto.OptionDTO;
 import com.mycompany.qltn.dto.QuestionDTO;
-import com.mycompany.qltn_mvc.utils.RandomStringGenerator;
+import com.mycompany.qltn.utils.RandomStringGenerator;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
