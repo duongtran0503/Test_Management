@@ -6,7 +6,7 @@ package com.mycompany.qltn.UI;
 
 import com.mycompany.qltn.BLL.AuthBLL;
 import com.mycompany.qltn.BLL.Response;
-import com.mycompany.qltn_mvc.dtos.UserDTO;
+import com.mycompany.qltn.dto.UserDTO;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 

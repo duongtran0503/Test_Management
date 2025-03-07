@@ -6,7 +6,7 @@ package com.mycompany.qltn;
 
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import com.mycompany.qltn.config.DatabaseConnection;
-import com.mycompany.qltn_mvc.dtos.UserDTO;
+import com.mycompany.qltn.dto.UserDTO;
 import com.mycompany.qltn.UI.Login;
 import java.sql.Connection;
 import java.sql.SQLException;

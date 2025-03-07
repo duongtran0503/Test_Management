@@ -6,7 +6,7 @@ package com.mycompany.qltn.DAL;
 
 import com.mycompany.qltn.config.DatabaseConnection;
 import com.mycompany.qltn.BLL.Response;
-import com.mycompany.qltn_mvc.dtos.UserDTO;
+import com.mycompany.qltn.dto.UserDTO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

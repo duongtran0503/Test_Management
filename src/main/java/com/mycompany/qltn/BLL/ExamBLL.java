@@ -1,8 +1,8 @@
 package com.mycompany.qltn.BLL;
 
-import com.mycompany.qltn_mvc.dtos.OptionDTO;
-import com.mycompany.qltn_mvc.dtos.QuestionDTO;
-import com.mycompany.qltn_mvc.dtos.TestDTO;
+import com.mycompany.qltn.dto.OptionDTO;
+import com.mycompany.qltn.dto.QuestionDTO;
+import com.mycompany.qltn.dto.TestDTO;
 import com.mycompany.qltn.DAL.ExamDAL;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

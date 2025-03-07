@@ -8,7 +8,7 @@ import com.mycompany.qltn.App;
 import com.mycompany.qltn.config.DatabaseConnection;
 import com.mycompany.qltn.BLL.Response;
 import com.mycompany.qltn.BLL.Response.BaseResponse;
-import com.mycompany.qltn_mvc.dtos.UserDTO;
+import com.mycompany.qltn.dto.UserDTO;
 import com.sun.tools.javac.Main;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

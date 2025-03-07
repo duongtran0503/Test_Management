@@ -6,9 +6,9 @@ package com.mycompany.qltn.component;
 
 import com.mycompany.qltn.BLL.QuestionBLL;
 import com.mycompany.qltn.BLL.Response;
-import com.mycompany.qltn_mvc.dtos.OptionDTO;
-import com.mycompany.qltn_mvc.dtos.QuestionDTO;
-import com.mycompany.qltn_mvc.dtos.TopicDTO;
+import com.mycompany.qltn.dto.OptionDTO;
+import com.mycompany.qltn.dto.QuestionDTO;
+import com.mycompany.qltn.dto.TopicDTO;
 import com.mycompany.qltn.UI.AdminModalQuestion;
 import java.util.ArrayList;
 import javax.swing.JFrame;

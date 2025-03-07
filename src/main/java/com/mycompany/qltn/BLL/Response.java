@@ -4,15 +4,15 @@
  */
 package com.mycompany.qltn.BLL;
 
-import com.mycompany.qltn_mvc.dtos.ExamDTO;
-import com.mycompany.qltn_mvc.dtos.ExamQuestionDTO;
-import com.mycompany.qltn_mvc.dtos.OptionDTO;
-import com.mycompany.qltn_mvc.dtos.QuestionDTO;
-import com.mycompany.qltn_mvc.dtos.ResultDTO;
-import com.mycompany.qltn_mvc.dtos.ResultDetailDTO;
-import com.mycompany.qltn_mvc.dtos.TestDTO;
-import com.mycompany.qltn_mvc.dtos.TopicDTO;
-import com.mycompany.qltn_mvc.dtos.UserDTO;
+import com.mycompany.qltn.dto.ExamDTO;
+import com.mycompany.qltn.dto.ExamQuestionDTO;
+import com.mycompany.qltn.dto.OptionDTO;
+import com.mycompany.qltn.dto.QuestionDTO;
+import com.mycompany.qltn.dto.ResultDTO;
+import com.mycompany.qltn.dto.ResultDetailDTO;
+import com.mycompany.qltn.dto.TestDTO;
+import com.mycompany.qltn.dto.TopicDTO;
+import com.mycompany.qltn.dto.UserDTO;
 import java.util.ArrayList;
 import java.util.HashMap;
 

@@ -4,7 +4,7 @@
  */
 package com.mycompany.qltn.BLL;
 
-import com.mycompany.qltn_mvc.dtos.UserDTO;
+import com.mycompany.qltn.dto.UserDTO;
 import com.mycompany.qltn.DAL.AuthDAL;
 
 /**

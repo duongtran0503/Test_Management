@@ -4,9 +4,9 @@
  */
 package com.mycompany.qltn.BLL;
 
-import com.mycompany.qltn_mvc.dtos.OptionDTO;
-import com.mycompany.qltn_mvc.dtos.QuestionDTO;
-import com.mycompany.qltn_mvc.dtos.UserDTO;
+import com.mycompany.qltn.dto.OptionDTO;
+import com.mycompany.qltn.dto.QuestionDTO;
+import com.mycompany.qltn.dto.UserDTO;
 import com.mycompany.qltn.DAL.UserDAL;
 import java.io.File;
 import java.io.FileInputStream;

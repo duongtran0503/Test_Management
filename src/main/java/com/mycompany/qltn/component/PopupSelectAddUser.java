@@ -8,7 +8,7 @@ import com.mycompany.qltn.BLL.AuthBLL;
 import com.mycompany.qltn.BLL.ExamBLL;
 import com.mycompany.qltn.BLL.Response;
 import com.mycompany.qltn.BLL.UserBLL;
-import com.mycompany.qltn_mvc.dtos.UserDTO;
+import com.mycompany.qltn.dto.UserDTO;
 import com.mycompany.qltn.UI.AdminModalUser;
 import java.io.File;
 import javax.swing.JFileChooser;
