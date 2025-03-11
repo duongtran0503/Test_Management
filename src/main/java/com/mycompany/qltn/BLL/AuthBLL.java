@@ -12,31 +12,32 @@ import com.mycompany.qltn.DAL.AuthDAL;
  * @author ACER
  */
 public class AuthBLL {
-    private final  AuthDAL authDAL = new AuthDAL();
-     public Response.loginResult login(String email,String password) {
-         Response.loginResult res;
-          res = this.authDAL.login(email);
-          if(res.isIsSuccess()) {
-              System.out.println("password"+res.getUser().getPassword());
-            if(password.equalsIgnoreCase(res.getUser().getPassword())) {
+
+    private final AuthDAL authDAL = new AuthDAL();
+
+    public Response.loginResult login(String email, String password) {
+        Response.loginResult res;
+        res = this.authDAL.login(email);
+        if (res.isIsSuccess()) {
+            System.out.println("password" + res.getUser().getPassword());
+            if (password.equalsIgnoreCase(res.getUser().getPassword())) {
                 res.getUser().setPassword("");
                 res.setMessage("Đăng nhập thành công!");
                 res.setIsSuccess(true);
-                return  res;
+                return res;
             } else {
                 res.setMessage("Mật khẩu hoặc email không đúng!");
                 res.setIsSuccess(false);
-                return  res;
+                return res;
             }
-          } 
-          res.setIsSuccess(false);
-          res.setMessage("Người dùng chưa đăng ký!");
-          return  res;
-     }
-     public Response.RegisterResult register(UserDTO userDTO) {
-    
-     
-    
-         return   authDAL.register(userDTO);
-     }
+        }
+        res.setIsSuccess(false);
+        res.setMessage("Người dùng chưa đăng ký!");
+        return res;
+    }
+
+    public Response.RegisterResult register(UserDTO userDTO) {
+
+        return authDAL.register(userDTO);
+    }
 }

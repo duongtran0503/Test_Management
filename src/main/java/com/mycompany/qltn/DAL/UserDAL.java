@@ -23,14 +23,12 @@ import java.util.ArrayList;
  * @author ACER
  */
 public class UserDAL {
-      public Response.UserResult getUser(int status) {
+
+    public Response.UserResult getUser(int status) {
         Response.UserResult result = new Response.UserResult();
         ArrayList<UserDTO> userList = new ArrayList<>();
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             
-                PreparedStatement pstmt = conn.prepareStatement("SELECT user_id, fullname, password, email, role,updated_at,updater FROM users WHERE is_deleted = "+status);
-                ResultSet rs = pstmt.executeQuery()) {
+          boolean is_delete = status==1;
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement("SELECT user_id, fullname, password, email, role,updated_at,updater FROM users WHERE is_deleted = " + is_delete); ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
                 UserDTO user = new UserDTO();
@@ -55,18 +53,17 @@ public class UserDAL {
 
         return result;
     }
-      
-        public Response.UserResult getUserById(int id) {
-             Response.UserResult res = new Response.UserResult();
-             res.setUserList(new ArrayList<>());
-            try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM users WHERE user_id = ?")) {
+
+    public Response.UserResult getUserById(int id) {
+        Response.UserResult res = new Response.UserResult();
+        res.setUserList(new ArrayList<>());
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM users WHERE user_id = ?")) {
 
             pstmt.setInt(1, id);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                   UserDTO user = new UserDTO();
+                    UserDTO user = new UserDTO();
                     user.setUserId(rs.getInt("user_id"));
                     user.setUsername(rs.getString("fullname"));
                     user.setPassword(rs.getString("password"));
@@ -82,19 +79,18 @@ public class UserDAL {
             return res;
 
         } catch (SQLException e) {
-         res.setIsSuccess(false);
-         res.setMessage("lỗi"+ e.getMessage());
+            res.setIsSuccess(false);
+            res.setMessage("lỗi" + e.getMessage());
         }
         return res;
     }
-      
-       public BaseResponse deleteUser(int userId) {
+
+    public BaseResponse deleteUser(int userId) {
         BaseResponse response = new BaseResponse();
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement("UPDATE users SET is_deleted = ?, updater = ? WHERE user_id = ?")) {
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement("UPDATE users SET is_deleted = ?, updater = ? WHERE user_id = ?")) {
 
             pstmt.setBoolean(1, true);
-            pstmt.setString(2,App.user.getUsername());
+            pstmt.setString(2, App.user.getUsername());
             pstmt.setInt(3, userId);
 
             int rowsAffected = pstmt.executeUpdate();
@@ -114,18 +110,43 @@ public class UserDAL {
 
         return response;
     }
-       
-        public BaseResponse updateUser(UserDTO user) {
+     public BaseResponse recoverUser(int userId) {
+        BaseResponse response = new BaseResponse();
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement("UPDATE users SET is_deleted = ?, updater = ? WHERE user_id = ?")) {
+
+            pstmt.setBoolean(1, false);
+            pstmt.setString(2, App.user.getUsername());
+            pstmt.setInt(3, userId);
+
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                response.setIsSuccess(true);
+                response.setMessage("Người dùng đã được khôi phục thành công.");
+            } else {
+                response.setIsSuccess(false);
+                response.setMessage("Không tìm thấy người dùng với ID: " + userId);
+            }
+
+        } catch (SQLException e) {
+            response.setIsSuccess(false);
+            response.setMessage("Lỗi xóa người dùng: " + e.getMessage());
+        }
+
+        return response;
+    }
+
+    public BaseResponse updateUser(UserDTO user) {
         BaseResponse response = new BaseResponse();
         try (Connection conn = DatabaseConnection.getConnection()) {
             String sql = "UPDATE users SET fullname = ?, password = ?, email = ?, role = ?, updater = ? WHERE user_id = ?";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
                 pstmt.setString(1, user.getUsername());
-                pstmt.setString(2, user.getPassword()); 
+                pstmt.setString(2, user.getPassword());
                 pstmt.setString(3, user.getEmail());
                 pstmt.setString(4, user.getRole());
-           
+
                 pstmt.setString(5, App.user.getUsername());
                 pstmt.setInt(6, user.getUserId());
 
@@ -147,27 +168,25 @@ public class UserDAL {
 
         return response;
     }
-         public Response.UserResult searchUsers(String searchTerm) {
+
+    public Response.UserResult searchUsers(String searchTerm) {
         Response.UserResult result = new Response.UserResult();
         ArrayList<UserDTO> userList = new ArrayList<>();
 
         try (Connection conn = DatabaseConnection.getConnection()) {
-            String sql = "SELECT * FROM users WHERE " +
-                    "user_id = ? OR fullname LIKE ? OR email LIKE ?  AND is_deleted = ?";
-            try (PreparedStatement pstmt = conn.prepareStatement(sql);
-                   
-                    ) {
+            String sql = "SELECT * FROM users WHERE "
+                    + "user_id = ? OR fullname LIKE ? OR email LIKE ?  AND is_deleted = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql);) {
 
                 try {
-                    pstmt.setInt(1, Integer.parseInt(searchTerm)); 
+                    pstmt.setInt(1, Integer.parseInt(searchTerm));
                 } catch (NumberFormatException e) {
-                    pstmt.setNull(1, java.sql.Types.INTEGER); 
+                    pstmt.setNull(1, java.sql.Types.INTEGER);
                 }
-                                     
 
-                pstmt.setString(2, "%" + searchTerm + "%"); 
-                pstmt.setString(3, "%" + searchTerm + "%"); 
-                  pstmt.setBoolean(4, false);
+                pstmt.setString(2, "%" + searchTerm + "%");
+                pstmt.setString(3, "%" + searchTerm + "%");
+                pstmt.setBoolean(4, false);
                 try (ResultSet rs = pstmt.executeQuery()) {
                     while (rs.next()) {
                         UserDTO user = new UserDTO();
@@ -193,7 +212,8 @@ public class UserDAL {
 
         return result;
     }
-        private LocalDateTime convertTimestampToLocalDateTime(Timestamp timestamp) {
+
+    private LocalDateTime convertTimestampToLocalDateTime(Timestamp timestamp) {
         if (timestamp != null) {
             LocalDateTime localDateTime = timestamp.toLocalDateTime();
             if (localDateTime.equals(LocalDateTime.MIN)) {
@@ -204,35 +224,34 @@ public class UserDAL {
         }
         return null;
     }
-   
-         public BaseResponse updatePassword(String currentPassword, String newPassword, int userId) {
+
+    public BaseResponse updatePassword(String currentPassword, String newPassword, int userId) {
         BaseResponse response = new BaseResponse();
         try (Connection conn = DatabaseConnection.getConnection()) {
-        
+
             String checkPasswordSql = "SELECT password FROM users WHERE user_id = ?";
             try (PreparedStatement checkPasswordStmt = conn.prepareStatement(checkPasswordSql)) {
                 checkPasswordStmt.setInt(1, userId);
                 try (ResultSet rs = checkPasswordStmt.executeQuery()) {
                     if (rs.next()) {
                         String storedPassword = rs.getString("password");
-                        if (!storedPassword.equals(currentPassword)) { 
+                        if (!storedPassword.equals(currentPassword)) {
                             response.setIsSuccess(false);
                             response.setMessage("Mật khẩu hiện tại không chính xác.");
-                            return response; 
+                            return response;
                         }
                     } else {
                         response.setIsSuccess(false);
                         response.setMessage("Không tìm thấy người dùng với ID: " + userId);
-                        return response; 
+                        return response;
                     }
                 }
             }
 
-      
             String updatePasswordSql = "UPDATE users SET password = ?, updater = ? WHERE user_id = ?";
             try (PreparedStatement updatePasswordStmt = conn.prepareStatement(updatePasswordSql)) {
                 updatePasswordStmt.setString(1, newPassword);
-                updatePasswordStmt.setString(2, App.user.getUsername()); 
+                updatePasswordStmt.setString(2, App.user.getUsername());
                 updatePasswordStmt.setInt(3, userId);
 
                 int rowsAffected = updatePasswordStmt.executeUpdate();
@@ -253,28 +272,28 @@ public class UserDAL {
 
         return response;
     }
-           public BaseResponse resetPassword( int userId) {
+
+    public BaseResponse resetPassword(int userId) {
         BaseResponse response = new BaseResponse();
         try (Connection conn = DatabaseConnection.getConnection()) {
-        
+
             String checkPasswordSql = "SELECT * FROM users WHERE user_id = ?";
             try (PreparedStatement checkPasswordStmt = conn.prepareStatement(checkPasswordSql)) {
                 checkPasswordStmt.setInt(1, userId);
                 try (ResultSet rs = checkPasswordStmt.executeQuery()) {
                     if (!rs.next()) {
-                     response.setIsSuccess(false);
+                        response.setIsSuccess(false);
                         response.setMessage("Không tìm thấy người dùng với ID: " + userId);
-                        return response; 
-                   
+                        return response;
+
+                    }
                 }
             }
-            }
 
-      
             String updatePasswordSql = "UPDATE users SET password = ?, updater = ? WHERE user_id = ?";
             try (PreparedStatement updatePasswordStmt = conn.prepareStatement(updatePasswordSql)) {
-                updatePasswordStmt.setString(1, 1+"");
-                updatePasswordStmt.setString(2, App.user.getUsername()); 
+                updatePasswordStmt.setString(1, 1 + "");
+                updatePasswordStmt.setString(2, App.user.getUsername());
                 updatePasswordStmt.setInt(3, userId);
 
                 int rowsAffected = updatePasswordStmt.executeUpdate();

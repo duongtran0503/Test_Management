@@ -31,218 +31,208 @@ import javax.swing.table.DefaultTableModel;
  * @author ACER
  */
 public class AdminQuestionManagerScreen extends javax.swing.JFrame {
-
-  
-
-     private int currentPage = 0;
+    
+    private int currentPage = 0;
     private int questionsPerPage = 20;
     private int totalQuestions = 0;
-    private  QuestionBLL questionBLL;
-   private  ActionPanelEditor actionPanelEditor;
-    private  ArrayList<QuestionDTO> questionDATA;
-    private  ArrayList<OptionDTO> listAnswerData;
+    private QuestionBLL questionBLL;
+    private ActionPanelEditor actionPanelEditor;
+    private ArrayList<QuestionDTO> questionDATA;
+    private ArrayList<OptionDTO> listAnswerData;
+    
     public AdminQuestionManagerScreen() {
         this.questionBLL = new QuestionBLL();
         this.questionDATA = new ArrayList<>();
         this.listAnswerData = new ArrayList<>();
         initComponents();
         this.buttonExport.setBackground(Color.WHITE);
-       this.buttonExport.setForeground(Color.BLACK);
-         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); 
-           
-   
-    jTable1.setSelectionBackground(Color.WHITE);
-    jTable1.setSelectionForeground(Color.BLACK);
-     DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-     model.addElement("Tất cả chủ đề");
-        model.addElement("Lập trình");
-        model.addElement("Du lịch");
-        model.addElement("Toán học");
-        selectQuery.setModel(model);
- jTable1.setFocusable(false);
-    jTable1.setRowHeight(50);
+        this.buttonExport.setForeground(Color.BLACK);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        
+        jTable1.setSelectionBackground(Color.WHITE);
+        jTable1.setSelectionForeground(Color.BLACK);
+        
+        jTable1.setFocusable(false);
+        jTable1.setRowHeight(50);
         loadQuestions(0);
+        setValueTopicSelect();
     }
-    private  void loadQuestions(int page) {
+    
+    private void setValueTopicSelect() {
+        Response.TopicResult res = questionBLL.getTopic();
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        for (TopicDTO topic : res.getTopicList()) {
+            model.addElement(topic.getTopicName());
+        }
+        selectQuery.setModel(model);
+    }
+    
+    private void loadQuestions(int page) {
         Response.QuestoinResult result = questionBLL.getQuestoinResult(page, this.questionsPerPage);
         Response.TopicResult topicResult = questionBLL.getTopic();
         
-        if(result.isIsSuccess() && topicResult.isIsSuccess()) {
-          
+        if (result.isIsSuccess() && topicResult.isIsSuccess()) {
+            
             displayDataOnTable(result, topicResult, page);
         } else {
             JOptionPane.showMessageDialog(this, result.getMessage());
-
-           
+            
         }
     }
-    private  void  displayDataOnTable(Response.QuestoinResult result,Response.TopicResult  topicResult,int page) {
-     ArrayList<QuestionDTO> questions = result.getQuestionList();
-     
-            ArrayList<OptionDTO> options = result.getAnswerList();
-            this.questionDATA =questions;
-            this.listAnswerData = options;
-            this.actionPanelEditor = new ActionPanelEditor();
-             DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
-             tableModel.setRowCount(0);
-             jTable1.getColumnModel().getColumn(5).setCellRenderer(new ActionPanelRenderer());
-             jTable1.getColumnModel().getColumn(5).setCellEditor(this.actionPanelEditor);
-            
-             
-              
-         
-               for (QuestionDTO question : questions) {
-                StringBuilder answers = new StringBuilder();
-                String topicText = "";
-                for (OptionDTO option : options) {
-                   
-                    if (option.getQuestionId() == question.getQuestionId() && option.isIsCorrect()) {
-                        answers.append(option.getOptionText()).append(", ");
-                    }
-                }
-                for(TopicDTO topic: topicResult.getTopicList()) {
-                 if(topic.getTopicId()==question.getTopicId()) {
-                   topicText = topic.getTopicName();
-                 }
-                }
-                   System.out.println("title:"+topicText);
-                if (answers.length() > 2) {
-                    answers.setLength(answers.length() - 2);
-                }
+    
+    private void displayDataOnTable(Response.QuestoinResult result, Response.TopicResult topicResult, int page) {
+        ArrayList<QuestionDTO> questions = result.getQuestionList();
+        
+        ArrayList<OptionDTO> options = result.getAnswerList();
+        this.questionDATA = questions;
+        this.listAnswerData = options;
+        this.actionPanelEditor = new ActionPanelEditor();
+        DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
+        tableModel.setRowCount(0);
+        jTable1.getColumnModel().getColumn(5).setCellRenderer(new ActionPanelRenderer());
+        jTable1.getColumnModel().getColumn(5).setCellEditor(this.actionPanelEditor);
+        
+        for (QuestionDTO question : questions) {
+            StringBuilder answers = new StringBuilder();
+            String topicText = "";
+            for (OptionDTO option : options) {
                 
-                tableModel.addRow(new Object[]{question.getQuestionId()+"",question.getQuestionText(), answers.toString(), question.getDifficulty(), topicText,""});
+                if (option.getQuestionId() == question.getQuestionId() && option.isIsCorrect()) {
+                    answers.append(option.getOptionText()).append(", ");
+                }
             }
-                currentPage = result.getCurrentPage() + 1;
-                System.out.println("current page"+this.currentPage);
-            totalQuestions = result.getTotalQuestions();
-            updateLoadedCountLabel(questions.size() + (page * questionsPerPage));
+            for (TopicDTO topic : topicResult.getTopicList()) {
+                if (topic.getTopicId() == question.getTopicId()) {
+                    topicText = topic.getTopicName();
+                }
+            }
+            System.out.println("title:" + topicText);
+            if (answers.length() > 2) {
+                answers.setLength(answers.length() - 2);
+            }
             
-             this.actionPanelEditor.getPanel().getButtonEdit().addActionListener((e) -> {
+            tableModel.addRow(new Object[]{question.getQuestionId() + "", question.getQuestionText(), answers.toString(), question.getDifficulty(), topicText, ""});
+        }
+        currentPage = result.getCurrentPage() + 1;
+        System.out.println("current page" + this.currentPage);
+        totalQuestions = result.getTotalQuestions();
+        updateLoadedCountLabel(questions.size() + (page * questionsPerPage));
+        
+        this.actionPanelEditor.getPanel().getButtonEdit().addActionListener((e) -> {
+            
+            int indexItem = Integer.parseInt((String) tableModel.getValueAt(this.actionPanelEditor.getRow(), 0));
+            QuestionDTO questionDTO = new QuestionDTO();
+            
+            for (QuestionDTO question : questions) {
+                if (question.getQuestionId() == indexItem) {
+                    questionDTO = question;
+                }
+            }
+            ArrayList<OptionDTO> listAnswer = new ArrayList<>();
+            int temp = 0;
+            int indexResult = 0;
+            for (OptionDTO optionDTO : options) {
+                if (optionDTO.getQuestionId() == questionDTO.getQuestionId()) {
                     
-                  int indexItem =Integer.parseInt((String) tableModel.getValueAt(this.actionPanelEditor.getRow(), 0)); 
-                  QuestionDTO questionDTO  = new QuestionDTO();
-                 
-                  for(QuestionDTO question:questions) {
-                     if(question.getQuestionId()==indexItem) {
-                      questionDTO = question;
-                     }
-                  }
-                   ArrayList<OptionDTO> listAnswer = new ArrayList<>();
-                   int temp = 0;
-                   int indexResult = 0;
-                   for(OptionDTO optionDTO:options){
-                    if(optionDTO.getQuestionId()==questionDTO.getQuestionId()) {
-                        
-                        listAnswer.add(optionDTO);
-                        if(optionDTO.isIsCorrect()) {
-                          indexResult =temp;
-                        }
-                         temp++;
+                    listAnswer.add(optionDTO);
+                    if (optionDTO.isIsCorrect()) {
+                        indexResult = temp;
                     }
-                   }
-                           System.out.println("row"+questionDTO.getQuestionId());   
-                             JFrame frame = new JFrame("Thêm câu hỏi");
-    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    frame.setSize(1080, 600); // Điều chỉnh kích thước
-      AdminModalQuestion updateQuestion = new AdminModalQuestion();
-      updateQuestion.setTask(AdminModalQuestion.MODAL_UPDATE);
-      updateQuestion.setValueQuestion(questionDTO, listAnswer, indexResult);
-    frame.add(updateQuestion); // Thêm JPanel vào JFrame
-    frame.setLocationRelativeTo(null); // Căn giữa màn hình
-    frame.setVisible(true);
-  
-                           this.actionPanelEditor.fireEditStop();
-                            loadQuestions(1);
-                            
-                      
-                });
-             
-             this.actionPanelEditor.getPanel().getButtonDelete().addActionListener((e)->{
-                   int confirm = JOptionPane.showConfirmDialog(
-        this, 
-        "Bạn có chắc chắn muốn xóa câu hỏi không?", 
-        "Xác nhận", 
-        JOptionPane.YES_NO_OPTION
-    );
-
-    if (confirm == JOptionPane.YES_OPTION) {
-            int indexItem =Integer.parseInt((String) tableModel.getValueAt(this.actionPanelEditor.getRow(), 0)); 
-                  QuestionDTO questionDTO  = new QuestionDTO();
-                 
-                  for(QuestionDTO question:questions) {
-                     if(question.getQuestionId()==indexItem) {
-                      questionDTO = question;
-                     }
-                  }
-                System.out.println("delete question id:"+questionDTO.getQuestionId());
+                    temp++;
+                }
+            }
+            System.out.println("row" + questionDTO.getQuestionId());
+            JFrame frame = new JFrame("Thêm câu hỏi");
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frame.setSize(1080, 600);
+            frame.setTitle("Chỉnh sửa câu hỏi");
+            
+            AdminModalQuestion updateQuestion = new AdminModalQuestion();
+            updateQuestion.setTextTitleInTopImage("Chỉnh sửa câu hỏi");
+            updateQuestion.setTask(AdminModalQuestion.MODAL_UPDATE);
+            updateQuestion.setValueQuestion(questionDTO, listAnswer, indexResult);
+            frame.add(updateQuestion); // Thêm JPanel vào JFrame
+            frame.setLocationRelativeTo(null); // Căn giữa màn hình
+            frame.setVisible(true);
+            
+            this.actionPanelEditor.fireEditStop();
+            loadQuestions(1);
+            
+        });
+        
+        this.actionPanelEditor.getPanel().getButtonDelete().addActionListener((e) -> {
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "Bạn có chắc chắn muốn xóa câu hỏi không?",
+                    "Xác nhận",
+                    JOptionPane.YES_NO_OPTION
+            );
+            
+            if (confirm == JOptionPane.YES_OPTION) {
+                int indexItem = Integer.parseInt((String) tableModel.getValueAt(this.actionPanelEditor.getRow(), 0));
+                QuestionDTO questionDTO = new QuestionDTO();
+                
+                for (QuestionDTO question : questions) {
+                    if (question.getQuestionId() == indexItem) {
+                        questionDTO = question;
+                    }
+                }
+                System.out.println("delete question id:" + questionDTO.getQuestionId());
                 
                 Response.QuestoinResult res = questionBLL.deleteQuestion(questionDTO.getQuestionId());
-                if(res.isIsSuccess()) {
-                  JOptionPane.showMessageDialog(null, res.getMessage());
-                 
-                }else {
-                
-                 JOptionPane.showMessageDialog(null, res.getMessage());
+                if (res.isIsSuccess()) {
+                    JOptionPane.showMessageDialog(null, res.getMessage());
+                    
+                } else {
+                    
+                    JOptionPane.showMessageDialog(null, res.getMessage());
                 }
-    }
-      this.actionPanelEditor.fireEditStop();
-              if(page==1) {
+            }
+            this.actionPanelEditor.fireEditStop();
+            if (page == 1) {
                 loadQuestions(1);
-              }else if(page >1) {
-                  loadQuestions(1);
-              } else {
-                  loadQuestions(0);
-               }
-             
-             
-             });
-             
-     
+            } else if (page > 1) {
+                loadQuestions(1);
+            } else {
+                loadQuestions(0);
+            }
+            
+        });
+        
     }
+    
     private void updateLoadedCountLabel(int loadedCount) {
         currentQuestion.setText(loadedCount + "/" + totalQuestions + " câu hỏi");
     }
-    private  void searchQuestion() {
-       String selectedValue  =(String)  selectQuery.getSelectedItem();
+    
+    private void searchQuestion() {
+        String selectedValue = (String) selectQuery.getSelectedItem();
         String searchKey = inputSearch.getText().trim();
-          Response.TopicResult topicResult = questionBLL.getTopic();
-       if(selectedValue.equalsIgnoreCase("Tất cả chủ đề")) {
-         Response.QuestoinResult res = questionBLL.searchQuestionByTitle(searchKey);
-         if(res.isIsSuccess()) {
-             displayDataOnTable(res, topicResult,0);
-         }else {
-           JOptionPane.showInternalMessageDialog(null, res.getMessage());
-         }
-       } else {
-         if(selectedValue.equalsIgnoreCase("Lập trình")) {
-           Response.QuestoinResult res = questionBLL.searchQuestionByTitleAndTopic(searchKey, 1);
-            if(res.isIsSuccess()) {
-             displayDataOnTable(res, topicResult,0);
-         }else {
-           JOptionPane.showInternalMessageDialog(null, res.getMessage());
-         }
-         } else if(selectedValue.equalsIgnoreCase("Du lịch")) {
-           Response.QuestoinResult res = questionBLL.searchQuestionByTitleAndTopic(searchKey, 2);
-           if(res.isIsSuccess()) {
-             displayDataOnTable(res, topicResult,0);
-         }else {
-           JOptionPane.showInternalMessageDialog(null, res.getMessage());
-         }
-         } else {
-           Response.QuestoinResult res = questionBLL.searchQuestionByTitleAndTopic(searchKey, 3);
-           if(res.isIsSuccess()) {
-             displayDataOnTable(res, topicResult,0);
-         }else {
-           JOptionPane.showInternalMessageDialog(null, res.getMessage());
-         }
-         }
-       }
+        Response.TopicResult topicResult = questionBLL.getTopic();
+        if (selectedValue.equalsIgnoreCase("Tất cả chủ đề")) {
+            Response.QuestoinResult res = questionBLL.searchQuestionByTitle(searchKey);
+            if (res.isIsSuccess()) {
+                displayDataOnTable(res, topicResult, 0);
+            } else {
+                JOptionPane.showInternalMessageDialog(null, res.getMessage());
+            }
+        } else {
+            int itemSelectIndex = this.selectQuery.getSelectedIndex();
+            Response.QuestoinResult res = questionBLL.searchQuestionByTitleAndTopic(searchKey, itemSelectIndex + 1);
+            if (res.isIsSuccess()) {
+                displayDataOnTable(res, topicResult, 0);
+            } else {
+                JOptionPane.showInternalMessageDialog(null, res.getMessage());
+            }
+            
+        }
     }
-      public void setCurrentPage(int currentPage) {
+    
+    public void setCurrentPage(int currentPage) {
         this.currentPage = currentPage;
     }
-
+    
     public void setQuestionsPerPage(int questionsPerPage) {
         this.questionsPerPage = questionsPerPage;
     }
@@ -253,13 +243,14 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
     public void setCurrentQuestion(JLabel currentQuestion) {
         this.currentQuestion = currentQuestion;
     }
-     private void exportExcel() {
+    
+    private void exportExcel() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Chọn vị trí lưu file Excel");
         fileChooser.setFileFilter(new FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx"));
-
+        
         int userSelection = fileChooser.showSaveDialog(this);
-
+        
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             File fileToSave = fileChooser.getSelectedFile();
             String filePath = fileToSave.getAbsolutePath();
@@ -268,20 +259,19 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
             if (!filePath.toLowerCase().endsWith(".xlsx")) {
                 filePath += ".xlsx";
             }
-
-          
+            
             ArrayList<QuestionDTO> questionList = this.questionDATA;
             ArrayList<OptionDTO> answerLists = this.listAnswerData;
-               Response.QuestoinResult res = questionBLL.exportToExcel(questionList, answerLists, filePath);
-          if(res.isIsSuccess()) {
-            JOptionPane.showMessageDialog(null, res.getMessage());
-          } else {
-          JOptionPane.showMessageDialog(null, res.getMessage());
-          }        
-           
-          
+            Response.QuestoinResult res = questionBLL.exportToExcel(questionList, answerLists, filePath);
+            if (res.isIsSuccess()) {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+            } else {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+            }
+            
         }
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -464,12 +454,11 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportActionPerformed
-    exportExcel();
+        exportExcel();
     }//GEN-LAST:event_buttonExportActionPerformed
 
     private void buttonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddActionPerformed
-                                         
-
+        
         PopupSelectAddQuestion popupSelectAddQuestion = new PopupSelectAddQuestion();
         popupSelectAddQuestion.setVisible(true);
         
@@ -477,36 +466,34 @@ public class AdminQuestionManagerScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_buttonAddActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-         AdminHomeScreen adminHomeScreen = new AdminHomeScreen();
-           adminHomeScreen.setVisible(true);
-           dispose();
+        AdminHomeScreen adminHomeScreen = new AdminHomeScreen();
+        adminHomeScreen.setVisible(true);
+        dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void buttonSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSearchActionPerformed
-       searchQuestion();
+        searchQuestion();
     }//GEN-LAST:event_buttonSearchActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-         if(this.currentPage*this.questionsPerPage <this.totalQuestions) {
-             setCurrentPage(this.currentPage);
-              loadQuestions(this.currentPage);
-         }else {
-          JOptionPane.showMessageDialog(null, "Đã tài hết câu hỏi");
-         }
+        if (this.currentPage * this.questionsPerPage < this.totalQuestions) {
+            setCurrentPage(this.currentPage);
+            loadQuestions(this.currentPage);
+        } else {
+            JOptionPane.showMessageDialog(null, "Đã tài hết câu hỏi");
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void buttonPrevActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPrevActionPerformed
-      
-    
+        
         loadQuestions(0);
-    
-  
+        
+
     }//GEN-LAST:event_buttonPrevActionPerformed
 
     /**
      * @param args the command line arguments
      */
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonAdd;

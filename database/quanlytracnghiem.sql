@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 06, 2025 at 10:32 AM
+-- Generation Time: Mar 11, 2025 at 10:56 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -41,7 +41,9 @@ CREATE TABLE `exams` (
 INSERT INTO `exams` (`exam_id`, `test_id`, `exam_code`, `updated_at`) VALUES
 (1, 1, 'A', '2025-02-25 08:44:35'),
 (2, 2, 'B', '2025-02-25 08:44:35'),
-(3, 3, 'C', '2025-02-25 08:44:35');
+(3, 3, 'C', '2025-02-25 08:44:35'),
+(11, 1, '123', '2025-03-11 09:15:13'),
+(12, 7, 'a', '2025-03-11 09:29:46');
 
 -- --------------------------------------------------------
 
@@ -68,7 +70,16 @@ INSERT INTO `exam_questions` (`exam_question_id`, `exam_id`, `question_id`) VALU
 (6, 3, 15),
 (7, 3, 20),
 (8, 1, 0),
-(9, 1, 123123128);
+(9, 1, 123123128),
+(41, 11, 6),
+(42, 11, 16),
+(43, 11, 1),
+(44, 11, 22),
+(45, 12, 1),
+(46, 12, 6),
+(47, 12, 16),
+(48, 12, 123123128),
+(49, 12, 7);
 
 -- --------------------------------------------------------
 
@@ -283,7 +294,9 @@ INSERT INTO `results` (`result_id`, `user_id`, `exam_id`, `start_time`, `end_tim
 (1, 1, 1, '2025-02-22 03:00:00', '2025-02-22 03:30:00', 90, 90),
 (2, 2, 2, '2025-02-22 04:00:00', '2025-02-22 04:25:00', 80, 80),
 (3, 3, 3, '2025-02-22 05:00:00', '2025-02-22 05:20:00', 70, 70),
-(4, 2, 1, '2025-03-06 08:18:30', '2025-03-06 08:48:30', 60, 66);
+(4, 2, 1, '2025-03-06 08:18:30', '2025-03-06 08:48:30', 60, 66),
+(5, 3, 9, '2025-03-06 08:18:30', '2025-03-06 08:48:30', 60, 66),
+(6, 3, 10, '2025-03-06 08:18:30', '2025-03-06 08:48:30', 60, 60);
 
 -- --------------------------------------------------------
 
@@ -322,19 +335,22 @@ CREATE TABLE `tests` (
   `test_time` int(11) DEFAULT NULL,
   `num_limit` int(11) DEFAULT NULL,
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `is_deleted` tinyint(1) NOT NULL DEFAULT 0
+  `is_deleted` tinyint(1) NOT NULL DEFAULT 0,
+  `easy` int(11) NOT NULL DEFAULT 0,
+  `medium` int(11) NOT NULL DEFAULT 0,
+  `difficult` int(11) NOT NULL DEFAULT 0,
+  `number_of_questions` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tests`
 --
 
-INSERT INTO `tests` (`test_id`, `topic_id`, `test_name`, `test_time`, `num_limit`, `updated_at`, `is_deleted`) VALUES
-(1, 1, 'Bài kiểm tra lập trình cơ bản 1', 30, 3, '2025-03-06 07:41:21', 0),
-(2, 2, 'Bài kiểm tra kiến thức du lịch', 25, 2, '2025-03-01 09:34:05', 0),
-(3, 3, 'Bài kiểm tra toán học', 20, 5, '2025-02-28 06:37:50', 0),
-(4, 1, 'test', 12, NULL, '2025-03-01 08:15:21', 1),
-(5, 1, 'fsadfas', 12, NULL, '2025-03-01 09:13:04', 1);
+INSERT INTO `tests` (`test_id`, `topic_id`, `test_name`, `test_time`, `num_limit`, `updated_at`, `is_deleted`, `easy`, `medium`, `difficult`, `number_of_questions`) VALUES
+(1, 1, 'Bài kiểm tra lập trình cơ bản 1', 30, 3, '2025-03-11 09:07:46', 0, 4, 0, 0, 4),
+(2, 2, 'Bài kiểm tra kiến thức du lịch', 25, 2, '2025-03-11 09:08:15', 0, 2, 0, 0, 2),
+(3, 3, 'Bài kiểm tra toán học', 20, 5, '2025-03-11 09:08:20', 0, 3, 0, 0, 3),
+(7, 1, 'bai test co ban', 30, 1, '2025-03-11 09:29:46', 0, 4, 1, 0, 5);
 
 -- --------------------------------------------------------
 
@@ -378,10 +394,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `password`, `fullname`, `email`, `role`, `is_deleted`, `updated_at`, `updater`) VALUES
-(1, '1', 'tran duong 1', 'admin@gmail.com', 'student', 0, '2025-03-02 13:41:23', 'tran duong'),
+(1, '1', 'tran duong 1', 'admin@gmail.com', 'admin', 0, '2025-03-11 08:08:38', 'tran duong 1'),
 (2, '1', 'abc', 'a@gmail.com', 'student', 0, '2025-03-02 14:38:54', 'tran duong'),
 (3, '1', 'nam', 'nam@gmail.com', 'student', 0, '2025-03-02 06:58:12', ''),
-(4, '123', 'dasd', 'sd@gmail.com', 'student', 1, '2025-03-02 09:15:13', 'tran duong'),
+(4, '123', 'dasd', 'sd@gmail.com', 'student', 0, '2025-03-11 09:55:32', 'tran duong 1'),
 (5, 'pass123', 'Nguyen Van A', 'email1@gmail.com', 'student', 0, '2025-03-02 14:25:03', NULL),
 (6, 'pass456', 'Tran Thi B', 'email2@gmail.com', 'student', 0, '2025-03-02 14:25:03', NULL),
 (7, 'pass789', 'Le Van C', 'email3@gmail.com', 'student', 0, '2025-03-02 14:25:03', NULL),
@@ -391,7 +407,7 @@ INSERT INTO `users` (`user_id`, `password`, `fullname`, `email`, `role`, `is_del
 (11, 'pass141', 'Dao Van G', 'email7@gmail.com', 'student', 0, '2025-03-02 14:25:03', NULL),
 (12, 'pass151', 'Do Thi H', 'email8@gmail.com', 'student', 0, '2025-03-02 14:25:03', NULL),
 (13, 'pass161', 'Truong Van I', 'email9@gmail.com', 'student', 0, '2025-03-02 14:25:03', NULL),
-(14, 'pass171', 'Phan Thi K', 'email10@gmail.com', 'student', 0, '2025-03-02 14:25:03', NULL);
+(14, 'pass171', 'Phan Thi K', 'email10@gmail.com', 'student', 1, '2025-03-11 09:55:41', 'tran duong 1');
 
 --
 -- Indexes for dumped tables
@@ -459,13 +475,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `exams`
 --
 ALTER TABLE `exams`
-  MODIFY `exam_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `exam_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `exam_questions`
 --
 ALTER TABLE `exam_questions`
-  MODIFY `exam_question_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `exam_question_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT for table `options`
@@ -483,7 +499,7 @@ ALTER TABLE `questions`
 -- AUTO_INCREMENT for table `results`
 --
 ALTER TABLE `results`
-  MODIFY `result_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `result_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `result_details`
@@ -495,7 +511,7 @@ ALTER TABLE `result_details`
 -- AUTO_INCREMENT for table `tests`
 --
 ALTER TABLE `tests`
-  MODIFY `test_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `test_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `topics`

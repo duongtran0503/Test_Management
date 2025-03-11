@@ -331,7 +331,13 @@ public class AdminModalExam extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonAddQuestionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddQuestionActionPerformed
-           PupupSelectAddQuestionForExam pop = new PupupSelectAddQuestionForExam();
+         if(this.examData.getListQestionOfExam().getQuestionList().size()==this.examData.getTestLists().getFirst().getTotalQuestion()) {
+           JOptionPane.showMessageDialog(null, "Số lượng câu hỏi của bài thi đã đủ!");
+           return;
+         }   
+        PupupSelectAddQuestionForExam pop = new PupupSelectAddQuestionForExam();
+           
+           
            pop.setExamCode(this.examData.getExamList().getFirst().getExamId());
             pop.setVisible(true);
             

@@ -23,8 +23,8 @@ import java.util.ArrayList;
  * @author ACER
  */
 public class QuestionDAL {
-    
-     public Response.QuestoinResult getQuestoinResult(int page, int questionsPerPage) { 
+
+    public Response.QuestoinResult getQuestoinResult(int page, int questionsPerPage) {
         Connection conn = null;
         PreparedStatement questionStmt = null;
         PreparedStatement answerStmt = null;
@@ -33,8 +33,8 @@ public class QuestionDAL {
         try {
             conn = DatabaseConnection.getConnection();
 
-           // Lấy tổng số câu hỏi
-            String countSql = "SELECT COUNT(*) FROM questions WHERE is_deleted = 0"; 
+            // Lấy tổng số câu hỏi
+            String countSql = "SELECT COUNT(*) FROM questions WHERE is_deleted = 0";
             PreparedStatement countStmt = conn.prepareStatement(countSql);
             ResultSet countRs = countStmt.executeQuery();
             if (countRs.next()) {
@@ -43,7 +43,7 @@ public class QuestionDAL {
             countStmt.close();
 
             // 2. Lấy danh sách câu hỏi theo trang
-            String questionSql = "SELECT * FROM questions WHERE is_deleted = 0 LIMIT ? OFFSET ?"; 
+            String questionSql = "SELECT * FROM questions WHERE is_deleted = 0 LIMIT ? OFFSET ?";
             questionStmt = conn.prepareStatement(questionSql);
             questionStmt.setInt(1, questionsPerPage);
             questionStmt.setInt(2, page * questionsPerPage);
@@ -53,36 +53,35 @@ public class QuestionDAL {
             while (questionRs.next()) {
                 System.out.println("run");
                 QuestionDTO questionDTO = new QuestionDTO();
-                questionDTO.setQuestionId(questionRs.getInt("question_id")); 
-                questionDTO.setQuestionText(questionRs.getString("question_text")); 
-               questionDTO.setImageUrl(questionRs.getString("image_url"));
-               questionDTO.setDifficulty(questionRs.getString("difficulty"));
-               questionDTO.setTopicId(questionRs.getInt("topic_id"));
-               questionDTO.setUpdater(questionRs.getString("updater"));
+                questionDTO.setQuestionId(questionRs.getInt("question_id"));
+                questionDTO.setQuestionText(questionRs.getString("question_text"));
+                questionDTO.setImageUrl(questionRs.getString("image_url"));
+                questionDTO.setDifficulty(questionRs.getString("difficulty"));
+                questionDTO.setTopicId(questionRs.getInt("topic_id"));
+                questionDTO.setUpdater(questionRs.getString("updater"));
                 System.out.println("errr");
-            
-             questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
-                    questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
+
+                questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
+                questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
                 questionList.add(questionDTO);
             }
             res.setQuestionList(questionList);
 
-           
             ArrayList<OptionDTO> answerList = new ArrayList<>();
             for (QuestionDTO question : questionList) {
-                String answerSql = "SELECT * FROM options WHERE question_id = ? "; 
+                String answerSql = "SELECT * FROM options WHERE question_id = ? ";
                 answerStmt = conn.prepareStatement(answerSql);
                 answerStmt.setInt(1, question.getQuestionId());
                 ResultSet answerRs = answerStmt.executeQuery();
 
                 while (answerRs.next()) {
                     OptionDTO optionDTO = new OptionDTO();
-                    optionDTO.setOptionId(answerRs.getInt("option_id")); 
-                    optionDTO.setOptionText(answerRs.getString("option_text")); 
+                    optionDTO.setOptionId(answerRs.getInt("option_id"));
+                    optionDTO.setOptionText(answerRs.getString("option_text"));
                     optionDTO.setQuestionId(question.getQuestionId());
                     optionDTO.setIsCorrect(answerRs.getBoolean("is_correct"));
                     optionDTO.setImageUrl(answerRs.getString("image_url"));
-                    
+
                     answerList.add(optionDTO);
                 }
             }
@@ -98,111 +97,115 @@ public class QuestionDAL {
             res.setMessage("Lỗi lấy dữ liệu: " + e.getMessage());
         } finally {
             try {
-                if (questionStmt != null) questionStmt.close();
-                if (answerStmt != null) answerStmt.close();
-                if (conn != null) conn.close();
+                if (questionStmt != null) {
+                    questionStmt.close();
+                }
+                if (answerStmt != null) {
+                    answerStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException ex) {
             }
         }
 
         return res;
     }
-     
-     public Response.TopicResult getTopic() {
+
+    public Response.TopicResult getTopic() {
         Connection conn = null;
         PreparedStatement topicStmt = null;
-     
+
         Response.TopicResult res = new Response.TopicResult();
-         try {
+        try {
             conn = DatabaseConnection.getConnection();
             String sql = "SELECT * FROM topics";
-             topicStmt = conn.prepareStatement(sql);
-             ResultSet topicRs = topicStmt.executeQuery();
-              ArrayList<TopicDTO> topicList = new ArrayList<>();
-               while (topicRs.next()) {
-                    TopicDTO topicDTO = new TopicDTO();
-                    topicDTO.setTopicId(topicRs.getInt("topic_id"));
-                    topicDTO.setTopicName(topicRs.getString("topic_name"));
-                    topicList.add(topicDTO);
-                     
-                }
-               res.setTopicList(topicList);
-               res.setIsSuccess(true);
-               res.setMessage("Lấy chủ đề thành công!");
-               return  res;
-             
-         } catch (Exception e) {
-             res.setIsSuccess(false);
-             res.setMessage("Lỗi tải dữ liệu!");
-         }
-         return  res;
-       
-     }
-     
-     public Response.QuestoinResult searchQuestionByTitle(String title) {
-       Connection conn = null;
+            topicStmt = conn.prepareStatement(sql);
+            ResultSet topicRs = topicStmt.executeQuery();
+            ArrayList<TopicDTO> topicList = new ArrayList<>();
+            while (topicRs.next()) {
+                TopicDTO topicDTO = new TopicDTO();
+                topicDTO.setTopicId(topicRs.getInt("topic_id"));
+                topicDTO.setTopicName(topicRs.getString("topic_name"));
+                topicList.add(topicDTO);
+
+            }
+            res.setTopicList(topicList);
+            res.setIsSuccess(true);
+            res.setMessage("Lấy chủ đề thành công!");
+            return res;
+
+        } catch (Exception e) {
+            res.setIsSuccess(false);
+            res.setMessage("Lỗi tải dữ liệu!");
+        }
+        return res;
+
+    }
+
+    public Response.QuestoinResult searchQuestionByTitle(String title) {
+        Connection conn = null;
         PreparedStatement questionStmt = null;
         PreparedStatement answerStmt = null;
         Response.QuestoinResult res = new Response.QuestoinResult();
 
         try {
             conn = DatabaseConnection.getConnection();
-              String searchText = "%" + title + "%";
-         
-          String countSql = "SELECT COUNT(*) FROM questions WHERE LOWER(question_text) LIKE LOWER(?) AND  is_deleted = 0";
+            String searchText = "%" + title + "%";
+
+            String countSql = "SELECT COUNT(*) FROM questions WHERE LOWER(question_text) LIKE LOWER(?) AND  is_deleted = 0";
             PreparedStatement countStmt = conn.prepareStatement(countSql);
-             countStmt.setString(1, searchText);
+            countStmt.setString(1, searchText);
             ResultSet countRs = countStmt.executeQuery();
             if (countRs.next()) {
                 res.setTotalQuestions(countRs.getInt(1));
-                if(res.getTotalQuestions()==0) {
-                  res.setIsSuccess(false);
-                  res.setMessage("Không tìm thấy kết quả");
-                  return  res;
+                if (res.getTotalQuestions() == 0) {
+                    res.setIsSuccess(false);
+                    res.setMessage("Không tìm thấy kết quả");
+                    return res;
                 }
             }
             countStmt.close();
 
             // 2. Lấy danh sách câu hỏi theo trang
-          
-          String questionSql = "SELECT * FROM questions WHERE LOWER(question_text) LIKE LOWER(?) AND is_deleted = 0 LIMIT 8";
+            String questionSql = "SELECT * FROM questions WHERE LOWER(question_text) LIKE LOWER(?) AND is_deleted = 0 LIMIT 8";
             questionStmt = conn.prepareStatement(questionSql);
             questionStmt.setString(1, searchText);
-           
+
             ResultSet questionRs = questionStmt.executeQuery();
 
             ArrayList<QuestionDTO> questionList = new ArrayList<>();
             while (questionRs.next()) {
                 System.out.println("run");
                 QuestionDTO questionDTO = new QuestionDTO();
-                questionDTO.setQuestionId(questionRs.getInt("question_id")); 
-                questionDTO.setQuestionText(questionRs.getString("question_text")); 
-               questionDTO.setImageUrl(questionRs.getString("image_url"));
-               questionDTO.setDifficulty(questionRs.getString("difficulty"));
-               questionDTO.setTopicId(questionRs.getInt("topic_id"));
-               questionDTO.setUpdater(questionRs.getString("updater"));
-              questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
-                    questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
+                questionDTO.setQuestionId(questionRs.getInt("question_id"));
+                questionDTO.setQuestionText(questionRs.getString("question_text"));
+                questionDTO.setImageUrl(questionRs.getString("image_url"));
+                questionDTO.setDifficulty(questionRs.getString("difficulty"));
+                questionDTO.setTopicId(questionRs.getInt("topic_id"));
+                questionDTO.setUpdater(questionRs.getString("updater"));
+                questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
+                questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
                 questionList.add(questionDTO);
             }
             res.setQuestionList(questionList);
 
-           
             ArrayList<OptionDTO> answerList = new ArrayList<>();
             for (QuestionDTO question : questionList) {
-                String answerSql = "SELECT * FROM options WHERE question_id = ?"; 
+                String answerSql = "SELECT * FROM options WHERE question_id = ?";
                 answerStmt = conn.prepareStatement(answerSql);
                 answerStmt.setInt(1, question.getQuestionId());
                 ResultSet answerRs = answerStmt.executeQuery();
 
                 while (answerRs.next()) {
                     OptionDTO optionDTO = new OptionDTO();
-                    optionDTO.setOptionId(answerRs.getInt("option_id")); 
-                    optionDTO.setOptionText(answerRs.getString("option_text")); 
+                    optionDTO.setOptionId(answerRs.getInt("option_id"));
+                    optionDTO.setOptionText(answerRs.getString("option_text"));
                     optionDTO.setQuestionId(question.getQuestionId());
                     optionDTO.setIsCorrect(answerRs.getBoolean("is_correct"));
                     optionDTO.setImageUrl(answerRs.getString("image_url"));
-                    
+
                     answerList.add(optionDTO);
                 }
             }
@@ -210,69 +213,74 @@ public class QuestionDAL {
 
             res.setIsSuccess(true);
             res.setMessage("Lấy dữ liệu thành công!");
-        
 
         } catch (SQLException e) {
             res.setIsSuccess(false);
             res.setMessage("Lỗi lấy dữ liệu: " + e.getMessage());
         } finally {
             try {
-                if (questionStmt != null) questionStmt.close();
-                if (answerStmt != null) answerStmt.close();
-                if (conn != null) conn.close();
+                if (questionStmt != null) {
+                    questionStmt.close();
+                }
+                if (answerStmt != null) {
+                    answerStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException ex) {
             }
         }
 
         return res;
-      
-     }
-      public Response.QuestoinResult getQuestionById(int id) {
-       Connection conn = null;
+
+    }
+
+    public Response.QuestoinResult getQuestionById(int id) {
+        Connection conn = null;
         PreparedStatement questionStmt = null;
         PreparedStatement answerStmt = null;
         Response.QuestoinResult res = new Response.QuestoinResult();
 
         try {
             conn = DatabaseConnection.getConnection();
-          String questionSql = "SELECT * FROM questions WHERE question_id = ? ";
+            String questionSql = "SELECT * FROM questions WHERE question_id = ? ";
             questionStmt = conn.prepareStatement(questionSql);
             questionStmt.setInt(1, id);
-           
+
             ResultSet questionRs = questionStmt.executeQuery();
 
             ArrayList<QuestionDTO> questionList = new ArrayList<>();
             if (questionRs.next()) {
                 System.out.println("run");
                 QuestionDTO questionDTO = new QuestionDTO();
-                questionDTO.setQuestionId(questionRs.getInt("question_id")); 
-                questionDTO.setQuestionText(questionRs.getString("question_text")); 
-               questionDTO.setImageUrl(questionRs.getString("image_url"));
-               questionDTO.setDifficulty(questionRs.getString("difficulty"));
-               questionDTO.setTopicId(questionRs.getInt("topic_id"));
-               questionDTO.setUpdater(questionRs.getString("updater"));
-              questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
-                    questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
+                questionDTO.setQuestionId(questionRs.getInt("question_id"));
+                questionDTO.setQuestionText(questionRs.getString("question_text"));
+                questionDTO.setImageUrl(questionRs.getString("image_url"));
+                questionDTO.setDifficulty(questionRs.getString("difficulty"));
+                questionDTO.setTopicId(questionRs.getInt("topic_id"));
+                questionDTO.setUpdater(questionRs.getString("updater"));
+                questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
+                questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
                 questionList.add(questionDTO);
             }
             res.setQuestionList(questionList);
 
-           
             ArrayList<OptionDTO> answerList = new ArrayList<>();
             for (QuestionDTO question : questionList) {
-                String answerSql = "SELECT * FROM options WHERE question_id = ?"; 
+                String answerSql = "SELECT * FROM options WHERE question_id = ?";
                 answerStmt = conn.prepareStatement(answerSql);
                 answerStmt.setInt(1, question.getQuestionId());
                 ResultSet answerRs = answerStmt.executeQuery();
 
                 while (answerRs.next()) {
                     OptionDTO optionDTO = new OptionDTO();
-                    optionDTO.setOptionId(answerRs.getInt("option_id")); 
-                    optionDTO.setOptionText(answerRs.getString("option_text")); 
+                    optionDTO.setOptionId(answerRs.getInt("option_id"));
+                    optionDTO.setOptionText(answerRs.getString("option_text"));
                     optionDTO.setQuestionId(question.getQuestionId());
                     optionDTO.setIsCorrect(answerRs.getBoolean("is_correct"));
                     optionDTO.setImageUrl(answerRs.getString("image_url"));
-                    
+
                     answerList.add(optionDTO);
                 }
             }
@@ -280,25 +288,30 @@ public class QuestionDAL {
 
             res.setIsSuccess(true);
             res.setMessage("Lấy dữ liệu thành công!");
-        
 
         } catch (SQLException e) {
             res.setIsSuccess(false);
             res.setMessage("Lỗi lấy dữ liệu: " + e.getMessage());
         } finally {
             try {
-                if (questionStmt != null) questionStmt.close();
-                if (answerStmt != null) answerStmt.close();
-                if (conn != null) conn.close();
+                if (questionStmt != null) {
+                    questionStmt.close();
+                }
+                if (answerStmt != null) {
+                    answerStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException ex) {
             }
         }
 
         return res;
-      
-     }
-     
-     public Response.QuestoinResult searchQuestionByTitleAndTopic(String title,int topic) {
+
+    }
+
+    public Response.QuestoinResult searchQuestionByTitleAndTopic(String title, int topic) {
         Connection conn = null;
         PreparedStatement questionStmt = null;
         PreparedStatement answerStmt = null;
@@ -306,64 +319,62 @@ public class QuestionDAL {
 
         try {
             conn = DatabaseConnection.getConnection();
-              String searchText = "%" + title + "%";
-         
-          String countSql = "SELECT COUNT(*) FROM questions WHERE LOWER(question_text) LIKE LOWER(?) AND topic_id = ? AND is_deleted = 0 ";
+            String searchText = "%" + title + "%";
+
+            String countSql = "SELECT COUNT(*) FROM questions WHERE LOWER(question_text) LIKE LOWER(?) AND topic_id = ? AND is_deleted = 0 ";
             PreparedStatement countStmt = conn.prepareStatement(countSql);
-             countStmt.setString(1, searchText);
-             countStmt.setInt(2, topic);
+            countStmt.setString(1, searchText);
+            countStmt.setInt(2, topic);
             ResultSet countRs = countStmt.executeQuery();
             if (countRs.next()) {
                 res.setTotalQuestions(countRs.getInt(1));
-                if(res.getTotalQuestions()==0) {
-                  res.setIsSuccess(false);
-                  res.setMessage("Không tìm thấy kết quả");
-                  return  res;
+                if (res.getTotalQuestions() == 0) {
+                    res.setIsSuccess(false);
+                    res.setMessage("Không tìm thấy kết quả");
+                    return res;
                 }
             }
             countStmt.close();
 
             // 2. Lấy danh sách câu hỏi theo trang
-          
-          String questionSql = "SELECT * FROM questions WHERE LOWER(question_text) LIKE LOWER(?) AND topic_id = ? AND is_deleted = 0 LIMIT 8";
+            String questionSql = "SELECT * FROM questions WHERE LOWER(question_text) LIKE LOWER(?) AND topic_id = ? AND is_deleted = 0 LIMIT 8";
             questionStmt = conn.prepareStatement(questionSql);
             questionStmt.setString(1, searchText);
             questionStmt.setInt(2, topic);
-           
+
             ResultSet questionRs = questionStmt.executeQuery();
 
             ArrayList<QuestionDTO> questionList = new ArrayList<>();
             while (questionRs.next()) {
                 System.out.println("run");
                 QuestionDTO questionDTO = new QuestionDTO();
-                questionDTO.setQuestionId(questionRs.getInt("question_id")); 
-                questionDTO.setQuestionText(questionRs.getString("question_text")); 
-               questionDTO.setImageUrl(questionRs.getString("image_url"));
-               questionDTO.setDifficulty(questionRs.getString("difficulty"));
-               questionDTO.setTopicId(questionRs.getInt("topic_id"));
-               questionDTO.setUpdater(questionRs.getString("updater"));
+                questionDTO.setQuestionId(questionRs.getInt("question_id"));
+                questionDTO.setQuestionText(questionRs.getString("question_text"));
+                questionDTO.setImageUrl(questionRs.getString("image_url"));
+                questionDTO.setDifficulty(questionRs.getString("difficulty"));
+                questionDTO.setTopicId(questionRs.getInt("topic_id"));
+                questionDTO.setUpdater(questionRs.getString("updater"));
                 questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
-                    questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
+                questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
                 questionList.add(questionDTO);
             }
             res.setQuestionList(questionList);
 
-           
             ArrayList<OptionDTO> answerList = new ArrayList<>();
             for (QuestionDTO question : questionList) {
-                String answerSql = "SELECT * FROM options WHERE question_id = ?"; 
+                String answerSql = "SELECT * FROM options WHERE question_id = ?";
                 answerStmt = conn.prepareStatement(answerSql);
                 answerStmt.setInt(1, question.getQuestionId());
                 ResultSet answerRs = answerStmt.executeQuery();
 
                 while (answerRs.next()) {
                     OptionDTO optionDTO = new OptionDTO();
-                    optionDTO.setOptionId(answerRs.getInt("option_id")); 
-                    optionDTO.setOptionText(answerRs.getString("option_text")); 
+                    optionDTO.setOptionId(answerRs.getInt("option_id"));
+                    optionDTO.setOptionText(answerRs.getString("option_text"));
                     optionDTO.setQuestionId(question.getQuestionId());
                     optionDTO.setIsCorrect(answerRs.getBoolean("is_correct"));
                     optionDTO.setImageUrl(answerRs.getString("image_url"));
-                    
+
                     answerList.add(optionDTO);
                 }
             }
@@ -371,23 +382,29 @@ public class QuestionDAL {
 
             res.setIsSuccess(true);
             res.setMessage("Lấy dữ liệu thành công!");
-        
 
         } catch (SQLException e) {
             res.setIsSuccess(false);
             res.setMessage("Lỗi lấy dữ liệu: " + e.getMessage());
         } finally {
             try {
-                if (questionStmt != null) questionStmt.close();
-                if (answerStmt != null) answerStmt.close();
-                if (conn != null) conn.close();
+                if (questionStmt != null) {
+                    questionStmt.close();
+                }
+                if (answerStmt != null) {
+                    answerStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException ex) {
             }
         }
 
         return res;
-     }
-   public Response.QuestoinResult AddQuestoin(QuestionDTO questionDTO, ArrayList<OptionDTO> listOption) {
+    }
+
+    public Response.QuestoinResult AddQuestoin(QuestionDTO questionDTO, ArrayList<OptionDTO> listOption) {
         Response.QuestoinResult res = new Response.QuestoinResult();
         res.setIsSuccess(false);
         res.setQuestionList(new ArrayList<>());
@@ -413,7 +430,7 @@ public class QuestionDAL {
             ResultSet generatedKeys = questionStmt.getGeneratedKeys();
             if (generatedKeys.next()) {
                 questionDTO.setQuestionId(generatedKeys.getInt(1));
-                System.out.println("new id question:"+questionDTO.getQuestionId());
+                System.out.println("new id question:" + questionDTO.getQuestionId());
             } else {
                 throw new SQLException("Lỗi lấy id câu hỏi!"); // Throw exception
             }
@@ -465,7 +482,8 @@ public class QuestionDAL {
             }
         }
     }
-     public Response.QuestoinResult updateQuestion(QuestionDTO questionDTO, ArrayList<OptionDTO> listOption) {
+
+    public Response.QuestoinResult updateQuestion(QuestionDTO questionDTO, ArrayList<OptionDTO> listOption) {
         Response.QuestoinResult res = new Response.QuestoinResult();
         res.setIsSuccess(false);
         Connection conn = null;
@@ -535,7 +553,7 @@ public class QuestionDAL {
                 try {
                     questionStmt.close();
                 } catch (SQLException e) {
-                   e.printStackTrace(); 
+                    e.printStackTrace();
                 }
             }
             if (conn != null) {
@@ -548,9 +566,9 @@ public class QuestionDAL {
             }
         }
     }
-  
-     public Response.QuestoinResult delelteQuestoin(int id) {
-         Response.QuestoinResult res = new Response.QuestoinResult();
+
+    public Response.QuestoinResult delelteQuestoin(int id) {
+        Response.QuestoinResult res = new Response.QuestoinResult();
         res.setIsSuccess(false);
         Connection conn = null;
         PreparedStatement questionStmt = null;
@@ -566,7 +584,7 @@ public class QuestionDAL {
             // Update Question
             String sqlUpdateQuestion = "UPDATE questions SET is_deleted = ? ,updater = ? WHERE question_id = ?";
             questionStmt = conn.prepareStatement(sqlUpdateQuestion);
-           questionStmt.setBoolean(1, true);
+            questionStmt.setBoolean(1, true);
             questionStmt.setString(2, App.user.getUsername());
             questionStmt.setInt(3, id);
             int rowsAffected = questionStmt.executeUpdate();
@@ -574,8 +592,6 @@ public class QuestionDAL {
             if (rowsAffected == 0) {
                 throw new SQLException("Không tìm thấy câu hỏi với id: " + id);
             }
-
-          
 
             conn.commit();
             res.setIsSuccess(true);
@@ -598,7 +614,7 @@ public class QuestionDAL {
                 try {
                     questionStmt.close();
                 } catch (SQLException e) {
-                   e.printStackTrace(); 
+                    e.printStackTrace();
                 }
             }
             if (conn != null) {
@@ -610,10 +626,10 @@ public class QuestionDAL {
                 }
             }
         }
-     
-     }
-     
-     public Response.QuestoinResult getQuestionDeleted() {
+
+    }
+
+    public Response.QuestoinResult getQuestionDeleted() {
         Connection conn = null;
         PreparedStatement questionStmt = null;
         PreparedStatement answerStmt = null;
@@ -621,46 +637,44 @@ public class QuestionDAL {
 
         try {
             conn = DatabaseConnection.getConnection();
-      
-            String questionSql = "SELECT * FROM questions WHERE is_deleted = 1"; 
+
+            String questionSql = "SELECT * FROM questions WHERE is_deleted = 1";
             questionStmt = conn.prepareStatement(questionSql);
-          
+
             ResultSet questionRs = questionStmt.executeQuery();
 
             ArrayList<QuestionDTO> questionList = new ArrayList<>();
             while (questionRs.next()) {
                 System.out.println("run");
                 QuestionDTO questionDTO = new QuestionDTO();
-                questionDTO.setQuestionId(questionRs.getInt("question_id")); 
-                questionDTO.setQuestionText(questionRs.getString("question_text")); 
-               questionDTO.setImageUrl(questionRs.getString("image_url"));
-               questionDTO.setDifficulty(questionRs.getString("difficulty"));
-               questionDTO.setTopicId(questionRs.getInt("topic_id"));
-               questionDTO.setUpdater(questionRs.getString("updater"));
+                questionDTO.setQuestionId(questionRs.getInt("question_id"));
+                questionDTO.setQuestionText(questionRs.getString("question_text"));
+                questionDTO.setImageUrl(questionRs.getString("image_url"));
+                questionDTO.setDifficulty(questionRs.getString("difficulty"));
+                questionDTO.setTopicId(questionRs.getInt("topic_id"));
+                questionDTO.setUpdater(questionRs.getString("updater"));
                 questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
-                    questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
-            
-          
+                questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
+
                 questionList.add(questionDTO);
             }
             res.setQuestionList(questionList);
 
-           
             ArrayList<OptionDTO> answerList = new ArrayList<>();
             for (QuestionDTO question : questionList) {
-                String answerSql = "SELECT * FROM options WHERE question_id = ? "; 
+                String answerSql = "SELECT * FROM options WHERE question_id = ? ";
                 answerStmt = conn.prepareStatement(answerSql);
                 answerStmt.setInt(1, question.getQuestionId());
                 ResultSet answerRs = answerStmt.executeQuery();
 
                 while (answerRs.next()) {
                     OptionDTO optionDTO = new OptionDTO();
-                    optionDTO.setOptionId(answerRs.getInt("option_id")); 
-                    optionDTO.setOptionText(answerRs.getString("option_text")); 
+                    optionDTO.setOptionId(answerRs.getInt("option_id"));
+                    optionDTO.setOptionText(answerRs.getString("option_text"));
                     optionDTO.setQuestionId(question.getQuestionId());
                     optionDTO.setIsCorrect(answerRs.getBoolean("is_correct"));
                     optionDTO.setImageUrl(answerRs.getString("image_url"));
-                    
+
                     answerList.add(optionDTO);
                 }
             }
@@ -674,16 +688,23 @@ public class QuestionDAL {
             res.setMessage("Lỗi lấy dữ liệu: " + e.getMessage());
         } finally {
             try {
-                if (questionStmt != null) questionStmt.close();
-                if (answerStmt != null) answerStmt.close();
-                if (conn != null) conn.close();
+                if (questionStmt != null) {
+                    questionStmt.close();
+                }
+                if (answerStmt != null) {
+                    answerStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException ex) {
             }
         }
 
         return res;
-     }
-    public Response.QuestoinResult recoverQuestion(int id){
+    }
+
+    public Response.QuestoinResult recoverQuestion(int id) {
         Response.QuestoinResult res = new Response.QuestoinResult();
         res.setIsSuccess(false);
         Connection conn = null;
@@ -734,8 +755,8 @@ public class QuestionDAL {
             }
         }
     }
-    
-    public  Response.QuestoinResult filterQuestionBydifficulty(String difficulty,int topicId){
+
+    public Response.QuestoinResult filterQuestionBydifficulty(String difficulty, int topicId) {
         Connection conn = null;
         PreparedStatement questionStmt = null;
         PreparedStatement answerStmt = null;
@@ -743,15 +764,15 @@ public class QuestionDAL {
 
         try {
             conn = DatabaseConnection.getConnection();
-           
+
             String questionSql = "SELECT * FROM questions WHERE is_deleted = 0 AND difficulty = ? ";
-             if(topicId!=-1) {
-               questionSql +="AND topic_id = ?";
-             }
+            if (topicId != -1) {
+                questionSql += "AND topic_id = ?";
+            }
             questionStmt = conn.prepareStatement(questionSql);
             questionStmt.setString(1, difficulty);
-            if(topicId!=-1) {
-             questionStmt.setInt(2, topicId);
+            if (topicId != -1) {
+                questionStmt.setInt(2, topicId);
             }
             ResultSet questionRs = questionStmt.executeQuery();
 
@@ -759,16 +780,15 @@ public class QuestionDAL {
             while (questionRs.next()) {
                 System.out.println("run");
                 QuestionDTO questionDTO = new QuestionDTO();
-                questionDTO.setQuestionId(questionRs.getInt("question_id")); 
-                questionDTO.setQuestionText(questionRs.getString("question_text")); 
-               questionDTO.setImageUrl(questionRs.getString("image_url"));
-               questionDTO.setDifficulty(questionRs.getString("difficulty"));
-               questionDTO.setTopicId(questionRs.getInt("topic_id"));
-               questionDTO.setUpdater(questionRs.getString("updater"));
+                questionDTO.setQuestionId(questionRs.getInt("question_id"));
+                questionDTO.setQuestionText(questionRs.getString("question_text"));
+                questionDTO.setImageUrl(questionRs.getString("image_url"));
+                questionDTO.setDifficulty(questionRs.getString("difficulty"));
+                questionDTO.setTopicId(questionRs.getInt("topic_id"));
+                questionDTO.setUpdater(questionRs.getString("updater"));
                 questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
-                    questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
-            
-          
+                questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
+
                 questionList.add(questionDTO);
             }
             res.setQuestionList(questionList);
@@ -780,16 +800,23 @@ public class QuestionDAL {
             res.setMessage("Lỗi lấy dữ liệu: " + e.getMessage());
         } finally {
             try {
-                if (questionStmt != null) questionStmt.close();
-                if (answerStmt != null) answerStmt.close();
-                if (conn != null) conn.close();
+                if (questionStmt != null) {
+                    questionStmt.close();
+                }
+                if (answerStmt != null) {
+                    answerStmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException ex) {
             }
         }
 
-        return res; 
+        return res;
     }
-     private LocalDateTime convertTimestampToLocalDateTime(Timestamp timestamp) {
+
+    private LocalDateTime convertTimestampToLocalDateTime(Timestamp timestamp) {
         if (timestamp != null) {
             LocalDateTime localDateTime = timestamp.toLocalDateTime();
             if (localDateTime.equals(LocalDateTime.MIN)) {

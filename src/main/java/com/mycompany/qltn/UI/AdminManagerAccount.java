@@ -29,9 +29,10 @@ public class AdminManagerAccount extends javax.swing.JFrame {
     /**
      * Creates new form AdminManagerAccount
      */
-    private  ActionPanelEditor actionPanelEditor;
-    private  Response.UserResult userData;
-    private  UserBLL userBLL;
+    private ActionPanelEditor actionPanelEditor;
+    private Response.UserResult userData;
+    private UserBLL userBLL;
+
     public AdminManagerAccount() {
         this.userBLL = new UserBLL();
         this.userData = new Response.UserResult();
@@ -39,75 +40,72 @@ public class AdminManagerAccount extends javax.swing.JFrame {
         initComponents();
         this.jTable1.setRowHeight(50);
         this.jTable1.setFocusable(false);
-              jTable1.setSelectionBackground(Color.WHITE);
-    jTable1.setSelectionForeground(Color.BLACK);
+        jTable1.setSelectionBackground(Color.WHITE);
+        jTable1.setSelectionForeground(Color.BLACK);
         loadUsers();
-         
-             this.actionPanelEditor.getPanel().getButtonEdit().addActionListener((e) -> {
-                   int row = this.actionPanelEditor.getRow();
-                   UserDTO user = this.userData.getUserList().get(row);
-                   AdminModalUser adminModalUser = new AdminModalUser();
-                   adminModalUser.setModalHandle(AdminModalUser.EDIT_MODAL);
-                   adminModalUser.setValueEdit(user);
-                   adminModalUser.setLocationRelativeTo(null);
-                   adminModalUser.setVisible(true);
-                   
-                   this.actionPanelEditor.fireEditStop();
-                            
-                      
-                });
-             
-             this.actionPanelEditor.getPanel().getButtonDelete().addActionListener((e)->{
-                 int row = this.actionPanelEditor.getRow();
-                   UserDTO user = this.userData.getUserList().get(row);
-               
-                  
-                 int confirm = JOptionPane.showConfirmDialog(
-        this, 
-        "Bạn có chắc chắn muốn xóa tài khoản này?", 
-        "Xác nhận", 
-        JOptionPane.YES_NO_OPTION
-    );
 
-    if (confirm == JOptionPane.YES_OPTION) {
-           Response.BaseResponse res = userBLL.deleteUser(user.getUserId());
-        if(res.isIsSuccess()) {
+        this.actionPanelEditor.getPanel().getButtonEdit().addActionListener((e) -> {
+            int row = this.actionPanelEditor.getRow();
+            UserDTO user = this.userData.getUserList().get(row);
+            AdminModalUser adminModalUser = new AdminModalUser();
+            adminModalUser.setModalHandle(AdminModalUser.EDIT_MODAL);
+            adminModalUser.setValueEdit(user);
+            adminModalUser.setLocationRelativeTo(null);
+            adminModalUser.setVisible(true);
+
+            this.actionPanelEditor.fireEditStop();
+
+        });
+
+        this.actionPanelEditor.getPanel().getButtonDelete().addActionListener((e) -> {
+            int row = this.actionPanelEditor.getRow();
+            UserDTO user = this.userData.getUserList().get(row);
+
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "Bạn có chắc chắn muốn xóa tài khoản này?",
+                    "Xác nhận",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                Response.BaseResponse res = userBLL.deleteUser(user.getUserId());
+                if (res.isIsSuccess()) {
                     JOptionPane.showMessageDialog(null, res.getMessage());
-                  }else {
-                  
+                } else {
+
                     JOptionPane.showMessageDialog(null, res.getMessage());
-                  }
-             
+                }
+
+            }
+            this.actionPanelEditor.fireEditStop();
+            loadUsers();
+
+        });
     }
-               this.actionPanelEditor.fireEditStop();
-              loadUsers();    
-            
-             });
+
+    private void loadUsers() {
+        Response.UserResult res = userBLL.getUser(UserDTO.IS_DELETED_FALSE);
+        if (res.isIsSuccess()) {
+            displayDataOnTable(res);
+        } else {
+            JOptionPane.showMessageDialog(null, res.getMessage());
+        }
     }
-    private  void loadUsers() {
-     Response.UserResult res = userBLL.getUser(UserDTO.IS_DELETED_FALSE);
-     if(res.isIsSuccess()) {
-         displayDataOnTable(res);
-     }else {
-         JOptionPane.showMessageDialog(null, res.getMessage());
-     }
+
+    private void displayDataOnTable(Response.UserResult userResult) {
+        DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
+        this.userData = userResult;
+        tableModel.setRowCount(0);
+        jTable1.getColumnModel().getColumn(4).setCellRenderer(new ActionPanelRenderer());
+        jTable1.getColumnModel().getColumn(4).setCellEditor(this.actionPanelEditor);
+        for (UserDTO user : userResult.getUserList()) {
+            tableModel.addRow(new Object[]{user.getUserId() + "", user.getUsername(), user.getEmail(), user.getRole()});
+        }
+
     }
-    private  void  displayDataOnTable(Response.UserResult userResult) {
-             DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
-             this.userData = userResult;
-             tableModel.setRowCount(0);
-             jTable1.getColumnModel().getColumn(4).setCellRenderer(new ActionPanelRenderer());
-             jTable1.getColumnModel().getColumn(4).setCellEditor(this.actionPanelEditor);
-             for(UserDTO user:userResult.getUserList()) {
-                    tableModel.addRow(new Object[]{user.getUserId()+"",user.getUsername(),user.getEmail(),user.getRole()});   
-             }
-             
-              
-           
-             
-     
-    }
-      private void exportExcel() {
+
+    private void exportExcel() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Chọn vị trí lưu file Excel");
         fileChooser.setFileFilter(new FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx"));
@@ -123,27 +121,26 @@ public class AdminManagerAccount extends javax.swing.JFrame {
                 filePath += ".xlsx";
             }
 
-          
-      
-               Response.BaseResponse res = userBLL.exportToExcel(this.userData.getUserList(), filePath);
-          if(res.isIsSuccess()) {
-            JOptionPane.showMessageDialog(null, res.getMessage());
-          } else {
-          JOptionPane.showMessageDialog(null, res.getMessage());
-          }        
-           
-          
+            Response.BaseResponse res = userBLL.exportToExcel(this.userData.getUserList(), filePath);
+            if (res.isIsSuccess()) {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+            } else {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+            }
+
         }
     }
+
     private void searchUser() {
-      String searchKey = this.jTextField1.getText().trim();
-      Response.UserResult res = userBLL.searResult(searchKey);
-      if(res.isIsSuccess()) {
-          displayDataOnTable(res);
-      }else {
-       JOptionPane.showMessageDialog(null, res.getMessage());
-      }
+        String searchKey = this.jTextField1.getText().trim();
+        Response.UserResult res = userBLL.searResult(searchKey);
+        if (res.isIsSuccess()) {
+            displayDataOnTable(res);
+        } else {
+            JOptionPane.showMessageDialog(null, res.getMessage());
+        }
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -287,13 +284,13 @@ public class AdminManagerAccount extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-      AdminHomeScreen adminHomeScreen = new AdminHomeScreen();
-      adminHomeScreen.setVisible(true);
-      dispose();
+        AdminHomeScreen adminHomeScreen = new AdminHomeScreen();
+        adminHomeScreen.setVisible(true);
+        dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-       searchUser();
+        searchUser();
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -301,8 +298,8 @@ public class AdminManagerAccount extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-      PopupSelectAddUser popupSelectAddUser = new PopupSelectAddUser();
-       popupSelectAddUser.setVisible(true);
+        PopupSelectAddUser popupSelectAddUser = new PopupSelectAddUser();
+        popupSelectAddUser.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**

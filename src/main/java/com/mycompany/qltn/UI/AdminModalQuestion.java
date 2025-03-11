@@ -36,189 +36,203 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class AdminModalQuestion extends javax.swing.JPanel {
 
-    public static final String MODAL_ADD="add";
-    public static  final  String MODAL_UPDATE ="update";
-    public static final  String MODAL_ADD_FOR_EXAM ="exam";
-    private  int questionId;
+    public static final String MODAL_ADD = "add";
+    public static final String MODAL_UPDATE = "update";
+    public static final String MODAL_ADD_FOR_EXAM = "exam";
+    private int questionId;
     private String task = "add";
-    private final  QuestionBLL questionBLL;
-    private  String imagePath;
+    private final QuestionBLL questionBLL;
+    private String imagePath;
     private final ExamBLL examBLL;
-  
-    private  int examCode;
+
+    private int examCode;
+
     public AdminModalQuestion() {
         this.examBLL = new ExamBLL();
         questionBLL = new QuestionBLL();
         initComponents();
         this.buttonCancel.setBackground(Color.red);
-         DefaultComboBoxModel<String> modelLever = new DefaultComboBoxModel<>();
-     
+        DefaultComboBoxModel<String> modelLever = new DefaultComboBoxModel<>();
+
         modelLever.addElement("easy");
         modelLever.addElement("medium");
         modelLever.addElement("difficult");
         this.selectLever.setModel(modelLever);
-          DefaultComboBoxModel<String> modelTopic = new DefaultComboBoxModel<>();
-     
+        DefaultComboBoxModel<String> modelTopic = new DefaultComboBoxModel<>();
+
         modelTopic.addElement("Lập trình");
         modelTopic.addElement("Du lịch");
         modelTopic.addElement("Toán học");
         this.selectTopic.setModel(modelTopic);
-             setupImageChooser();
-        
-               DefaultComboBoxModel<String> modelAnswer = new DefaultComboBoxModel<>();
+        setupImageChooser();
+
+        DefaultComboBoxModel<String> modelAnswer = new DefaultComboBoxModel<>();
         modelAnswer.addElement("chọn đáp án");
         modelAnswer.addElement("A");
         modelAnswer.addElement("B");
         modelAnswer.addElement("C");
-         modelAnswer.addElement("D");
+        modelAnswer.addElement("D");
         this.selectAnswer.setModel(modelAnswer);
-             setupImageChooser();
-             
-       
+        setupImageChooser();
+
     }
-    
-    public void setValueQuestion(QuestionDTO questionDTO ,ArrayList<OptionDTO> listAnswer,int Answer) {
-       this.inputContent.setText(questionDTO.getQuestionText());
-       this.inputOptionA.setText(listAnswer.get(0).getOptionText());
-       this.inputOptionB.setText(listAnswer.get(1).getOptionText());
-       this.inputOptionC.setText(listAnswer.get(2).getOptionText());
-       this.inputOptionD.setText(listAnswer.get(3).getOptionText());
-       this.selectAnswer.setSelectedIndex(Answer+1);
+
+    public void setValueQuestion(QuestionDTO questionDTO, ArrayList<OptionDTO> listAnswer, int Answer) {
+        this.inputContent.setText(questionDTO.getQuestionText());
+        this.inputOptionA.setText(listAnswer.get(0).getOptionText());
+        this.inputOptionB.setText(listAnswer.get(1).getOptionText());
+        this.inputOptionC.setText(listAnswer.get(2).getOptionText());
+        this.inputOptionD.setText(listAnswer.get(3).getOptionText());
+        this.selectAnswer.setSelectedIndex(Answer + 1);
         switch (questionDTO.getDifficulty()) {
-            case "easy" -> this.selectLever.setSelectedIndex(0);
-                 case "medium" -> this.selectLever.setSelectedIndex(1);
-                 case "difficult" -> this.selectLever.setSelectedIndex(2);
-            
+            case "easy" ->
+                this.selectLever.setSelectedIndex(0);
+            case "medium" ->
+                this.selectLever.setSelectedIndex(1);
+            case "difficult" ->
+                this.selectLever.setSelectedIndex(2);
+
         }
-        this.selectTopic.setSelectedIndex(questionDTO.getTopicId()-1);
-       if(questionDTO.getImageUrl()!=null) {
-           displayImagePreviewFromResource(questionDTO.getImageUrl());
-       }
-        this.update_at.setText("Cập nhật lúc:"+questionDTO.getUpdated_at().toString());
-        this.updater.setText("Người cập nhật:"+questionDTO.getUpdater());
-        this.create_at.setText("Ngày tạo:"+questionDTO.getCreate_ar().toString());
-       this.buttonAdd.setText("Cập nhật");
-       this.questionId =questionDTO.getQuestionId();
-      
+        this.selectTopic.setSelectedIndex(questionDTO.getTopicId() - 1);
+        if (questionDTO.getImageUrl() != null) {
+            displayImagePreviewFromResource(questionDTO.getImageUrl());
+        }
+        this.update_at.setText("Cập nhật lúc:" + questionDTO.getUpdated_at().toString());
+        this.updater.setText("Người cập nhật:" + questionDTO.getUpdater());
+        this.create_at.setText("Ngày tạo:" + questionDTO.getCreate_ar().toString());
+        this.buttonAdd.setText("Cập nhật");
+        this.questionId = questionDTO.getQuestionId();
+
     }
-private void closeParentFrame() {
-    JFrame parent = (JFrame) SwingUtilities.getWindowAncestor(this);
-    if (parent != null) {
-        parent.dispose(); // Đóng cửa sổ chứa JPanel
+
+    private void closeParentFrame() {
+        JFrame parent = (JFrame) SwingUtilities.getWindowAncestor(this);
+        if (parent != null) {
+            parent.dispose(); // Đóng cửa sổ chứa JPanel
+        }
     }
-}
-  public int getExamCode() {
+
+    public int getExamCode() {
         return examCode;
     }
 
     public void setExamCode(int examCode) {
         this.examCode = examCode;
     }
-private void validationData() {
-    int selectTopicValue =  this.selectTopic.getSelectedIndex()+1;
-    String selectLeverValue = (String) this.selectLever.getSelectedItem();
-    String contentQuestion = this.inputContent.getText().trim();
-    int selectAnswer = this.selectAnswer.getSelectedIndex();
-    String optionA = this.inputOptionA.getText().trim();
-    String optionB = this.inputOptionB.getText().trim();
-    String optionC = this.inputOptionC.getText().trim();
-    String optionD = this.inputOptionD.getText().trim();
-
-    boolean isValid = true;
-
-    if (contentQuestion.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Nội dung câu hỏi không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        isValid = false;
-    } else if (contentQuestion.length() < 4) {
-        JOptionPane.showMessageDialog(this, "Nội dung câu hỏi phải có ít nhất 4 ký tự.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        isValid = false;
+     public  void setTextTitleInTopImage(String text){
+     this.jLabel9.setText(text);
     }
 
-    if (optionA.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Nội dung đáp án A không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        isValid = false;
-    }
+    private void validationData() {
+        int selectTopicValue = this.selectTopic.getSelectedIndex() + 1;
+        String selectLeverValue = (String) this.selectLever.getSelectedItem();
+        String contentQuestion = this.inputContent.getText().trim();
+        int selectAnswer = this.selectAnswer.getSelectedIndex();
+        String optionA = this.inputOptionA.getText().trim();
+        String optionB = this.inputOptionB.getText().trim();
+        String optionC = this.inputOptionC.getText().trim();
+        String optionD = this.inputOptionD.getText().trim();
 
-    if (optionB.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Nội dung đáp án B không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        isValid = false;
-    }
+        boolean isValid = true;
 
-    if (optionC.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Nội dung đáp án C không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        isValid = false;
-    }
-
-    if (optionD.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Nội dung đáp án D không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        isValid = false;
-    }
-    if (selectAnswer ==0) {
-        JOptionPane.showMessageDialog(this, "Vui lòng chọn đáp án đúng cho câu hỏi.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        isValid = false;
-    }
-    if (isValid) {
-        QuestionDTO questionDTO = new QuestionDTO();
-        questionDTO.setQuestionId(this.questionId);
-        questionDTO.setTopicId(selectTopicValue);
-        questionDTO.setDifficulty(selectLeverValue);
-        questionDTO.setImageUrl(imagePath);
-        questionDTO.setQuestionText(contentQuestion);
-        ArrayList<OptionDTO> listAnswer = new ArrayList<>();
-        OptionDTO optionDTOA = new OptionDTO();
-        optionDTOA.setOptionText(optionA);
-        listAnswer.add(optionDTOA);
-        
-        OptionDTO optionDTOB = new OptionDTO();
-        optionDTOB.setOptionText(optionB);
-        listAnswer.add(optionDTOB);
-        
-        OptionDTO optionDTOC = new OptionDTO();
-        optionDTOC.setOptionText(optionC);
-        listAnswer.add(optionDTOC);
-        
-        OptionDTO optionDTOD = new OptionDTO();
-        optionDTOD.setOptionText(optionD);
-        listAnswer.add(optionDTOD);
-        
-        switch (selectAnswer) {
-            case 1 -> optionDTOA.setIsCorrect(true);
-                 case 2 -> optionDTOB.setIsCorrect(true);
-                 case 3 -> optionDTOC.setIsCorrect(true);
-                 case 4 -> optionDTOD.setIsCorrect(true);
-           
+        if (contentQuestion.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nội dung câu hỏi không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            isValid = false;
+        } else if (contentQuestion.length() < 4) {
+            JOptionPane.showMessageDialog(this, "Nội dung câu hỏi phải có ít nhất 4 ký tự.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            isValid = false;
         }
-        
-        Response.QuestoinResult res = new Response.QuestoinResult();
-        if(MODAL_ADD.equalsIgnoreCase(this.task)) {
-           res =  questionBLL.addQuestoin(questionDTO, listAnswer);
-        }else if(MODAL_ADD_FOR_EXAM.equalsIgnoreCase(this.task)) {
-              res =  questionBLL.addQuestoin(questionDTO, listAnswer);
-              Response.ExamResult result = examBLL.addQuestionToTheTest(res.getQuestionList(), examCode);
-             res.setMessage(result.getMessage());
-             res.setIsSuccess(result.isIsSuccess());
-        } else {
-          res = questionBLL.updateQuestoin(questionDTO, listAnswer);
-        }
-         if(res.isIsSuccess()) {
-             int confirm = JOptionPane.showConfirmDialog(
-        this, 
-        res.getMessage(),
-        "Xác nhận", 
-        JOptionPane.YES_NO_OPTION
-    );
 
-    if (confirm == JOptionPane.YES_OPTION) {
-         closeParentFrame();
+        if (optionA.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nội dung đáp án A không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            isValid = false;
+        }
+
+        if (optionB.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nội dung đáp án B không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            isValid = false;
+        }
+
+        if (optionC.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nội dung đáp án C không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            isValid = false;
+        }
+
+        if (optionD.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nội dung đáp án D không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            isValid = false;
+        }
+        if (selectAnswer == 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn đáp án đúng cho câu hỏi.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            isValid = false;
+        }
+        if (isValid) {
+            QuestionDTO questionDTO = new QuestionDTO();
+            questionDTO.setQuestionId(this.questionId);
+            questionDTO.setTopicId(selectTopicValue);
+            questionDTO.setDifficulty(selectLeverValue);
+            questionDTO.setImageUrl(imagePath);
+            questionDTO.setQuestionText(contentQuestion);
+            ArrayList<OptionDTO> listAnswer = new ArrayList<>();
+            OptionDTO optionDTOA = new OptionDTO();
+            optionDTOA.setOptionText(optionA);
+            listAnswer.add(optionDTOA);
+
+            OptionDTO optionDTOB = new OptionDTO();
+            optionDTOB.setOptionText(optionB);
+            listAnswer.add(optionDTOB);
+
+            OptionDTO optionDTOC = new OptionDTO();
+            optionDTOC.setOptionText(optionC);
+            listAnswer.add(optionDTOC);
+
+            OptionDTO optionDTOD = new OptionDTO();
+            optionDTOD.setOptionText(optionD);
+            listAnswer.add(optionDTOD);
+
+            switch (selectAnswer) {
+                case 1 ->
+                    optionDTOA.setIsCorrect(true);
+                case 2 ->
+                    optionDTOB.setIsCorrect(true);
+                case 3 ->
+                    optionDTOC.setIsCorrect(true);
+                case 4 ->
+                    optionDTOD.setIsCorrect(true);
+
+            }
+
+            Response.QuestoinResult res = new Response.QuestoinResult();
+            if (MODAL_ADD.equalsIgnoreCase(this.task)) {
+                res = questionBLL.addQuestoin(questionDTO, listAnswer);
+            } else if (MODAL_ADD_FOR_EXAM.equalsIgnoreCase(this.task)) {
+                res = questionBLL.addQuestoin(questionDTO, listAnswer);
+                Response.ExamResult result = examBLL.addQuestionToTheTest(res.getQuestionList(), examCode);
+                res.setMessage(result.getMessage());
+                res.setIsSuccess(result.isIsSuccess());
+            } else {
+                res = questionBLL.updateQuestoin(questionDTO, listAnswer);
+            }
+            if (res.isIsSuccess()) {
+                int confirm = JOptionPane.showConfirmDialog(
+                        this,
+                        res.getMessage(),
+                        "Xác nhận",
+                        JOptionPane.YES_NO_OPTION
+                );
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    closeParentFrame();
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+            }
+
+        }
     }
-         }  else {
-          JOptionPane.showMessageDialog(null, res.getMessage());
-         }
-       
-       
-    }
-}
- private void setupImageChooser() {
+   
+
+    private void setupImageChooser() {
         JFileChooser fileChooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "jpeg", "png", "gif");
         fileChooser.setFileFilter(filter);
@@ -232,7 +246,8 @@ private void validationData() {
             }
         });
     }
- private  void displayImagePreviewFromResource(String imageName) {
+
+    private void displayImagePreviewFromResource(String imageName) {
         try {
             ClassLoader classLoader = AdminModalQuestion.class.getClassLoader();
             InputStream inputStream = classLoader.getResourceAsStream("imageQuestion/" + imageName);
@@ -248,7 +263,8 @@ private void validationData() {
             labelImage.setIcon(null); // Xóa ảnh cũ nếu có lỗi
         }
     }
- private void displayImagePreviewFromSistem(File selectedFile) {
+
+    private void displayImagePreviewFromSistem(File selectedFile) {
         try {
             BufferedImage img = ImageIO.read(selectedFile);
             ImageIcon icon = new ImageIcon(img.getScaledInstance(200, 200, Image.SCALE_SMOOTH));
@@ -257,29 +273,31 @@ private void validationData() {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null, "Không thể tải ảnh.", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-    } 
- private  void saveImageToResources(File selectedFile) {
+    }
+
+    private void saveImageToResources(File selectedFile) {
         try {
             ClassLoader classLoader = AdminModalQuestion.class.getClassLoader();
-             URL resourceUrl = classLoader.getResource("imageQuestion/");
+            URL resourceUrl = classLoader.getResource("imageQuestion/");
 
-        if (resourceUrl == null) {
-            JOptionPane.showMessageDialog(null, "Thư mục imageQuestion không tồn tại trong resources.");
-            return;
-        }
+            if (resourceUrl == null) {
+                JOptionPane.showMessageDialog(null, "Thư mục imageQuestion không tồn tại trong resources.");
+                return;
+            }
 
-        String resourcePath = resourceUrl.getFile();
+            String resourcePath = resourceUrl.getFile();
             String randomToken = RandomStringGenerator.generateRandomString(10);
-            File destinationFile = new File(resourcePath +randomToken +"_"+ selectedFile.getName());
+            File destinationFile = new File(resourcePath + randomToken + "_" + selectedFile.getName());
             Files.copy(selectedFile.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-              this.imagePath =  randomToken + "_" + selectedFile.getName(); 
+            this.imagePath = randomToken + "_" + selectedFile.getName();
             System.out.println("Ảnh được lưu tại: " + imagePath);
-             
+
         } catch (IOException ex) {
-           JOptionPane.showMessageDialog(null,"Lôi lưu ảnh"+ex.getMessage());
-          
+            JOptionPane.showMessageDialog(null, "Lôi lưu ảnh" + ex.getMessage());
+
         }
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -532,18 +550,18 @@ private void validationData() {
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed
-     int confirm = JOptionPane.showConfirmDialog(
-        this, 
-        "Bạn có chắc chắn muốn hủy thao tác?", 
-        "Xác nhận", 
-        JOptionPane.YES_NO_OPTION
-    );
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Bạn có chắc chắn muốn hủy thao tác?",
+                "Xác nhận",
+                JOptionPane.YES_NO_OPTION
+        );
 
-    if (confirm == JOptionPane.YES_OPTION) {
-        closeParentFrame();
-    }
+        if (confirm == JOptionPane.YES_OPTION) {
+            closeParentFrame();
+        }
     }//GEN-LAST:event_buttonCancelActionPerformed
- public String getTask() {
+    public String getTask() {
         return task;
     }
 
@@ -555,7 +573,7 @@ private void validationData() {
     }
 
     private void buttonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddActionPerformed
-         validationData();
+        validationData();
     }//GEN-LAST:event_buttonAddActionPerformed
 
 

@@ -50,6 +50,10 @@ public class ExamDAL {
                     testDTO.setTestName(testRs.getString("test_name"));
                     testDTO.setTestId(testRs.getInt("test_id"));
                     testDTO.setTestTime(testRs.getInt("test_time"));
+                    testDTO.setEasy(testRs.getInt("easy"));
+                    testDTO.setMedium(testRs.getInt("medium"));
+                    testDTO.setDifficult(testRs.getInt("difficult"));
+                    testDTO.setTotalQuestion(testRs.getInt("number_of_questions"));
                    res.getTestLists().add(testDTO);
             }
            for(TestDTO test:res.getTestLists()) {
@@ -93,6 +97,10 @@ public class ExamDAL {
                     testDTO.setTestName(testRs.getString("test_name"));
                     testDTO.setTestId(testRs.getInt("test_id"));
                     testDTO.setTestTime(testRs.getInt("test_time"));
+                      testDTO.setEasy(testRs.getInt("easy"));
+                    testDTO.setMedium(testRs.getInt("medium"));
+                    testDTO.setDifficult(testRs.getInt("difficult"));
+                    testDTO.setTotalQuestion(testRs.getInt("number_of_questions"));
                    res.getTestLists().add(testDTO);
             }
            for(TestDTO test:res.getTestLists()) {
@@ -144,6 +152,10 @@ public class ExamDAL {
                     testDTO.setTestName(testRs.getString("test_name"));
                     testDTO.setTestId(testRs.getInt("test_id"));
                     testDTO.setTestTime(testRs.getInt("test_time"));
+                      testDTO.setEasy(testRs.getInt("easy"));
+                    testDTO.setMedium(testRs.getInt("medium"));
+                    testDTO.setDifficult(testRs.getInt("difficult"));
+                    testDTO.setTotalQuestion(testRs.getInt("number_of_questions"));
                    res.getTestLists().add(testDTO);
             }
            for(TestDTO test:res.getTestLists()) {
@@ -179,7 +191,10 @@ public class ExamDAL {
         questions.setAnswerList(new ArrayList<>());
 
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement testStmt = conn.prepareStatement("SELECT tests.topic_id, tests.test_name, tests.test_id, tests.test_time, exams.exam_id, exams.exam_code, questions.question_text, questions.image_url, questions.updater, questions.question_id,questions.difficulty, questions.updated_at, questions.create_at, options.option_id, options.option_text, options.is_correct, options.image_url FROM tests"
+             PreparedStatement testStmt = conn.prepareStatement("SELECT tests.topic_id, tests.test_name, tests.test_id, tests.test_time, tests.easy, tests.medium,tests.difficult,tests.number_of_questions"
+                     + ", exams.exam_id, exams.exam_code, questions.question_text, questions.image_url,"
+                     + " questions.updater, questions.question_id,questions.difficulty, questions.updated_at,"
+                     + " questions.create_at, options.option_id, options.option_text, options.is_correct, options.image_url FROM tests"
                      + " JOIN exams ON tests.test_id = exams.test_id"
                      + " JOIN exam_questions ON exams.exam_id = exam_questions.exam_id"
                      + " JOIN questions ON exam_questions.question_id = questions.question_id"
@@ -195,6 +210,10 @@ public class ExamDAL {
                     testDTO.setTestName(rs.getString("test_name"));
                     testDTO.setTestId(rs.getInt("test_id"));
                     testDTO.setTestTime(rs.getInt("test_time"));
+                      testDTO.setEasy(rs.getInt("easy"));
+                    testDTO.setMedium(rs.getInt("medium"));
+                    testDTO.setDifficult(rs.getInt("difficult"));
+                    testDTO.setTotalQuestion(rs.getInt("number_of_questions"));
                     res.getTestLists().add(testDTO);
 
                     ExamDTO examDTO = new ExamDTO();
@@ -425,12 +444,16 @@ public class ExamDAL {
                 }
             }
 
-            String insert = "INSERT INTO tests(test_name,topic_id,test_time,num_limit) VALUES(?,?,?,?)";
+            String insert = "INSERT INTO tests(test_name,topic_id,test_time,num_limit,easy,medium,difficult,number_of_questions) VALUES(?,?,?,?,?,?,?,?)";
             try (PreparedStatement testStmt = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS)) {
                 testStmt.setString(1, test.getTestName());
                 testStmt.setInt(2, test.getTopicId());
                 testStmt.setInt(3, test.getTestTime());
                 testStmt.setInt(4, test.getNumLimit());
+                testStmt.setInt(5, easyQ);
+               testStmt.setInt(6, mediumQ);
+               testStmt.setInt(7, diffQ);
+               testStmt.setInt(8, diffQ+mediumQ+easyQ);
                 testStmt.executeUpdate();
 
                 try (ResultSet generatedKeys = testStmt.getGeneratedKeys()) {

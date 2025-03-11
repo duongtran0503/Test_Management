@@ -20,114 +20,119 @@ public class AdminModalUser extends javax.swing.JFrame {
     /**
      * Creates new form adminModalUser
      */
-    public static String EDIT_MODAL ="edit";
+    public static String EDIT_MODAL = "edit";
     public static String ADD_MODAL = "add";
-   private UserBLL userBLL;
-   private AuthBLL authBLL;
-   private  UserDTO userData;
+    private UserBLL userBLL;
+    private AuthBLL authBLL;
+    private UserDTO userData;
+
     public String getModalHandle() {
         return ModalHandle;
     }
 
     public void setModalHandle(String ModalHandle) {
         this.ModalHandle = ModalHandle;
-        if(ModalHandle.equalsIgnoreCase(EDIT_MODAL)) {
-         this.inputEmail.setEnabled(false);
+        if (ModalHandle.equalsIgnoreCase(EDIT_MODAL)) {
+            this.inputEmail.setEnabled(false);
         } else {
-         this.buttonUdatePassword.setVisible(false);
-         this.lablePassword.setText("Xác nhận mật khẩu");
-         this.lableNewPasswordConfirm.setVisible(false);
-         this.confirmNewPassword.setVisible(false);
-         this.buttonResetPassword.setVisible(false);
+            this.buttonUdatePassword.setVisible(false);
+            this.lablePassword.setText("Xác nhận mật khẩu");
+            this.lableNewPasswordConfirm.setVisible(false);
+            this.confirmNewPassword.setVisible(false);
+            this.buttonResetPassword.setVisible(false);
         }
     }
-    private  String  ModalHandle ;
+    private String ModalHandle;
+
     public AdminModalUser() {
         this.userBLL = new UserBLL();
         this.authBLL = new AuthBLL();
         this.userData = new UserDTO();
         initComponents();
-         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
         model.addElement("student");
         model.addElement("admin");
         this.jComboBox1.setModel(model);
-      
+
     }
-   private void validateData() {
-      String password = this.inputCurrentPassword.getText().trim();
-      String newPassword = this.newPassword.getText().trim();
-      String newPasswordCOnfig = this.confirmNewPassword.getText().trim();
-      String name = this.inputName.getText().trim();
-      String email = this.inputEmail.getText().trim();
-      String role = (String) this.jComboBox1.getSelectedItem();
-      if(ModalHandle.equalsIgnoreCase(ADD_MODAL)) {
-        if(password.isEmpty() || newPassword.isEmpty()) {
-           JOptionPane.showMessageDialog(this, "Mật khẩu và xác nhận mật khảu không được để trống", "Lỗi", JOptionPane.ERROR_MESSAGE);
-           return;
+
+    private void validateData() {
+        String password = this.inputCurrentPassword.getText().trim();
+        String newPassword = this.newPassword.getText().trim();
+        String newPasswordCOnfig = this.confirmNewPassword.getText().trim();
+        String name = this.inputName.getText().trim();
+        String email = this.inputEmail.getText().trim();
+        String role = (String) this.jComboBox1.getSelectedItem();
+        if (ModalHandle.equalsIgnoreCase(ADD_MODAL)) {
+            if (password.isEmpty() || newPassword.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Mật khẩu và xác nhận mật khảu không được để trống", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (!password.equalsIgnoreCase(newPassword)) {
+                JOptionPane.showMessageDialog(this, "Mật khẩu xác nhận không khợp với mật khảu đã nhập!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (name.isEmpty() || email.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Tên người dùng  và email không được để trống", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (!isValidEmail(email)) {
+                JOptionPane.showMessageDialog(this, "Email không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            UserDTO user = new UserDTO();
+            user.setEmail(email);
+            user.setPassword(password);
+            user.setRole(role);
+            user.setUsername(name);
+            Response.RegisterResult res = authBLL.register(user);
+            if (res.isIsSuccess()) {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+                dispose();
+            }
+
+        } else {
+
+            if (name.isEmpty() || email.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Tên người dùng  và email không được để trống", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (!isValidEmail(email)) {
+                JOptionPane.showMessageDialog(this, "Email không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            UserDTO user = new UserDTO();
+            user.setUserId(this.userData.getUserId());
+            user.setEmail(email);
+            user.setUsername(name);
+            user.setRole(role);
+            user.setPassword(this.userData.getPassword());
+            Response.BaseResponse res = userBLL.updateUser(user);
+            if (res.isIsSuccess()) {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+                dispose();
+            }
+
         }
-        if(!password.equalsIgnoreCase(newPassword)) {
-          JOptionPane.showMessageDialog(this, "Mật khẩu xác nhận không khợp với mật khảu đã nhập!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-           return;
-        }
-         if(name.isEmpty() || email.isEmpty()) {
-           JOptionPane.showMessageDialog(this, "Tên người dùng  và email không được để trống", "Lỗi", JOptionPane.ERROR_MESSAGE);
-           return;
-        }
-         if(!isValidEmail(email)) {
-          JOptionPane.showMessageDialog(this, "Email không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-           return;
-         }
-          UserDTO user = new UserDTO();
-          user.setEmail(email);
-          user.setPassword(password);
-          user.setRole(role);
-          user.setUsername(name);
-          Response.RegisterResult res = authBLL.register(user);
-          if(res.isIsSuccess()) {
-           JOptionPane.showMessageDialog(null, res.getMessage());
-           dispose();
-          }else {
-             JOptionPane.showMessageDialog(null, res.getMessage());
-           dispose();
-          }
-          
-      }else {
-        
-         if(name.isEmpty() || email.isEmpty()) {
-           JOptionPane.showMessageDialog(this, "Tên người dùng  và email không được để trống", "Lỗi", JOptionPane.ERROR_MESSAGE);
-           return;
-        }
-         if(!isValidEmail(email)) {
-          JOptionPane.showMessageDialog(this, "Email không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-           return;
-         }
-         UserDTO user = new UserDTO();
-         user.setUserId(this.userData.getUserId());
-         user.setEmail(email);
-         user.setUsername(name);
-         user.setRole(role);
-         user.setPassword(this.userData.getPassword());
-         Response.BaseResponse res = userBLL.updateUser(user);
-           if(res.isIsSuccess()) {
-           JOptionPane.showMessageDialog(null, res.getMessage());
-           dispose();
-          }else {
-             JOptionPane.showMessageDialog(null, res.getMessage());
-           dispose();
-          }
-        
-      }
-   }
-   private boolean isValidEmail(String email) {
-    // Biểu thức chính quy kiểm tra email (có thể tùy chỉnh)
-    String regex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
-    return email.matches(regex);
-} 
-   public void setValueEdit(UserDTO user){
-     this.inputName.setText(user.getUsername());
-     this.inputEmail.setText(user.getEmail());
-     this.userData = user;
-   }
+    }
+
+    private boolean isValidEmail(String email) {
+        // Biểu thức chính quy kiểm tra email (có thể tùy chỉnh)
+        String regex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
+        return email.matches(regex);
+    }
+
+    public void setValueEdit(UserDTO user) {
+        this.inputName.setText(user.getUsername());
+        this.inputEmail.setText(user.getEmail());
+        this.userData = user;
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -330,59 +335,59 @@ public class AdminModalUser extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-         int confirm = JOptionPane.showConfirmDialog(
-        this, 
-        "Bạn có chắc chắn muốn thoát?", 
-        "Xác nhận", 
-        JOptionPane.YES_NO_OPTION
-    );
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Bạn có chắc chắn muốn thoát?",
+                "Xác nhận",
+                JOptionPane.YES_NO_OPTION
+        );
 
-    if (confirm == JOptionPane.YES_OPTION) {
-    
-         dispose();
-    }
+        if (confirm == JOptionPane.YES_OPTION) {
+
+            dispose();
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       validateData();
+        validateData();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void buttonUdatePasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonUdatePasswordActionPerformed
-              String password = this.inputCurrentPassword.getText().trim();
-      String newPassword = this.newPassword.getText().trim();
-      String newPasswordCOnfig = this.confirmNewPassword.getText().trim();
-      if(password.isEmpty() || newPassword.isEmpty()|| newPasswordCOnfig.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Vui lòng nhập đủ thông tin", "Lỗi", JOptionPane.ERROR_MESSAGE);
-           return;
-      }
-      if(newPassword.equalsIgnoreCase(newPasswordCOnfig)) {
-        JOptionPane.showMessageDialog(this, "Mật khẩu mới không khớp với mật khẫu đã nhập!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-           return;
-      }
-      
-     Response.BaseResponse res = userBLL.updatePassword(password, newPassword, userData.getUserId());
-       if(res.isIsSuccess()) {
-           JOptionPane.showMessageDialog(null, res.getMessage());
-           dispose();
-          }else {
-             JOptionPane.showMessageDialog(null, res.getMessage());
-           dispose();
-          }
+        String password = this.inputCurrentPassword.getText().trim();
+        String newPassword = this.newPassword.getText().trim();
+        String newPasswordCOnfig = this.confirmNewPassword.getText().trim();
+        if (password.isEmpty() || newPassword.isEmpty() || newPasswordCOnfig.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đủ thông tin", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (newPassword.equalsIgnoreCase(newPasswordCOnfig)) {
+            JOptionPane.showMessageDialog(this, "Mật khẩu mới không khớp với mật khẫu đã nhập!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Response.BaseResponse res = userBLL.updatePassword(password, newPassword, userData.getUserId());
+        if (res.isIsSuccess()) {
+            JOptionPane.showMessageDialog(null, res.getMessage());
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(null, res.getMessage());
+            dispose();
+        }
     }//GEN-LAST:event_buttonUdatePasswordActionPerformed
 
     private void buttonResetPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetPasswordActionPerformed
-         int confirm = JOptionPane.showConfirmDialog(
-        this, 
-        "Lưu ý: khi reset password mặc định sẽ là 1", 
-        "Xác nhận", 
-        JOptionPane.YES_NO_OPTION
-    );
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Lưu ý: khi reset password mặc định sẽ là 1",
+                "Xác nhận",
+                JOptionPane.YES_NO_OPTION
+        );
 
-    if (confirm == JOptionPane.YES_OPTION) {
-    
-       Response.BaseResponse res = userBLL.resetPassword(this.userData.getUserId());
-       JOptionPane.showMessageDialog(null, res.getMessage());
-    }
+        if (confirm == JOptionPane.YES_OPTION) {
+
+            Response.BaseResponse res = userBLL.resetPassword(this.userData.getUserId());
+            JOptionPane.showMessageDialog(null, res.getMessage());
+        }
     }//GEN-LAST:event_buttonResetPasswordActionPerformed
 
     /**

@@ -10,11 +10,13 @@ import com.mycompany.qltn.component.ButtonRecoverRender;
 import com.mycompany.qltn.BLL.ExamBLL;
 import com.mycompany.qltn.BLL.QuestionBLL;
 import com.mycompany.qltn.BLL.Response;
+import com.mycompany.qltn.BLL.UserBLL;
 import com.mycompany.qltn.dto.ExamDTO;
 import com.mycompany.qltn.dto.OptionDTO;
 import com.mycompany.qltn.dto.QuestionDTO;
 import com.mycompany.qltn.dto.TestDTO;
 import com.mycompany.qltn.dto.TopicDTO;
+import com.mycompany.qltn.dto.UserDTO;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,15 +36,21 @@ public class AdminQuestionRecovery extends javax.swing.JFrame {
      */
     private  QuestionBLL    questionBLL;
     private  ButtonRecoverEdit buttonRecoverEdit;
+    private  ButtonRecoverEdit buttonRecoverAccount;
     private   ArrayList<QuestionDTO> questionsData  ;
+    private  UserBLL userBLL;
     private  Response.ExamResult examData;
     private  ExamBLL examBLL;
     private  ButtonRecoverEdit buttonRecoverTest;
+    private   Response.UserResult userData;
     public AdminQuestionRecovery() {
+        this.userBLL = new UserBLL();
+        this.userData = new Response.UserResult();
         this.examBLL = new ExamBLL();
         this.examData = new Response.ExamResult();
         this.questionsData = new ArrayList<>();
         this.   questionBLL = new QuestionBLL();
+        this.buttonRecoverAccount =new ButtonRecoverEdit();
         this.buttonRecoverEdit = new ButtonRecoverEdit();
         this.buttonRecoverTest = new  ButtonRecoverEdit();
         initComponents();
@@ -97,6 +105,26 @@ public class AdminQuestionRecovery extends javax.swing.JFrame {
          }
          this.buttonRecoverTest.fireEditStop();
          loadExams();
+       });
+        this.buttonRecoverAccount.getPanel().getjButton1().addActionListener((ActionEvent e) -> { 
+          int row = this.buttonRecoverTest.getRow();
+          int userId =this.userData.getUserList().get(row).getUserId();
+         int confirm = JOptionPane.showConfirmDialog(
+        this, 
+        "Bạn có chắc chắn muốn khôi phục tài khoản ?", 
+        "Xác nhận", 
+        JOptionPane.YES_NO_OPTION
+    );
+         if(confirm ==JOptionPane.YES_OPTION) {
+           Response.BaseResponse res = this.userBLL.recoverUser(userId);
+           if(res.isIsSuccess()) {
+             JOptionPane.showMessageDialog(null, res.getMessage()); 
+           }else {
+            JOptionPane.showMessageDialog(null, res.getMessage());
+           }
+         }
+         this.buttonRecoverAccount.fireEditStop();
+         loadUsers();
        });
       
        
@@ -177,6 +205,41 @@ public class AdminQuestionRecovery extends javax.swing.JFrame {
              
      
     }
+     private  void  displayDataOnTableAccount(Response.UserResult userResult) {
+        
+       ArrayList<UserDTO> users = userResult.getUserList();
+         System.out.println("size:"+userResult.getUserList().size());
+        this.userData = userResult;
+           String[] columnNames = { "ID", "Tên ","Email","Quyền", "Khôi phục"};
+             DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
+                tableModel.setColumnIdentifiers(columnNames);
+             tableModel.setRowCount(0);
+                   jTable1.getColumnModel().getColumn(4).setCellRenderer(new ButtonRecoverRender());
+             jTable1.getColumnModel().getColumn(4).setCellEditor(this.buttonRecoverAccount);
+              
+            
+              
+         
+               for (UserDTO user:users) {
+               
+                tableModel.addRow(new Object[]{user.getUserId()+"", user.getUsername(), user.getEmail(), user.getRole()});
+            }
+               
+            
+         
+    
+             
+     
+    }
+     private  void loadUsers() {
+     Response.UserResult res = this.userBLL.getUser(1);
+       if(res.isIsSuccess()) {
+           displayDataOnTableAccount(res);
+       }else {
+          JOptionPane.showMessageDialog(null, res.getMessage());
+       }
+    }
+    
     private  void loadExams() {
        Response.ExamResult res = examBLL.getExamDeletedResult();
        Response.TopicResult topicResult =    questionBLL.getTopic();
@@ -212,6 +275,7 @@ public class AdminQuestionRecovery extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        buttonAccount = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
@@ -229,9 +293,18 @@ public class AdminQuestionRecovery extends javax.swing.JFrame {
         });
 
         jButton2.setText("Khôi phục đề thi");
+        jButton2.setPreferredSize(new java.awt.Dimension(116, 30));
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
+            }
+        });
+
+        buttonAccount.setText("Khôi phục tài khoản");
+        buttonAccount.setPreferredSize(new java.awt.Dimension(135, 30));
+        buttonAccount.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonAccountActionPerformed(evt);
             }
         });
 
@@ -243,6 +316,8 @@ public class AdminQuestionRecovery extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(buttonAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(55, 55, 55)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(40, 40, 40)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -256,7 +331,8 @@ public class AdminQuestionRecovery extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
-                            .addComponent(jButton2))
+                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(buttonAccount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(7, 7, 7))
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -325,6 +401,10 @@ public class AdminQuestionRecovery extends javax.swing.JFrame {
           loadExams();
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void buttonAccountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAccountActionPerformed
+     loadUsers();
+    }//GEN-LAST:event_buttonAccountActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -361,6 +441,7 @@ public class AdminQuestionRecovery extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonAccount;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;

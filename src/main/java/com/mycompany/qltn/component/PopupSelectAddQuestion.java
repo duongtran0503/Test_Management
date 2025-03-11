@@ -21,12 +21,13 @@ public class PopupSelectAddQuestion extends javax.swing.JFrame {
     /**
      * Creates new form PopupSelectAddQuestion
      */
-    private  QuestionBLL questionController ;
+    private QuestionBLL questionController;
+
     public PopupSelectAddQuestion() {
         this.questionController = new QuestionBLL();
         initComponents();
-             setLocationRelativeTo(null); 
-             setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
     /**
@@ -89,14 +90,14 @@ public class PopupSelectAddQuestion extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonAddOneQuestionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddOneQuestionActionPerformed
-           JFrame frame = new JFrame("Thêm câu hỏi");
-    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-      frame.setUndecorated(true);
-    frame.setSize(1080, 600); // Điều chỉnh kích thước
-    frame.add(new AdminModalQuestion()); // Thêm JPanel vào JFrame
-    frame.setLocationRelativeTo(null); // Căn giữa màn hình
-    frame.setVisible(true);
-    dispose();
+        JFrame frame = new JFrame("Thêm câu hỏi");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setUndecorated(true);
+        frame.setSize(1080, 600); // Điều chỉnh kích thước
+        frame.add(new AdminModalQuestion()); // Thêm JPanel vào JFrame
+        frame.setLocationRelativeTo(null); // Căn giữa màn hình
+        frame.setVisible(true);
+        dispose();
     }//GEN-LAST:event_buttonAddOneQuestionActionPerformed
 
     private void importFileExcelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importFileExcelActionPerformed
@@ -107,23 +108,23 @@ public class PopupSelectAddQuestion extends javax.swing.JFrame {
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
-            Response.QuestoinResult res =    this.questionController.importExcelAndPopulateLists(selectedFile);
-            if(res.isIsSuccess()) {
-               DisplayQuestionFromExcel displayQuestionFromExcel = new DisplayQuestionFromExcel();
-             Response.TopicResult topics = questionController.getTopic();
-               displayQuestionFromExcel.displayDataOnTable(res, topics);
+            Response.QuestoinResult res = this.questionController.importExcelAndPopulateLists(selectedFile);
+            if (res.isIsSuccess()) {
+                DisplayQuestionFromExcel displayQuestionFromExcel = new DisplayQuestionFromExcel();
+                Response.TopicResult topics = questionController.getTopic();
+                displayQuestionFromExcel.displayDataOnTable(res, topics);
                 displayQuestionFromExcel.setVisible(true);
-               dispose();
-            }else {
-                            JOptionPane.showMessageDialog(null, res.getMessage());
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(null, res.getMessage());
 
-             }
+            }
         }
     }
     /**
      * @param args the command line arguments
      */
-   
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonAddOneQuestion;

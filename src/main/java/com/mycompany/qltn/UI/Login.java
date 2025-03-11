@@ -12,70 +12,69 @@ import java.awt.Color;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-
 /**
  *
  * @author ACER
  */
 public class Login extends javax.swing.JFrame {
-   private final AuthBLL authBLL = new AuthBLL();
+
+    private final AuthBLL authBLL = new AuthBLL();
+
     /**
      * Creates new form Login
      */
     public Login() {
-         
+
         initComponents();
-         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); 
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
         jLabel3.setText("<html>Đăng nhập ứng dụng để bắt đầu thi</html>");
         this.setBackground(Color.white);
         containerFormLogin.setBorder(new RoundedFlatBorder(15, Color.WHITE, 2)); // Bo góc 15px, viền đen, dày 2px
         containerFormLogin.setBackground(Color.WHITE);
         this.setSize(410, 604);
-         
-    }
-   private void validationLogin() {
-    String email = userName.getText().trim();
-    char[] passwordChars = inputPassword.getPassword();
-    String password = new String(passwordChars); // Chuyển đổi sang String (cần thiết cho so sánh)
 
-    System.out.println("password:" + password + " email:" + email);
-    if (email.isEmpty() || password.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Vui lòng nhập email và mật khẩu.", "Lỗi đăng nhập", JOptionPane.ERROR_MESSAGE);
-    } else if (!isValidEmail(email)) { 
-        JOptionPane.showMessageDialog(this, "Email không hợp lệ.", "Lỗi đăng nhập", JOptionPane.ERROR_MESSAGE);
-    } else {
-       
-        Response.loginResult res = authBLL.login(email, password);
-            App.user = res.getUser();
-        if (res.isIsSuccess()) {
-           if(res.getUser().getRole().equalsIgnoreCase("admin")) {
-            AdminHomeScreen adminHomeScreen = new AdminHomeScreen();
-            adminHomeScreen.setVisible(true);
-            this.dispose();
-           } else {
-            StudenHomeScreen studenHomeScreen = new StudenHomeScreen();
-            studenHomeScreen.setVisible(true);
-            this.setVisible(true);
-            this.dispose();
-           }
-         
-            
+    }
+
+    private void validationLogin() {
+        String email = userName.getText().trim();
+        char[] passwordChars = inputPassword.getPassword();
+        String password = new String(passwordChars);
+
+        System.out.println("password:" + password + " email:" + email);
+        if (email.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập email và mật khẩu.", "Lỗi đăng nhập", JOptionPane.ERROR_MESSAGE);
+        } else if (!isValidEmail(email)) {
+            JOptionPane.showMessageDialog(this, "Email không hợp lệ.", "Lỗi đăng nhập", JOptionPane.ERROR_MESSAGE);
         } else {
-          
-            JOptionPane.showMessageDialog(this,res.getMessage(), "Lỗi đăng nhập", JOptionPane.ERROR_MESSAGE);
+
+            Response.loginResult res = authBLL.login(email, password);
+            App.user = res.getUser();
+            if (res.isIsSuccess()) {
+                if (res.getUser().getRole().equalsIgnoreCase("admin")) {
+                    AdminHomeScreen adminHomeScreen = new AdminHomeScreen();
+                    adminHomeScreen.setVisible(true);
+                    this.dispose();
+                } else {
+                    StudenHomeScreen studenHomeScreen = new StudenHomeScreen();
+                    studenHomeScreen.setVisible(true);
+                    this.setVisible(true);
+                    this.dispose();
+                }
+
+            } else {
+
+                JOptionPane.showMessageDialog(this, res.getMessage(), "Lỗi đăng nhập", JOptionPane.ERROR_MESSAGE);
+            }
         }
+
     }
 
-}
-
-
-private boolean isValidEmail(String email) {
-    // Biểu thức chính quy kiểm tra email (có thể tùy chỉnh)
-    String regex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
-    return email.matches(regex);
-}
-
+    private boolean isValidEmail(String email) {
+        // Biểu thức chính quy kiểm tra email (có thể tùy chỉnh)
+        String regex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
+        return email.matches(regex);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -198,26 +197,17 @@ private boolean isValidEmail(String email) {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       Register register = new Register();
+        Register register = new Register();
         register.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-       register.setLocationRelativeTo(null); // Căn giữa màn hình
-       register.setVisible(true);
-       this.dispose();
+        register.setLocationRelativeTo(null); // Căn giữa màn hình
+        register.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-// file login
-// bật lên để login
-//      validationLogin();
-// hiện giao diện admin ko loggin
- App.user.setUsername("tran duong");
-   AdminHomeScreen adminHomeScreen = new AdminHomeScreen();
-   adminHomeScreen.setVisible(true);
-   dispose();
-   // hiện giao diện studen ko login
-//   StudenHomeScreen studenHomeScreen = new StudenHomeScreen();
-//    studenHomeScreen.setVisible(true);
-//     dispose();
+
+        validationLogin();
+
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void userNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userNameActionPerformed
@@ -227,7 +217,6 @@ private boolean isValidEmail(String email) {
     /**
      * @param args the command line arguments
      */
-   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel containerFormLogin;

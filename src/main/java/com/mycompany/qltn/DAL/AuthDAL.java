@@ -18,50 +18,50 @@ import java.sql.SQLException;
  */
 public class AuthDAL {
 
-     public Response.loginResult login(String email) {
-         Connection conn = null;
+    public Response.loginResult login(String email) {
+        Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-         Response.loginResult res = new Response.loginResult();
-         try {
-             conn = DatabaseConnection.getConnection();
-             String sql = "SELECT * FROM users WHERE email = ?"; // Thay thế bằng tên bảng và cột của bạn
+        Response.loginResult res = new Response.loginResult();
+        try {
+            conn = DatabaseConnection.getConnection();
+            String sql = "SELECT * FROM users WHERE email = ?"; // Thay thế bằng tên bảng và cột của bạn
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, email);
- 
-              rs = pstmt.executeQuery();
-              if(rs.next()) {
-                 UserDTO userDTO = new UserDTO();
-                    userDTO.setEmail(rs.getString("email"));
-                    userDTO.setPassword(rs.getString("password"));
-                    userDTO.setUserId(rs.getInt("user_id"));
-                    userDTO.setRole(rs.getString("role"));
-                    userDTO.setUsername(rs.getString("fullname"));
-                     res.setUser(userDTO);
-                     res.setIsSuccess(true);
-                     return  res;
-                     
-                          } else {
-                    res.setIsSuccess(false);
-                    return  res;
-              }
-         } catch (SQLException e) {
-          
-            return null;
-         }
-          
-     } 
-     
+
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                UserDTO userDTO = new UserDTO();
+                userDTO.setEmail(rs.getString("email"));
+                userDTO.setPassword(rs.getString("password"));
+                userDTO.setUserId(rs.getInt("user_id"));
+                userDTO.setRole(rs.getString("role"));
+                userDTO.setUsername(rs.getString("fullname"));
+                res.setUser(userDTO);
+                res.setIsSuccess(true);
+                return res;
+
+            } else {
+                res.setIsSuccess(false);
+                res.setMessage("Email chừa được đăng ký!");
+                return res;
+            }
+        } catch (SQLException e) {
+
+            return res;
+        }
+
+    }
+
     public Response.RegisterResult register(UserDTO userDTO) {
         Response.RegisterResult res = new Response.RegisterResult();
         Connection conn = null;
         PreparedStatement checkStmt = null;
-        PreparedStatement insertStmt = null; 
+        PreparedStatement insertStmt = null;
 
         try {
             conn = DatabaseConnection.getConnection();
 
-          
             String checkSql = "SELECT email FROM users WHERE email = ?";
             checkStmt = conn.prepareStatement(checkSql);
             checkStmt.setString(1, userDTO.getEmail());
@@ -72,13 +72,13 @@ public class AuthDAL {
                 res.setMessage("Email đã được đăng ký!");
                 return res;
             } else {
- 
-                String insertSql = "INSERT INTO users (fullname, email, password, role) VALUES (?, ?, ?, ?)"; 
+
+                String insertSql = "INSERT INTO users (fullname, email, password, role) VALUES (?, ?, ?, ?)";
                 insertStmt = conn.prepareStatement(insertSql);
                 insertStmt.setString(1, userDTO.getUsername());
                 insertStmt.setString(2, userDTO.getEmail());
-                insertStmt.setString(3, userDTO.getPassword()); 
-                insertStmt.setString(4, userDTO.getRole()); 
+                insertStmt.setString(3, userDTO.getPassword());
+                insertStmt.setString(4, userDTO.getRole());
 
                 int affectedRows = insertStmt.executeUpdate();
 
@@ -94,10 +94,10 @@ public class AuthDAL {
             }
 
         } catch (SQLException e) {
-         
+
             res.setIsSuccess(false);
-            res.setMessage("Lỗi đăng ký: "+e.getMessage()); 
+            res.setMessage("Lỗi đăng ký: " + e.getMessage());
             return res;
-        } 
-    } 
+        }
+    }
 }

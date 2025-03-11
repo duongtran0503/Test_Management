@@ -14,7 +14,43 @@ public class TestDTO {
     private String testName;
     private int testTime;
     private int numLimit;
+    private  int easy;
+    private  int medium;
+    private  int difficult;
+    private  int totalQuestion;
 
+    public int getEasy() {
+        return easy;
+    }
+
+    public void setEasy(int easy) {
+        this.easy = easy;
+    }
+
+    public int getMedium() {
+        return medium;
+    }
+
+    public void setMedium(int medium) {
+        this.medium = medium;
+    }
+
+    public int getDifficult() {
+        return difficult;
+    }
+
+    public void setDifficult(int difficult) {
+        this.difficult = difficult;
+    }
+
+    public int getTotalQuestion() {
+        return totalQuestion;
+    }
+
+    public void setTotalQuestion(int totalQuestion) {
+        this.totalQuestion = totalQuestion;
+    }
+    
     public TestDTO() {
     }
    

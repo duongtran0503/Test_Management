@@ -68,6 +68,7 @@ public class AdminCreateTestScreen extends javax.swing.JFrame {
                      this.testSelect =this.examData.getTestLists().get(itemSelected-1);
                      this.topicSelect.setSelectedIndex(this.examData.getTestLists().get(itemSelected-1).getTopicId());
                        setInforQueston(this.examData.getTestLists().get(itemSelected-1).getTopicId());
+                      
                        this.listExamCod = new ArrayList<>();
                      for(ExamDTO exam:this.examData.getExamList()) {
                        if(exam.getTestId() == this.testSelect.getTestId()) {
@@ -77,12 +78,20 @@ public class AdminCreateTestScreen extends javax.swing.JFrame {
                      }
                      this.listExamCode.setText(this.listExamCod.toString());
                      this.timeTest.setText(this.examData.getTestLists().get(itemSelected-1).getTestTime()+"");
+                     this.easyQuestion.setText(this.examData.getTestLists().get(itemSelected-1).getEasy()+"");
+                     this.mediumQuestion.setText(this.examData.getTestLists().get(itemSelected-1).getMedium()+"");
+                     this.difiQuestion.setText(this.examData.getTestLists().get(itemSelected-1).getDifficult()+"");
+                     this.numberQuestion.setText(this.examData.getTestLists().get(itemSelected-1).getTotalQuestion()+"");
+                     this.numberQuestion.setEnabled(false);
                      this.topicSelect.setEnabled(false);
                      this.nameTopic.setEditable(false);
+                     this.timeTest.setEnabled(false);
                    }else {
                        setInforQueston(-1);
-                       this.topicSelect.setEnabled(true);
-                        this.nameTopic.setEditable(true);
+                    this.numberQuestion.setEnabled(true);
+                     this.topicSelect.setEnabled(true);
+                     this.nameTopic.setEditable(true);
+                     this.timeTest.setEnabled(true);
                        this.status = "new";
                    this.nameTest.setText("");
                    this.listExamCod = new ArrayList<>();
@@ -95,7 +104,7 @@ public class AdminCreateTestScreen extends javax.swing.JFrame {
     this.topicSelect.addItemListener((ItemEvent e) -> {
         if(e.getStateChange()==ItemEvent.SELECTED){
             String selectedOption = (String) this.topicSelect.getSelectedItem();
-
+          setInforQueston(this.topicSelect.getSelectedIndex()+1);
          this.nameTopic.setText(selectedOption);
         }
     });
@@ -706,7 +715,13 @@ public class AdminCreateTestScreen extends javax.swing.JFrame {
           check = true;
          }
         }
-       if(check) {
+     
+       for(String code:this.listExamCod) {
+         if(examCode.equalsIgnoreCase(code)) {
+          check = true;
+         }
+       }
+         if(check) {
         JOptionPane.showMessageDialog(null, "Mã đề đã tồn tại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
        return;
        }

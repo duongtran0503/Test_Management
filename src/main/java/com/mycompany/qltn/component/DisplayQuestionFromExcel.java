@@ -24,58 +24,52 @@ public class DisplayQuestionFromExcel extends javax.swing.JFrame {
     /**
      * Creates new form DisplayQuestionFromExcel
      */
-    private  QuestionBLL questionController;
-      private  Response.QuestoinResult data;
+    private QuestionBLL questionController;
+    private Response.QuestoinResult data;
+
     public DisplayQuestionFromExcel() {
         initComponents();
         this.questionController = new QuestionBLL();
         this.data = new Response.QuestoinResult();
         data.setAnswerList(new ArrayList<>());
         data.setQuestionList(new ArrayList<>());
-        setLocationRelativeTo(null); 
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
-   
-  public   void  displayDataOnTable(Response.QuestoinResult result,Response.TopicResult  topicResult) {
-     ArrayList<QuestionDTO> questions = result.getQuestionList();
-     this.data.setQuestionList(questions);
-       ArrayList<OptionDTO> options = result.getAnswerList();
-     this.data.setAnswerList(options);
-       System.out.println("item1:"+questions.size());
-          
-             DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
-             tableModel.setRowCount(0);     
-               for (QuestionDTO question : questions) {
-                StringBuilder answers = new StringBuilder();
-                String topicText = "";
-                for (OptionDTO option : options) {
-                   
-                    if (option.getQuestionId() == question.getQuestionId() && option.isIsCorrect()) {
-                        answers.append(option.getOptionText()).append(", ");
-                    }
+
+    public void displayDataOnTable(Response.QuestoinResult result, Response.TopicResult topicResult) {
+        ArrayList<QuestionDTO> questions = result.getQuestionList();
+        this.data.setQuestionList(questions);
+        ArrayList<OptionDTO> options = result.getAnswerList();
+        this.data.setAnswerList(options);
+        System.out.println("item1:" + questions.size());
+
+        DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
+        tableModel.setRowCount(0);
+        for (QuestionDTO question : questions) {
+            StringBuilder answers = new StringBuilder();
+            String topicText = "";
+            for (OptionDTO option : options) {
+
+                if (option.getQuestionId() == question.getQuestionId() && option.isIsCorrect()) {
+                    answers.append(option.getOptionText()).append(", ");
                 }
-                for(TopicDTO topic: topicResult.getTopicList()) {
-                 if(topic.getTopicId()==question.getTopicId()) {
-                   topicText = topic.getTopicName();
-                 }
-                }
-                   System.out.println("title:"+topicText);
-                if (answers.length() > 2) {
-                    answers.setLength(answers.length() - 2);
-                }
-                
-                tableModel.addRow(new Object[]{question.getQuestionText(), topicText, answers.toString(), question.getDifficulty()});
             }
-            
-         
-            
-            
-             
-             
-           
-             
-     
+            for (TopicDTO topic : topicResult.getTopicList()) {
+                if (topic.getTopicId() == question.getTopicId()) {
+                    topicText = topic.getTopicName();
+                }
+            }
+            System.out.println("title:" + topicText);
+            if (answers.length() > 2) {
+                answers.setLength(answers.length() - 2);
+            }
+
+            tableModel.addRow(new Object[]{question.getQuestionText(), topicText, answers.toString(), question.getDifficulty()});
+        }
+
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -183,44 +177,44 @@ public class DisplayQuestionFromExcel extends javax.swing.JFrame {
 
     private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed
         int confirm = JOptionPane.showConfirmDialog(
-        this, 
-        "Bạn có chắc chắn muốn hủy thao tác?", 
-        "Xác nhận", 
-        JOptionPane.YES_NO_OPTION
-    );
+                this,
+                "Bạn có chắc chắn muốn hủy thao tác?",
+                "Xác nhận",
+                JOptionPane.YES_NO_OPTION
+        );
 
-    if (confirm == JOptionPane.YES_OPTION) {
-       dispose();
-    }
+        if (confirm == JOptionPane.YES_OPTION) {
+            dispose();
+        }
     }//GEN-LAST:event_buttonCancelActionPerformed
 
     private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
-      Response.QuestoinResult res = new Response.QuestoinResult();
-        for(QuestionDTO questionDTO:this.data.getQuestionList()) {
-         ArrayList<OptionDTO> listAnswer = new ArrayList<>();
-         for(OptionDTO optionDTO:this.data.getAnswerList()) {
-             if(optionDTO.getQuestionId() ==questionDTO.getQuestionId()) {
-                 OptionDTO odto = new OptionDTO();
-                 odto.setOptionText(optionDTO.getOptionText());
-                 odto.setIsCorrect(optionDTO.isIsCorrect());
-                 listAnswer.add(odto);
-             }
-         }
-          res = questionController.addQuestoin(questionDTO,listAnswer );
-      }
-        if(res.isIsSuccess()) {
-          JOptionPane.showMessageDialog(null, res.getMessage());
-          dispose();
-        }else {
-         JOptionPane.showMessageDialog(null, res.getMessage());
-          dispose();
+        Response.QuestoinResult res = new Response.QuestoinResult();
+        for (QuestionDTO questionDTO : this.data.getQuestionList()) {
+            ArrayList<OptionDTO> listAnswer = new ArrayList<>();
+            for (OptionDTO optionDTO : this.data.getAnswerList()) {
+                if (optionDTO.getQuestionId() == questionDTO.getQuestionId()) {
+                    OptionDTO odto = new OptionDTO();
+                    odto.setOptionText(optionDTO.getOptionText());
+                    odto.setIsCorrect(optionDTO.isIsCorrect());
+                    listAnswer.add(odto);
+                }
+            }
+            res = questionController.addQuestoin(questionDTO, listAnswer);
+        }
+        if (res.isIsSuccess()) {
+            JOptionPane.showMessageDialog(null, res.getMessage());
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(null, res.getMessage());
+            dispose();
         }
     }//GEN-LAST:event_buttonSaveActionPerformed
 
     /**
      * @param args the command line arguments
      */
- 
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonCancel;
     private javax.swing.JButton buttonSave;

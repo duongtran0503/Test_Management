@@ -15,62 +15,64 @@ import javax.swing.JOptionPane;
  * @author ACER
  */
 public class Register extends javax.swing.JFrame {
- private final  AuthBLL authBLL ;
+
+    private final AuthBLL authBLL;
+
     /**
      * Creates new form Register
      */
     public Register() {
-        authBLL  = new AuthBLL();
-         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); 
+        authBLL = new AuthBLL();
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
         initComponents();
         jLabel21.setText("<html>Đăng ký để sử dụng ứng dụng</html>");
     }
-private void validationRegister() {
-    String name = this.inputName.getText().trim();
-    String email = this.inputEmail.getText().trim();
-    char[] passwordChars = this.inputPasswword.getPassword();
-    String password = new String(passwordChars);
-    char[] confirmPasswordChars = this.inputConfirmPassword.getPassword();
-    String confirmPassword = new String(confirmPasswordChars);
 
-    System.out.println("Name: " + name + ", Email: " + email + ", Password: " + password + ", Confirm Password: " + confirmPassword);
+    private void validationRegister() {
+        String name = this.inputName.getText().trim();
+        String email = this.inputEmail.getText().trim();
+        char[] passwordChars = this.inputPasswword.getPassword();
+        String password = new String(passwordChars);
+        char[] confirmPasswordChars = this.inputConfirmPassword.getPassword();
+        String confirmPassword = new String(confirmPasswordChars);
 
-    if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin.", "Lỗi đăng ký", JOptionPane.ERROR_MESSAGE);
-    } else if (!isValidEmail(email)) {
-        JOptionPane.showMessageDialog(this, "Email không hợp lệ.", "Lỗi đăng ký", JOptionPane.ERROR_MESSAGE);
-    } else if (!password.equals(confirmPassword)) {
-        JOptionPane.showMessageDialog(this, "Mật khẩu và mật khẩu xác nhận không khớp.", "Lỗi đăng ký", JOptionPane.ERROR_MESSAGE);
-    } else {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setEmail(email);
-         userDTO.setPassword(password);
-         userDTO.setUsername(name);
-        Response.RegisterResult res = authBLL.register(userDTO);
-        
-        if (res.isIsSuccess()) {
-        
-            
-            this.inputName.setText("");
-            this.inputEmail.setText("");
-            this.inputPasswword.setText("");
-            this.inputConfirmPassword.setText("");
-           Login login =  new Login();
-           login.setVisible(true);
-          this.dispose();
+        System.out.println("Name: " + name + ", Email: " + email + ", Password: " + password + ", Confirm Password: " + confirmPassword);
+
+        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin.", "Lỗi đăng ký", JOptionPane.ERROR_MESSAGE);
+        } else if (!isValidEmail(email)) {
+            JOptionPane.showMessageDialog(this, "Email không hợp lệ.", "Lỗi đăng ký", JOptionPane.ERROR_MESSAGE);
+        } else if (!password.equals(confirmPassword)) {
+            JOptionPane.showMessageDialog(this, "Mật khẩu và mật khẩu xác nhận không khớp.", "Lỗi đăng ký", JOptionPane.ERROR_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(this,res.getMessage(), "Lỗi đăng ký", JOptionPane.ERROR_MESSAGE);
+            UserDTO userDTO = new UserDTO();
+            userDTO.setEmail(email);
+            userDTO.setPassword(password);
+            userDTO.setUsername(name);
+            Response.RegisterResult res = authBLL.register(userDTO);
+
+            if (res.isIsSuccess()) {
+
+                this.inputName.setText("");
+                this.inputEmail.setText("");
+                this.inputPasswword.setText("");
+                this.inputConfirmPassword.setText("");
+                Login login = new Login();
+                login.setVisible(true);
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, res.getMessage(), "Lỗi đăng ký", JOptionPane.ERROR_MESSAGE);
+            }
         }
+
     }
 
-   
-}
+    private boolean isValidEmail(String email) {
+        String regex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
+        return email.matches(regex);
+    }
 
-private boolean isValidEmail(String email) {
-    String regex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
-    return email.matches(regex);
-}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -202,19 +204,18 @@ private boolean isValidEmail(String email) {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
-       Login login = new Login();
-       login.setVisible(true);
-       dispose();
+        Login login = new Login();
+        login.setVisible(true);
+        dispose();
     }//GEN-LAST:event_jButton12ActionPerformed
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-         validationRegister();
+        validationRegister();
     }//GEN-LAST:event_jButton11ActionPerformed
 
     /**
      * @param args the command line arguments
      */
-   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPasswordField inputConfirmPassword;

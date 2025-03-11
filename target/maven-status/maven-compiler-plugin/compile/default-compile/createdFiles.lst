@@ -99,6 +99,7 @@ com\mycompany\qltn\UI\AdminModalUser$1.class
 com\mycompany\qltn\dto\ExamDTO.class
 com\mycompany\qltn\UI\AdminQuestionSelectScreen$1.class
 com\mycompany\qltn\UI\Login.class
+com\mycompany\qltn\UI\AdminQuestionRecovery$5.class
 com\mycompany\qltn\UI\AdminQuestionManagerScreen$5.class
 com\mycompany\qltn\UI\StudenHomeScreen.class
 com\mycompany\qltn\UI\AdminManagerTest$2.class
