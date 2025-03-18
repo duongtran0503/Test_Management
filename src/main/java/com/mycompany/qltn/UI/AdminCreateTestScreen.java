@@ -27,186 +27,180 @@ public class AdminCreateTestScreen extends javax.swing.JFrame {
     /**
      * Creates new form AdminCreateTestScreen
      */
-    private ArrayList<String>  listExamCod = new ArrayList<>();
+    private ArrayList<String> listExamCod = new ArrayList<>();
     private Response.ExamResult examData;
-    private final  QuestionBLL questionBLL;
-    private final  ExamBLL examBLL;
-    private  Response.TopicResult topicResult;
+    private final QuestionBLL questionBLL;
+    private final ExamBLL examBLL;
+    private Response.TopicResult topicResult;
     private String status = "new";
-    private  TestDTO testSelect;
+    private TestDTO testSelect;
     private ArrayList<ExamDTO> examOFTestSelected;
+
     public AdminCreateTestScreen() {
-          this.examOFTestSelected = new ArrayList<>();
-          this.testSelect = new TestDTO();
-          this.topicResult = new Response.TopicResult();
-          this.questionBLL = new QuestionBLL();
-          this.examBLL = new ExamBLL();
-          this.examData = new Response.ExamResult();
-                    
+        this.examOFTestSelected = new ArrayList<>();
+        this.testSelect = new TestDTO();
+        this.topicResult = new Response.TopicResult();
+        this.questionBLL = new QuestionBLL();
+        this.examBLL = new ExamBLL();
+        this.examData = new Response.ExamResult();
+
         initComponents();
-          setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setValueSelectNameTest();
         setValueSelectTopic();
         changeValueWhenSelectTestName();
         setInforQueston(-1);
     }
+
     private void setInforQueston(int topicId) {
-       Response.QuestoinResult easyQuestions = questionBLL.filterQuestionsResult(QuestionDTO.EASY,topicId);
-        Response.QuestoinResult MeddiumQuestions = questionBLL.filterQuestionsResult(QuestionDTO.MEDIUM,topicId);
-         Response.QuestoinResult DiffQuestions = questionBLL.filterQuestionsResult(QuestionDTO.DIFFICULT,topicId);
-         this.labelEasyQ.setText("Số câu dẽ (hiện có "+easyQuestions.getQuestionList().size() +" câu )");
-          this.labelMediumQ.setText("Số câu trung bình (hiện có "+MeddiumQuestions.getQuestionList().size() +" câu )");
-           this.LabelDiff.setText("Số câu khó (hiện có "+DiffQuestions.getQuestionList().size() +" câu)");
+        Response.QuestoinResult easyQuestions = questionBLL.filterQuestionsResult(QuestionDTO.EASY, topicId);
+        Response.QuestoinResult MeddiumQuestions = questionBLL.filterQuestionsResult(QuestionDTO.MEDIUM, topicId);
+        Response.QuestoinResult DiffQuestions = questionBLL.filterQuestionsResult(QuestionDTO.DIFFICULT, topicId);
+        this.labelEasyQ.setText("Số câu dẽ (hiện có " + easyQuestions.getQuestionList().size() + " câu )");
+        this.labelMediumQ.setText("Số câu trung bình (hiện có " + MeddiumQuestions.getQuestionList().size() + " câu )");
+        this.LabelDiff.setText("Số câu khó (hiện có " + DiffQuestions.getQuestionList().size() + " câu)");
     }
-   private  void changeValueWhenSelectTestName() {
-    this.nameTestSelect.addItemListener((ItemEvent e) -> {
-       if (e.getStateChange() == ItemEvent.SELECTED) {
-                   int itemSelected = this.nameTestSelect.getSelectedIndex();
-                   if(itemSelected!=0) {
-                       this.status = "addExamCode";
-                     this.nameTest.setText(this.examData.getTestLists().get(itemSelected-1).getTestName());
-                     this.testSelect =this.examData.getTestLists().get(itemSelected-1);
-                     this.topicSelect.setSelectedIndex(this.examData.getTestLists().get(itemSelected-1).getTopicId());
-                       setInforQueston(this.examData.getTestLists().get(itemSelected-1).getTopicId());
-                      
-                       this.listExamCod = new ArrayList<>();
-                     for(ExamDTO exam:this.examData.getExamList()) {
-                       if(exam.getTestId() == this.testSelect.getTestId()) {
-                          this.listExamCod.add(exam.getExamCode());
-                          this.examOFTestSelected.add(exam);
-                       }
-                     }
-                     this.listExamCode.setText(this.listExamCod.toString());
-                     this.timeTest.setText(this.examData.getTestLists().get(itemSelected-1).getTestTime()+"");
-                     this.easyQuestion.setText(this.examData.getTestLists().get(itemSelected-1).getEasy()+"");
-                     this.mediumQuestion.setText(this.examData.getTestLists().get(itemSelected-1).getMedium()+"");
-                     this.difiQuestion.setText(this.examData.getTestLists().get(itemSelected-1).getDifficult()+"");
-                     this.numberQuestion.setText(this.examData.getTestLists().get(itemSelected-1).getTotalQuestion()+"");
-                     this.numberQuestion.setEnabled(false);
-                     this.topicSelect.setEnabled(false);
-                     this.nameTopic.setEditable(false);
-                     this.timeTest.setEnabled(false);
-                   }else {
-                       setInforQueston(-1);
+
+    private void changeValueWhenSelectTestName() {
+        this.nameTestSelect.addItemListener((ItemEvent e) -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                int itemSelected = this.nameTestSelect.getSelectedIndex();
+                if (itemSelected != 0) {
+                    this.status = "addExamCode";
+                    this.nameTest.setText(this.examData.getTestLists().get(itemSelected - 1).getTestName());
+                    this.testSelect = this.examData.getTestLists().get(itemSelected - 1);
+                    this.topicSelect.setSelectedIndex(this.examData.getTestLists().get(itemSelected - 1).getTopicId());
+                    setInforQueston(this.examData.getTestLists().get(itemSelected - 1).getTopicId());
+
+                    this.listExamCod = new ArrayList<>();
+                    for (ExamDTO exam : this.examData.getExamList()) {
+                        if (exam.getTestId() == this.testSelect.getTestId()) {
+                            this.listExamCod.add(exam.getExamCode());
+                            this.examOFTestSelected.add(exam);
+                        }
+                    }
+                    this.listExamCode.setText(this.listExamCod.toString());
+                    this.timeTest.setText(this.examData.getTestLists().get(itemSelected - 1).getTestTime() + "");
+                    this.easyQuestion.setText(this.examData.getTestLists().get(itemSelected - 1).getEasy() + "");
+                    this.mediumQuestion.setText(this.examData.getTestLists().get(itemSelected - 1).getMedium() + "");
+                    this.difiQuestion.setText(this.examData.getTestLists().get(itemSelected - 1).getDifficult() + "");
+                    this.numberQuestion.setText(this.examData.getTestLists().get(itemSelected - 1).getTotalQuestion() + "");
+                    this.numberQuestion.setEnabled(false);
+                    this.topicSelect.setEnabled(false);
+                    this.nameTopic.setEditable(false);
+                    this.timeTest.setEnabled(false);
+                    this.lableTitle.setText("Thêm đề thi vào bài thi!");
+                    this.jButton1.setText("Thêm mã đề");
+                } else {
+                    setInforQueston(-1);
                     this.numberQuestion.setEnabled(true);
-                     this.topicSelect.setEnabled(true);
-                     this.nameTopic.setEditable(true);
-                     this.timeTest.setEnabled(true);
-                       this.status = "new";
-                   this.nameTest.setText("");
-                   this.listExamCod = new ArrayList<>();
-                   this.listExamCode.setText("");
-                   this.topicSelect.setSelectedIndex(0);
-                   this.nameTopic.setText("");
-                   }
+                    this.topicSelect.setEnabled(true);
+                    this.nameTopic.setEditable(true);
+                    this.timeTest.setEnabled(true);
+                    this.status = "new";
+                    this.nameTest.setText("");
+                    this.listExamCod = new ArrayList<>();
+                    this.listExamCode.setText("");
+                    this.topicSelect.setSelectedIndex(0);
+                    this.nameTopic.setText("");
+                    this.lableTitle.setText("tạo bài thi mới!");
+                    this.jButton1.setText("tạo bài thi");
                 }
-    });
-    this.topicSelect.addItemListener((ItemEvent e) -> {
-        if(e.getStateChange()==ItemEvent.SELECTED){
-            String selectedOption = (String) this.topicSelect.getSelectedItem();
-          setInforQueston(this.topicSelect.getSelectedIndex()+1);
-         this.nameTopic.setText(selectedOption);
-        }
-    });
-   }
-   private  void setValueSelectNameTest() {
-    this.examData =this.examBLL.getExamResult();
-       DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-       model.addElement("Chọn bài thi trong hệ thống");
-        for(TestDTO test: this.examData.getTestLists()) {
-           model.addElement(test.getTestName());
+            }
+        });
+        this.topicSelect.addItemListener((ItemEvent e) -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                String selectedOption = (String) this.topicSelect.getSelectedItem();
+                setInforQueston(this.topicSelect.getSelectedIndex() + 1);
+                this.nameTopic.setText(selectedOption);
+            }
+        });
+    }
+
+    private void setValueSelectNameTest() {
+        this.examData = this.examBLL.getExamResult();
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        model.addElement("Chọn bài thi trong hệ thống");
+        for (TestDTO test : this.examData.getTestLists()) {
+            model.addElement(test.getTestName());
         }
         this.nameTestSelect.setModel(model);
-   }
-   private  void setValueSelectTopic()  {
-      this.topicResult= this.questionBLL.getTopic();
-       DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-       model.addElement("Chọn chủ đề trong  hệ thống");
-       for(TopicDTO topic:this.topicResult.getTopicList()) {
-         model.addElement(topic.getTopicName());
-       }
-       this.topicSelect.setModel(model);
-   }
- private boolean validateData() {
-    String nameTest = this.nameTest.getText().trim();
-    String nameTopic = this.nameTopic.getText().trim();
-
-    if (nameTest.isBlank() || nameTopic.isBlank()) {
-        JOptionPane.showMessageDialog(null, "Tên bài thi và chủ đề không được để trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        return false;
     }
 
-    if (this.listExamCod == null || this.listExamCod.isEmpty()) {
-        JOptionPane.showMessageDialog(null, "Bạn chưa thêm mã đề nào!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        return false;
+    private void setValueSelectTopic() {
+        this.topicResult = this.questionBLL.getTopic();
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        model.addElement("Chọn chủ đề trong  hệ thống");
+        for (TopicDTO topic : this.topicResult.getTopicList()) {
+            model.addElement(topic.getTopicName());
+        }
+        this.topicSelect.setModel(model);
     }
 
-    if (this.timeTest.getText().trim().isBlank()) {
-        JOptionPane.showMessageDialog(null, "Vui lòng thêm thời gian làm bài thi!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-         return false;
-    }
-    int numberQuestion;
-    int easyQ ;
-    int mediumQ ;
-    int diffQ;
-    int timeTest;
-    int limit_num;
-    try {
-         numberQuestion = Integer.parseInt(this.numberQuestion.getText().trim());
-         easyQ = Integer.parseInt(this.easyQuestion.getText().trim());
-         mediumQ = Integer.parseInt(this.mediumQuestion.getText().trim());
-         diffQ = Integer.parseInt(this.difiQuestion.getText().trim());
-         timeTest = Integer.parseInt(this.timeTest.getText().trim());
-         limit_num = Integer.parseInt(this.limit_num.getText().trim());
-      
-        if (numberQuestion <= 0 || easyQ < 0 || mediumQ < 0 || diffQ < 0 || timeTest <= 0 || limit_num <=0) {
-            JOptionPane.showMessageDialog(null, "Giá trị nhập vào không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    private boolean validateData() {
+        String nameTest = this.nameTest.getText().trim();
+        String nameTopic = this.nameTopic.getText().trim();
+
+        if (nameTest.isBlank() || nameTopic.isBlank()) {
+            JOptionPane.showMessageDialog(null, "Tên bài thi và chủ đề không được để trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
-        int total = easyQ + mediumQ + diffQ;
-        if (total > numberQuestion) {
-            JOptionPane.showMessageDialog(null, "Tổng số câu dễ, trung bình, khó lớn hơn số lượng câu hỏi của bài thi!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        if (this.listExamCod == null || this.listExamCod.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Bạn chưa thêm mã đề nào!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-          if (total < numberQuestion) {
-            JOptionPane.showMessageDialog(null, "Tổng số câu dễ, trung bình, khó nhở hơn số lượng câu hỏi của bài thi!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-           return false;
-        }
 
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(null, "Vui lòng nhập số nguyên hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        return false;
+        if (this.timeTest.getText().trim().isBlank()) {
+            JOptionPane.showMessageDialog(null, "Vui lòng thêm thời gian làm bài thi!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        int numberQuestion;
+        int easyQ;
+        int mediumQ;
+        int diffQ;
+        int timeTest;
+        int limit_num;
+        try {
+            numberQuestion = Integer.parseInt(this.numberQuestion.getText().trim());
+            easyQ = Integer.parseInt(this.easyQuestion.getText().trim());
+            mediumQ = Integer.parseInt(this.mediumQuestion.getText().trim());
+            diffQ = Integer.parseInt(this.difiQuestion.getText().trim());
+            timeTest = Integer.parseInt(this.timeTest.getText().trim());
+            limit_num = Integer.parseInt(this.limit_num.getText().trim());
+
+            if (numberQuestion <= 0 || easyQ < 0 || mediumQ < 0 || diffQ < 0 || timeTest <= 0 || limit_num <= 0) {
+                JOptionPane.showMessageDialog(null, "Giá trị nhập vào không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+
+            int total = easyQ + mediumQ + diffQ;
+            if (total > numberQuestion) {
+                JOptionPane.showMessageDialog(null, "Tổng số câu dễ, trung bình, khó lớn hơn số lượng câu hỏi của bài thi!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+            if (total < numberQuestion) {
+                JOptionPane.showMessageDialog(null, "Tổng số câu dễ, trung bình, khó nhở hơn số lượng câu hỏi của bài thi!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Vui lòng nhập số nguyên hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        this.nameTestConirm.setText(nameTest);
+        this.nameTopicConfirm.setText(nameTopic);
+        this.totalQuestionconfirm.setText(numberQuestion + "");
+        this.timeConfirm.setText(timeTest + "");
+        this.easyQConfirm.setText(easyQ + "");
+        this.mediumQConfirm.setText(mediumQ + "");
+        this.diffQCofirm.setText(diffQ + "");
+        this.totalExamCode.setText(listExamCod.toString());
+        this.limit_num_conf.setText(limit_num + "");
+        return true;
+
     }
-    this.nameTestConirm.setText(nameTest);
-     this.nameTopicConfirm.setText(nameTopic);
-     this.totalQuestionconfirm.setText(numberQuestion+"");
-     this.timeConfirm.setText(timeTest+"" );
-     this.easyQConfirm.setText(easyQ+"");
-     this.mediumQConfirm.setText(mediumQ+"");
-     this.diffQCofirm.setText(diffQ+"");
-     this.totalExamCode.setText(listExamCod.toString());
-     this.limit_num_conf.setText(limit_num+"");
-     return  true;
-    
-}
- 
- private  void createNewTest() {
-     if( validateData()){
-     
-         int numberQuestion = Integer.parseInt(this.numberQuestion.getText().trim());
-       int  easyQ = Integer.parseInt(this.easyQuestion.getText().trim());
-       int  mediumQ = Integer.parseInt(this.mediumQuestion.getText().trim());
-        int diffQ = Integer.parseInt(this.difiQuestion.getText().trim());
-        int timeTest = Integer.parseInt(this.timeTest.getText().trim());
-        int limit_num = Integer.parseInt(this.limit_num.getText().trim());
-         String nameTest = this.nameTest.getText().trim();
-    String nameTopic = this.nameTopic.getText().trim();
-        
-    
-     }
-    
- }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -217,7 +211,7 @@ public class AdminCreateTestScreen extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        lableTitle = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         nameTestSelect = new javax.swing.JComboBox<>();
@@ -269,22 +263,22 @@ public class AdminCreateTestScreen extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel1.setText("Taọ bài thi mới");
+        lableTitle.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lableTitle.setText("Taọ bài thi mới");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lableTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+                .addComponent(lableTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -689,44 +683,44 @@ public class AdminCreateTestScreen extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-       int confirm = JOptionPane.showConfirmDialog(null,"Bạn muốn hủy thao tác!","Xác nhận",JOptionPane.YES_NO_OPTION);
-       if(confirm==JOptionPane.YES_OPTION) {
-         dispose();
-       }
+        int confirm = JOptionPane.showConfirmDialog(null, "Bạn muốn hủy thao tác!", "Xác nhận", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            dispose();
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void examCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_examCodeActionPerformed
-    
+
     }//GEN-LAST:event_examCodeActionPerformed
 
     private void buttonValidateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonValidateActionPerformed
-         validateData();
+        validateData();
     }//GEN-LAST:event_buttonValidateActionPerformed
 
     private void buttonAddExamCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddExamCodeActionPerformed
-       String examCode  = this.examCode.getText();
-       if(examCode.length()==0) {
-       JOptionPane.showMessageDialog(null, "Vui lòng nhập mã đề !", "Lỗi", JOptionPane.ERROR_MESSAGE);
-       return;
-       }
-       boolean check = false;
-        for(ExamDTO examDTO:this.examOFTestSelected) {
-         if(examDTO.getExamCode().equalsIgnoreCase(examCode)) {
-          check = true;
-         }
+        String examCode = this.examCode.getText();
+        if (examCode.length() == 0) {
+            JOptionPane.showMessageDialog(null, "Vui lòng nhập mã đề !", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
         }
-     
-       for(String code:this.listExamCod) {
-         if(examCode.equalsIgnoreCase(code)) {
-          check = true;
-         }
-       }
-         if(check) {
-        JOptionPane.showMessageDialog(null, "Mã đề đã tồn tại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
-       return;
-       }
-       this.listExamCod.add(examCode);
-       this.listExamCode.setText(listExamCod.toString());
+        boolean check = false;
+        for (ExamDTO examDTO : this.examOFTestSelected) {
+            if (examDTO.getExamCode().equalsIgnoreCase(examCode)) {
+                check = true;
+            }
+        }
+
+        for (String code : this.listExamCod) {
+            if (examCode.equalsIgnoreCase(code)) {
+                check = true;
+            }
+        }
+        if (check) {
+            JOptionPane.showMessageDialog(null, "Mã đề đã tồn tại !", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        this.listExamCod.add(examCode);
+        this.listExamCode.setText(listExamCod.toString());
     }//GEN-LAST:event_buttonAddExamCodeActionPerformed
 
     private void nameTestSelectItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_nameTestSelectItemStateChanged
@@ -734,59 +728,59 @@ public class AdminCreateTestScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_nameTestSelectItemStateChanged
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       int currentExamCode = this.examOFTestSelected.size();
-       if(this.listExamCod.size()==currentExamCode) {
-         JOptionPane.showMessageDialog(null,"Các mã đề hiện tại đã tồn tại bạn chua thêm mã đề mới nào!","Lỗi",JOptionPane.ERROR_MESSAGE);
-         return;
-       }
-      if(status.equalsIgnoreCase("new")) {
-       TestDTO test =new TestDTO();
-       String topicValue = (String) this.nameTopicConfirm.getText();
-       boolean check = false;
-       for(TopicDTO topic:topicResult.getTopicList()) {
-         if(topicValue.equalsIgnoreCase(topic.getTopicName())) {
-           check =true;
-           test.setTopicId(topic.getTopicId());
-         }
-       }
-       if(!check) {
-         test.setTopicId(this.topicResult.getTopicList().getLast().getTopicId()+1);
-       }
-       test.setTestName(this.nameTestConirm.getText());
-       test.setTestTime(Integer.parseInt(this.timeConfirm.getText()));
-       test.setNumLimit(Integer.parseInt(this.limit_num_conf.getText()));
-       int easyQ = Integer.parseInt( this.easyQConfirm.getText());
-       
-       int meddiumQ = Integer.parseInt( this.mediumQConfirm.getText());
-       int diffQ = Integer.parseInt( this.diffQCofirm.getText());
-       Response.BaseResponse res = examBLL.createNewTest(test, topicValue, listExamCod, easyQ, meddiumQ, diffQ);
-       if(res.isIsSuccess()) {
-        JOptionPane.showMessageDialog(null, res.getMessage());
-        dispose();
-       }else {
-       JOptionPane.showMessageDialog(null, res.getMessage());
-        dispose();
-       }
-      }else if(status.equalsIgnoreCase("addExamCode")) {
-         for(int i = 0 ;i<this.examOFTestSelected.size();i++) {
-             System.out.println("remo:"+i);
-             this.listExamCod.remove(i);
-         }
-        TestDTO test = this.testSelect;
-         int easyQ = Integer.parseInt( this.easyQConfirm.getText());
-       int meddiumQ = Integer.parseInt( this.mediumQConfirm.getText());
-       int diffQ = Integer.parseInt( this.diffQCofirm.getText());
-        Response.BaseResponse res = this.examBLL.addNewExamCode(test, listExamCod, easyQ, meddiumQ, diffQ);
-         if(res.isIsSuccess()) {
-        JOptionPane.showMessageDialog(null, res.getMessage());
-        dispose();
-       }else {
-       JOptionPane.showMessageDialog(null, res.getMessage());
-        dispose();
-       }
-      } else {
-         JOptionPane.showMessageDialog(null, "Lỗi tạo bài thi");
-      }
+        int currentExamCode = this.examOFTestSelected.size();
+        if (this.listExamCod.size() == currentExamCode) {
+            JOptionPane.showMessageDialog(null, "Các mã đề hiện tại đã tồn tại bạn chua thêm mã đề mới nào!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (status.equalsIgnoreCase("new")) {
+            TestDTO test = new TestDTO();
+            String topicValue = (String) this.nameTopicConfirm.getText();
+            boolean check = false;
+            for (TopicDTO topic : topicResult.getTopicList()) {
+                if (topicValue.equalsIgnoreCase(topic.getTopicName())) {
+                    check = true;
+                    test.setTopicId(topic.getTopicId());
+                }
+            }
+            if (!check) {
+                test.setTopicId(this.topicResult.getTopicList().getLast().getTopicId() + 1);
+            }
+            test.setTestName(this.nameTestConirm.getText());
+            test.setTestTime(Integer.parseInt(this.timeConfirm.getText()));
+            test.setNumLimit(Integer.parseInt(this.limit_num_conf.getText()));
+            int easyQ = Integer.parseInt(this.easyQConfirm.getText());
+
+            int meddiumQ = Integer.parseInt(this.mediumQConfirm.getText());
+            int diffQ = Integer.parseInt(this.diffQCofirm.getText());
+            Response.BaseResponse res = examBLL.createNewTest(test, topicValue, listExamCod, easyQ, meddiumQ, diffQ);
+            if (res.isIsSuccess()) {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+                dispose();
+            }
+        } else if (status.equalsIgnoreCase("addExamCode")) {
+            for (int i = 0; i < this.examOFTestSelected.size(); i++) {
+                System.out.println("remo:" + i);
+                this.listExamCod.remove(i);
+            }
+            TestDTO test = this.testSelect;
+            int easyQ = Integer.parseInt(this.easyQConfirm.getText());
+            int meddiumQ = Integer.parseInt(this.mediumQConfirm.getText());
+            int diffQ = Integer.parseInt(this.diffQCofirm.getText());
+            Response.BaseResponse res = this.examBLL.addNewExamCode(test, listExamCod, easyQ, meddiumQ, diffQ);
+            if (res.isIsSuccess()) {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+                dispose();
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Lỗi tạo bài thi");
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -835,7 +829,6 @@ public class AdminCreateTestScreen extends javax.swing.JFrame {
     private javax.swing.JTextField examCode;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
@@ -858,6 +851,7 @@ public class AdminCreateTestScreen extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel labelEasyQ;
     private javax.swing.JLabel labelMediumQ;
+    private javax.swing.JLabel lableTitle;
     private javax.swing.JTextField limit_num;
     private javax.swing.JLabel limit_num_conf;
     private javax.swing.JLabel listExamCode;

@@ -38,113 +38,141 @@ public class AdminModalExam extends javax.swing.JFrame {
     /**
      * Creates new form AdminModalExam
      */
-     private final  ExamBLL examBLL;
-   private  ActionPanelEditor actionPanelEditor;
-   private  Response.ExamResult examData;
-      private final  QuestionBLL questionBLL; 
+    private final ExamBLL examBLL;
+    private ActionPanelEditor actionPanelEditor;
+    private Response.ExamResult examData;
+    private final QuestionBLL questionBLL;
+    private int examId;
+
     public AdminModalExam() {
-               this.questionBLL = new  QuestionBLL();
+        this.questionBLL = new QuestionBLL();
         this.examData = new Response.ExamResult();
-         this.examBLL = new ExamBLL();
+        this.examBLL = new ExamBLL();
         this.actionPanelEditor = new ActionPanelEditor();
         initComponents();
-           setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         jTable1.setFocusable(false);
-    jTable1.setRowHeight(50);
-     TableColumn questionColumn = this.jTable1.getColumnModel().getColumn(0); 
+        jTable1.setRowHeight(50);
+        TableColumn questionColumn = this.jTable1.getColumnModel().getColumn(0);
         questionColumn.setPreferredWidth(400);
-      
-        this.actionPanelEditor.getPanel().getButtonEdit().addActionListener((ActionEvent e)->{
-          int row = this.actionPanelEditor.getRow();
-         QuestionDTO questionDTO =  this.examData.getListQestionOfExam().getQuestionList().get(row);
-         ArrayList<OptionDTO> listAnswer = new ArrayList<>();
-          int indexResult = 0;
-          int index = 0;
-         for(OptionDTO option:this.examData.getListQestionOfExam().getAnswerList()) {
-           if(option.getQuestionId() ==questionDTO.getQuestionId()) {
-             listAnswer.add(option);
-               if(option.isIsCorrect()) {
-                indexResult = index;
-               } else {
-                 index ++;
-               }
-           }
-         }
-            System.out.println("index:"+indexResult+"topic:"+questionDTO.getTopicId());
-           System.out.println("row selected:"+row+"id:"+questionDTO.getQuestionId());   
-                             JFrame frame = new JFrame("Chỉnh sửa câu hỏi");
-    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    frame.setSize(1080, 600); // Điều chỉnh kích thước
-      AdminModalQuestion updateQuestion = new AdminModalQuestion();
-      updateQuestion.setTask(AdminModalQuestion.MODAL_UPDATE);
-      updateQuestion.setValueQuestion(questionDTO, listAnswer, indexResult);
-    frame.add(updateQuestion); // Thêm JPanel vào JFrame
-    frame.setLocationRelativeTo(null); // Căn giữa màn hình
-    frame.setVisible(true);
-  
-                           this.actionPanelEditor.fireEditStop();
-        });
-        
-        
-                          
-      
-    }
-   public void displayDataEdit(int idOfTest,String examCode) {
-           this.examData =examBLL.getTestByIdAndExamCode(idOfTest, examCode);
-          if(this.examData.isIsSuccess()) {
-              
-              displayDataOnTable(this.examData);
-              this.timeTest.setText(this.examData.getTestLists().getFirst().getTestTime()+"");
-              this.nameTest.setText(this.examData.getTestLists().getFirst().getTestName());
-          }else {
-              JOptionPane.showMessageDialog(null, this.examData.getMessage());
-          }         
-   }
-   
-    private  void  displayDataOnTable(Response.ExamResult result) {
-     
-             DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
-             tableModel.setRowCount(0);
-             jTable1.getColumnModel().getColumn(7).setCellRenderer(new ActionPanelRenderer());
-             jTable1.getColumnModel().getColumn(7).setCellEditor(this.actionPanelEditor);
-                 for(QuestionDTO question: result.getListQestionOfExam().getQuestionList()) {
-                 String answer = "";
-                 ArrayList<OptionDTO> listAnswer = new ArrayList<>();
-                    for(OptionDTO option: this.examData.getListQestionOfExam().getAnswerList()) {
-                       if(option. getQuestionId() == question.getQuestionId() && option.isIsCorrect()) {
-                            switch (listAnswer.size() +1) {
-                               case 1 -> answer = "A";
-                                    case 2 -> answer = "B";
-                                    case 3 -> answer = "C";
-                                    case 4 -> answer = "D";
-                                   
-                          
-                           }
-                       }
-                       if(option.getQuestionId()==question.getQuestionId()) {
-                         listAnswer.add(option);
-                       }
-                     
-                    }
 
-                tableModel.addRow(new Object[]{question.getQuestionText(),listAnswer.get(0).getOptionText(),
-                    listAnswer.get(1).getOptionText(),
-                    listAnswer.get(2).getOptionText(),
-                    listAnswer.get(3).getOptionText(),
-                    answer, question.getDifficulty(),});
+        this.actionPanelEditor.getPanel().getButtonEdit().addActionListener((ActionEvent e) -> {
+            int row = this.actionPanelEditor.getRow();
+            QuestionDTO questionDTO = this.examData.getListQestionOfExam().getQuestionList().get(row);
+            ArrayList<OptionDTO> listAnswer = new ArrayList<>();
+            int indexResult = 0;
+            int index = 0;
+            for (OptionDTO option : this.examData.getListQestionOfExam().getAnswerList()) {
+                if (option.getQuestionId() == questionDTO.getQuestionId()) {
+                    listAnswer.add(option);
+                    if (option.isIsCorrect()) {
+                        indexResult = index;
+                    } else {
+                        index++;
+                    }
+                }
             }
-               
-            
-         
-    
-             
-     
+            System.out.println("index:" + indexResult + "topic:" + questionDTO.getTopicId());
+            System.out.println("row selected:" + row + "id:" + questionDTO.getQuestionId());
+            JFrame frame = new JFrame("Chỉnh sửa câu hỏi");
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frame.setSize(1080, 600); // Điều chỉnh kích thước
+            AdminModalQuestion updateQuestion = new AdminModalQuestion();
+            updateQuestion.setTask(AdminModalQuestion.MODAL_UPDATE);
+            updateQuestion.setValueQuestion(questionDTO, listAnswer, indexResult);
+            frame.add(updateQuestion); // Thêm JPanel vào JFrame
+            frame.setLocationRelativeTo(null); // Căn giữa màn hình
+            frame.setVisible(true);
+
+            this.actionPanelEditor.fireEditStop();
+        });
+
+        this.actionPanelEditor.getPanel().getButtonDelete().addActionListener((e) -> {
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "Bạn có chắc chắn muốn xóa câu hỏi không?",
+                    "Xác nhận",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                int row = this.actionPanelEditor.getRow();
+                QuestionDTO questionDTO = this.examData.getListQestionOfExam().getQuestionList().get(row);
+
+                System.out.println("delete question id:" + questionDTO.getQuestionId() + "exxam:" + this.examId);
+
+                Response.BaseResponse res = examBLL.deleteQuestionFromExam(this.examId, questionDTO.getQuestionId());
+                if (res.isIsSuccess()) {
+                    JOptionPane.showMessageDialog(null, res.getMessage());
+
+                } else {
+
+                    JOptionPane.showMessageDialog(null, res.getMessage());
+                }
+            }
+            this.actionPanelEditor.fireEditStop();
+
+        });
+
     }
-    
-    private  void exportFIleDocs() throws InvalidFormatException {
-    
-      JFileChooser fileChooser = new JFileChooser();
+
+    public void displayDataEdit(int idOfTest, String examCode) {
+
+        this.examData = examBLL.getTestByIdAndExamCode(idOfTest, examCode);
+        this.examId = this.examData.getExamList().getFirst().getExamId();
+        if (this.examData.isIsSuccess()) {
+
+            displayDataOnTable(this.examData);
+            this.timeTest.setText(this.examData.getTestLists().getFirst().getTestTime() + "");
+            this.nameTest.setText(this.examData.getTestLists().getFirst().getTestName());
+            this.number.setText(this.examData.getTestLists().getFirst().getNumLimit() + "");
+        } else {
+            JOptionPane.showMessageDialog(null, this.examData.getMessage());
+        }
+    }
+
+    private void displayDataOnTable(Response.ExamResult result) {
+
+        DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
+        tableModel.setRowCount(0);
+        jTable1.getColumnModel().getColumn(7).setCellRenderer(new ActionPanelRenderer());
+        jTable1.getColumnModel().getColumn(7).setCellEditor(this.actionPanelEditor);
+        for (QuestionDTO question : result.getListQestionOfExam().getQuestionList()) {
+            String answer = "";
+            ArrayList<OptionDTO> listAnswer = new ArrayList<>();
+            for (OptionDTO option : this.examData.getListQestionOfExam().getAnswerList()) {
+                if (option.getQuestionId() == question.getQuestionId() && option.isIsCorrect()) {
+                    switch (listAnswer.size() + 1) {
+                        case 1 ->
+                            answer = "A";
+                        case 2 ->
+                            answer = "B";
+                        case 3 ->
+                            answer = "C";
+                        case 4 ->
+                            answer = "D";
+
+                    }
+                }
+                if (option.getQuestionId() == question.getQuestionId()) {
+                    listAnswer.add(option);
+                }
+
+            }
+
+            tableModel.addRow(new Object[]{question.getQuestionText(), listAnswer.get(0).getOptionText(),
+                listAnswer.get(1).getOptionText(),
+                listAnswer.get(2).getOptionText(),
+                listAnswer.get(3).getOptionText(),
+                answer, question.getDifficulty(),});
+        }
+
+    }
+
+    private void exportFIleDocs() throws InvalidFormatException {
+
+        JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Chọn vị trí lưu file docs");
         fileChooser.setFileFilter(new FileNameExtensionFilter("docs Files (*.docs)", "docs"));
 
@@ -159,19 +187,19 @@ public class AdminModalExam extends javax.swing.JFrame {
                 filePath += ".docs";
             }
             String nametest = this.examData.getTestLists().getFirst().getTestName();
-             int time = this.examData.getTestLists().getFirst().getTestTime();
-             String examCode = this.examData.getExamList().getFirst().getExamCode();
-         Response.ExamResult res = examBLL.exportExamToDoc(filePath, nametest, time, examCode, this.examData.getListQestionOfExam());
-           
-          if(res.isIsSuccess()) {
-            JOptionPane.showMessageDialog(null, res.getMessage());
-          } else {
-          JOptionPane.showMessageDialog(null, res.getMessage());
-          }        
-           
-          
+            int time = this.examData.getTestLists().getFirst().getTestTime();
+            String examCode = this.examData.getExamList().getFirst().getExamCode();
+            Response.ExamResult res = examBLL.exportExamToDoc(filePath, nametest, time, examCode, this.examData.getListQestionOfExam());
+
+            if (res.isIsSuccess()) {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+            } else {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+            }
+
         }
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -191,13 +219,15 @@ public class AdminModalExam extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         nameTest = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        number = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        title.setText("Chỉnh sửa đề thi");
+        title.setText("Chỉnh sữa đề thi:");
 
         jLabel2.setText("Thời gian thi:");
 
@@ -235,6 +265,14 @@ public class AdminModalExam extends javax.swing.JFrame {
             }
         });
 
+        jLabel3.setText("Số lần thi:");
+
+        number.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                numberActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -251,8 +289,12 @@ public class AdminModalExam extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(number, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(115, 115, 115)
+                .addGap(18, 18, 18)
                 .addComponent(buttonAddQuestion, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -273,7 +315,9 @@ public class AdminModalExam extends javax.swing.JFrame {
                     .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(nameTest, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(nameTest, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(number, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -331,57 +375,70 @@ public class AdminModalExam extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonAddQuestionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddQuestionActionPerformed
-         if(this.examData.getListQestionOfExam().getQuestionList().size()==this.examData.getTestLists().getFirst().getTotalQuestion()) {
-           JOptionPane.showMessageDialog(null, "Số lượng câu hỏi của bài thi đã đủ!");
-           return;
-         }   
+        if (this.examData.getListQestionOfExam().getQuestionList().size() == this.examData.getTestLists().getFirst().getTotalQuestion()) {
+            JOptionPane.showMessageDialog(null, "Số lượng câu hỏi của bài thi đã đủ!");
+            return;
+        }
         PupupSelectAddQuestionForExam pop = new PupupSelectAddQuestionForExam();
-           
-           
-           pop.setExamCode(this.examData.getExamList().getFirst().getExamId());
-            pop.setVisible(true);
-            
+
+        pop.setExamCode(this.examData.getExamList().getFirst().getExamId());
+        pop.setVisible(true);
+
     }//GEN-LAST:event_buttonAddQuestionActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-      
-         try {
-             exportFIleDocs();
-         } catch (InvalidFormatException ex) {
-             Logger.getLogger(AdminModalExam.class.getName()).log(Level.SEVERE, null, ex);
-         }
-        
+
+        try {
+            exportFIleDocs();
+        } catch (InvalidFormatException ex) {
+            Logger.getLogger(AdminModalExam.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-              int confirm = JOptionPane.showConfirmDialog(
-        this, 
-        "Bạn có chắc chắn muốn thoát?", 
-        "Xác nhận", 
-        JOptionPane.YES_NO_OPTION
-    );
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Bạn có chắc chắn muốn thoát?",
+                "Xác nhận",
+                JOptionPane.YES_NO_OPTION
+        );
 
-    if (confirm == JOptionPane.YES_OPTION) {
-        dispose();
-    }
+        if (confirm == JOptionPane.YES_OPTION) {
+            dispose();
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-      String nametest = this.nameTest.getText().trim();
-      int time =  Integer.parseInt(this.timeTest.getText());
-      Response.ExamResult res = examBLL.updateNameAndTestTime(nametest, time,this.examData.getTestLists().getFirst().getTestId());
-      if(res.isIsSuccess()) {
-       JOptionPane.showMessageDialog(null, res.getMessage());
-      }else {
-              JOptionPane.showMessageDialog(null, res.getMessage());
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Lưu ý:Thay đổi tên,thòi gian,số lần làm sẻ áp dụng cho các mã đề khác!",
+                "Xác nhận",
+                JOptionPane.YES_NO_OPTION
+        );
 
-      }
+        if (confirm == JOptionPane.YES_OPTION) {
+            String nametest = this.nameTest.getText().trim();
+            int num = Integer.parseInt(this.number.getText());
+            int time = Integer.parseInt(this.timeTest.getText());
+            Response.ExamResult res = examBLL.updateNameAndTestTime(nametest, num, time, this.examData.getTestLists().getFirst().getTestId());
+            if (res.isIsSuccess()) {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+            } else {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+
+            }
+        }
+
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void numberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_numberActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_numberActionPerformed
 
     /**
      * @param args the command line arguments
      */
-   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonAddQuestion;
@@ -390,11 +447,13 @@ public class AdminModalExam extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField nameTest;
+    private javax.swing.JTextField number;
     private javax.swing.JTextField timeTest;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables

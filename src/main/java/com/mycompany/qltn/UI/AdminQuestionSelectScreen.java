@@ -28,21 +28,21 @@ public class AdminQuestionSelectScreen extends javax.swing.JFrame {
     /**
      * Creates new form AdminQuestionScreen
      */
-    private  QuestionBLL questionBLL;
-    private  Response.QuestoinResult questoinResult;
-    private  ExamBLL examBLL;
+    private QuestionBLL questionBLL;
+    private Response.QuestoinResult questoinResult;
+    private ExamBLL examBLL;
 
-  
-    private  int ExamQuestionCode ; 
+    private int ExamQuestionCode;
+
     public AdminQuestionSelectScreen() {
         this.examBLL = new ExamBLL();
         this.questoinResult = new Response.QuestoinResult();
         this.questionBLL = new QuestionBLL();
         initComponents();
-          setLocationRelativeTo(null); 
-             setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-           
-          DefaultComboBoxModel<String> modelTopic = new DefaultComboBoxModel<>();
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        DefaultComboBoxModel<String> modelTopic = new DefaultComboBoxModel<>();
         modelTopic.addElement("Tất cả chủ đề");
         modelTopic.addElement("Lập trính");
         modelTopic.addElement("Du lịch");
@@ -52,6 +52,7 @@ public class AdminQuestionSelectScreen extends javax.swing.JFrame {
         jTable1.setRowHeight(50);
         jTable1.setFocusable(false);
     }
+
     public int getExamQuestionCode() {
         return ExamQuestionCode;
     }
@@ -59,101 +60,94 @@ public class AdminQuestionSelectScreen extends javax.swing.JFrame {
     public void setExamQuestionCode(int ExamQuestionCode) {
         this.ExamQuestionCode = ExamQuestionCode;
     }
-       private  void  displayDataOnTable(Response.QuestoinResult questoinResult) {
-          Response.TopicResult topics = questionBLL.getTopic();
-             DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
-             tableModel.setRowCount(0);
-              List<Object[]> data = new ArrayList<>();
-             for(QuestionDTO question: questoinResult.getQuestionList()) {
-                 String answer = "";
-                 String topic ="";
-                 ArrayList<OptionDTO> listAnswer = new ArrayList<>();
-                    for(OptionDTO option: questoinResult.getAnswerList()) {
-                       if(option. getQuestionId() == question.getQuestionId() && option.isIsCorrect()) {
-                            switch (listAnswer.size() +1) {
-                               case 1 -> answer = "A";
-                                    case 2 -> answer = "B";
-                                    case 3 -> answer = "C";
-                                    case 4 -> answer = "D";
-                                   
-                          
-                           }
-                       }
-                       if(option.getQuestionId()==question.getQuestionId()) {
-                         listAnswer.add(option);
-                       }
-                     
-                    }
-                   for(TopicDTO top:topics.getTopicList()) {
-                    if(top.getTopicId() == question.getTopicId()) {
-                     topic =top.getTopicName();
-                    }
-                    } 
 
-               data.add(new Object[]{false, question.getQuestionText(), listAnswer.get(0).getOptionText(), listAnswer.get(1).getOptionText(), listAnswer.get(2).getOptionText(),listAnswer.get(3).getOptionText(), answer, question.getDifficulty(), topic});
+    private void displayDataOnTable(Response.QuestoinResult questoinResult) {
+        Response.TopicResult topics = questionBLL.getTopic();
+        DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
+        tableModel.setRowCount(0);
+        List<Object[]> data = new ArrayList<>();
+        for (QuestionDTO question : questoinResult.getQuestionList()) {
+            String answer = "";
+            String topic = "";
+            ArrayList<OptionDTO> listAnswer = new ArrayList<>();
+            for (OptionDTO option : questoinResult.getAnswerList()) {
+                if (option.getQuestionId() == question.getQuestionId() && option.isIsCorrect()) {
+                    switch (listAnswer.size() + 1) {
+                        case 1 ->
+                            answer = "A";
+                        case 2 ->
+                            answer = "B";
+                        case 3 ->
+                            answer = "C";
+                        case 4 ->
+                            answer = "D";
+
+                    }
+                }
+                if (option.getQuestionId() == question.getQuestionId()) {
+                    listAnswer.add(option);
+                }
+
             }
-              
-                  
-                 
-          
+            for (TopicDTO top : topics.getTopicList()) {
+                if (top.getTopicId() == question.getTopicId()) {
+                    topic = top.getTopicName();
+                }
+            }
 
-
-Object[][] dataArray = data.toArray(Object[][]::new);
-    String[] columnNames = {"Chọn", "Câu hỏi", "Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D", "Đáp án đúng", "Mức độ", "Chủ đề"};
-
-           CheckboxTableModel checkboxTableModel = new CheckboxTableModel(dataArray, columnNames);
-    this.jTable1.setModel(checkboxTableModel);
-               
-        
-     
-    }
-       private void loadQuestion() {
-        Response.QuestoinResult res = questionBLL.getQuestoinResult(0, 20);
-        this.questoinResult =res;
-           displayDataOnTable(res);
-       }
-            
-               
-       
-      
-       
-       private  ArrayList<QuestionDTO> getSelectedQuestions() {
-      ArrayList<QuestionDTO> questions = new ArrayList<>();
-    CheckboxTableModel tableModel = (CheckboxTableModel) jTable1.getModel();
-    for (int i = 0; i < tableModel.getRowCount(); i++) {
-        if ((Boolean) tableModel.getValueAt(i, 0)) {
-        QuestionDTO questionDTO = this.questoinResult.getQuestionList().get(i);
-           questions.add(questionDTO);
-            
+            data.add(new Object[]{false, question.getQuestionText(), listAnswer.get(0).getOptionText(), listAnswer.get(1).getOptionText(), listAnswer.get(2).getOptionText(), listAnswer.get(3).getOptionText(), answer, question.getDifficulty(), topic});
         }
-    }
-    return questions;
-}
-    private  void searchQuestion() {
-      String searchKey = inputSearch.getText().trim();
-   
-    int topic = selectTopic.getSelectedIndex();
-        System.out.println("topiuc"+topic);
-     if(topic !=0) {
-       Response.QuestoinResult res = questionBLL.searchQuestionByTitleAndTopic(searchKey, topic);
-         if(res.isIsSuccess()) {
-             displayDataOnTable(res);
-         }else {
-          JOptionPane.showMessageDialog(null, res.getMessage());
-         }
-     } else {
-          Response.QuestoinResult res = questionBLL.searchQuestionByTitle(searchKey);
-         if(res.isIsSuccess()) {
-             displayDataOnTable(res);
-         }else {
-          JOptionPane.showMessageDialog(null, res.getMessage());
-         }
-     }
-  
 
-  
+        Object[][] dataArray = data.toArray(Object[][]::new);
+        String[] columnNames = {"Chọn", "Câu hỏi", "Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D", "Đáp án đúng", "Mức độ", "Chủ đề"};
+
+        CheckboxTableModel checkboxTableModel = new CheckboxTableModel(dataArray, columnNames);
+        this.jTable1.setModel(checkboxTableModel);
+
     }
-   
+
+    private void loadQuestion() {
+        Response.QuestoinResult res = questionBLL.getQuestoinResult(0, 20);
+        this.questoinResult = res;
+        displayDataOnTable(res);
+    }
+
+    private ArrayList<QuestionDTO> getSelectedQuestions() {
+        ArrayList<QuestionDTO> questions = new ArrayList<>();
+        CheckboxTableModel tableModel = (CheckboxTableModel) jTable1.getModel();
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            if ((Boolean) tableModel.getValueAt(i, 0)) {
+                QuestionDTO questionDTO = this.questoinResult.getQuestionList().get(i);
+                questions.add(questionDTO);
+
+            }
+        }
+        return questions;
+    }
+
+    private void searchQuestion() {
+        String searchKey = inputSearch.getText().trim();
+
+        int topic = selectTopic.getSelectedIndex();
+        System.out.println("topiuc" + topic);
+        if (topic != 0) {
+            Response.QuestoinResult res = questionBLL.searchQuestionByTitleAndTopic(searchKey, topic);
+            if (res.isIsSuccess()) {
+                displayDataOnTable(res);
+            } else {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+            }
+        } else {
+            Response.QuestoinResult res = questionBLL.searchQuestionByTitle(searchKey);
+            if (res.isIsSuccess()) {
+                displayDataOnTable(res);
+            } else {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+            }
+        }
+
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -299,42 +293,42 @@ Object[][] dataArray = data.toArray(Object[][]::new);
     }//GEN-LAST:event_inputSearchActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-         ArrayList<QuestionDTO> questionsResult = getSelectedQuestions();
-         if(questionsResult.isEmpty()) {
-             JOptionPane.showMessageDialog(null, "Vui lòng chọn câu hỏi!");
-         } else {
-           Response.ExamResult res = examBLL.addQuestionToTheTest(questionsResult,this.ExamQuestionCode);
-           if(res.isIsSuccess()) {
-            JOptionPane.showMessageDialog(null, res.getMessage());
-           }else {
-              JOptionPane.showMessageDialog(null, res.getMessage());
-           }
+        ArrayList<QuestionDTO> questionsResult = getSelectedQuestions();
+        if (questionsResult.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Vui lòng chọn câu hỏi!");
+        } else {
+            Response.ExamResult res = examBLL.addQuestionToTheTest(questionsResult, this.ExamQuestionCode);
+            if (res.isIsSuccess()) {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+            } else {
+                JOptionPane.showMessageDialog(null, res.getMessage());
+            }
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-          int confirm = JOptionPane.showConfirmDialog(
-        this, 
-        "Xác nhận hủy thêm câu hỏi vào để thi!",
-        "Xác nhận", 
-        JOptionPane.YES_NO_OPTION
-    );
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Xác nhận hủy thêm câu hỏi vào để thi!",
+                "Xác nhận",
+                JOptionPane.YES_NO_OPTION
+        );
 
-    if (confirm == JOptionPane.YES_OPTION) {
-       dispose();
-    }
-         
-       
+        if (confirm == JOptionPane.YES_OPTION) {
+            dispose();
+        }
+
+
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       searchQuestion();
+        searchQuestion();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
      */
-   
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField inputSearch;
     private javax.swing.JButton jButton1;

@@ -29,160 +29,208 @@ import java.util.Random;
  * @author ACER
  */
 public class ExamDAL {
-    private  final QuestionDAL questionModel;
-     public ExamDAL(){
-      this.questionModel = new QuestionDAL();
-     }
-       public Response.ExamResult getExamResult(int status) {
-                 Connection conn = null;
-        Response.ExamResult res = new Response.ExamResult();
-       res.setTestLists(new ArrayList<>());
-       res.setExamList(new ArrayList<>());
-        try {
-            conn = DatabaseConnection.getConnection();
-                String sql =" SELECT * FROM tests WHERE is_deleted =  ?";
-                PreparedStatement testStmt = conn.prepareStatement(sql);
-                testStmt.setBoolean(1,status==1);
-                ResultSet testRs = testStmt.executeQuery();
-                while (testRs.next()) {                
-                    TestDTO testDTO = new TestDTO();
-                    testDTO.setTopicId(testRs.getInt("topic_id"));
-                    testDTO.setTestName(testRs.getString("test_name"));
-                    testDTO.setTestId(testRs.getInt("test_id"));
-                    testDTO.setTestTime(testRs.getInt("test_time"));
-                    testDTO.setEasy(testRs.getInt("easy"));
-                    testDTO.setMedium(testRs.getInt("medium"));
-                    testDTO.setDifficult(testRs.getInt("difficult"));
-                    testDTO.setTotalQuestion(testRs.getInt("number_of_questions"));
-                   res.getTestLists().add(testDTO);
-            }
-           for(TestDTO test:res.getTestLists()) {
-            String sqlgetExam = "SELECT * FROM exams WHERE test_id = ?";
-            PreparedStatement examStmt = conn.prepareStatement(sqlgetExam);
-            examStmt.setInt(1, test.getTestId());
-            ResultSet rs= examStmt.executeQuery();
-            while(rs.next()) {
-               ExamDTO examDTO = new ExamDTO();
-               examDTO.setTestId(test.getTestId());
-               examDTO.setExamId(rs.getInt("exam_id"));
-               examDTO.setExamCode(rs.getString("exam_code"));
-               res.getExamList().add(examDTO);
-            }
-           }
-         res.setMessage("Lấy dữ liệu thành công!");
-         res.setIsSuccess(true);
-         return  res;
-        } catch (SQLException e) {
-            res.setIsSuccess(false);
-            res.setMessage("Lỗi lấy dữ liệu: " + e.getMessage());
-        } 
 
-        return res;   
-       }
-        public Response.ExamResult getTestResultById(int status,int id) {
-                 Connection conn = null;
-        Response.ExamResult res = new Response.ExamResult();
-       res.setTestLists(new ArrayList<>());
-       res.setExamList(new ArrayList<>());
-        try {
-            conn = DatabaseConnection.getConnection();
-                String sql =" SELECT * FROM tests WHERE is_deleted =  ? AND test_id = ? ";
-                PreparedStatement testStmt = conn.prepareStatement(sql);
-                testStmt.setBoolean(1,status==1);
-                testStmt.setInt(2, id);
-                ResultSet testRs = testStmt.executeQuery();
-                while (testRs.next()) {                
-                    TestDTO testDTO = new TestDTO();
-                    testDTO.setTopicId(testRs.getInt("topic_id"));
-                    testDTO.setTestName(testRs.getString("test_name"));
-                    testDTO.setTestId(testRs.getInt("test_id"));
-                    testDTO.setTestTime(testRs.getInt("test_time"));
-                      testDTO.setEasy(testRs.getInt("easy"));
-                    testDTO.setMedium(testRs.getInt("medium"));
-                    testDTO.setDifficult(testRs.getInt("difficult"));
-                    testDTO.setTotalQuestion(testRs.getInt("number_of_questions"));
-                   res.getTestLists().add(testDTO);
-            }
-           for(TestDTO test:res.getTestLists()) {
-            String sqlgetExam = "SELECT * FROM exams WHERE test_id = ?";
-            PreparedStatement examStmt = conn.prepareStatement(sqlgetExam);
-            examStmt.setInt(1, test.getTestId());
-            ResultSet rs= examStmt.executeQuery();
-            while(rs.next()) {
-               ExamDTO examDTO = new ExamDTO();
-               examDTO.setTestId(test.getTestId());
-               examDTO.setExamId(rs.getInt("exam_id"));
-               examDTO.setExamCode(rs.getString("exam_code"));
-               res.getExamList().add(examDTO);
-            }
-           }
-         res.setMessage("Lấy dữ liệu thành công!");
-         res.setIsSuccess(true);
-         return  res;
-        } catch (SQLException e) {
-            res.setIsSuccess(false);
-            res.setMessage("Lỗi lấy dữ liệu: " + e.getMessage());
-        } 
+    private final QuestionDAL questionModel;
 
-        return res;   
-       }
-        public Response.ExamResult searchExam(int status,String title ,int topicId) {
-                 Connection conn = null;
+    public ExamDAL() {
+        this.questionModel = new QuestionDAL();
+    }
+
+    public Response.ExamResult getExamResult(int status) {
+        Connection conn = null;
         Response.ExamResult res = new Response.ExamResult();
-       res.setTestLists(new ArrayList<>());
-       res.setExamList(new ArrayList<>());
+        res.setTestLists(new ArrayList<>());
+        res.setExamList(new ArrayList<>());
         try {
             conn = DatabaseConnection.getConnection();
-               String searchText = "%" + title + "%";
-                String sql =" SELECT * FROM tests WHERE is_deleted =  ?  ";
-                if(title.length()!=0 || !title.trim().isEmpty()) {
-                 sql +=" AND test_name LIKE " +searchText;
+            String sql = " SELECT * FROM tests WHERE is_deleted =  ?";
+            PreparedStatement testStmt = conn.prepareStatement(sql);
+            testStmt.setBoolean(1, status == 1);
+            ResultSet testRs = testStmt.executeQuery();
+            while (testRs.next()) {
+                TestDTO testDTO = new TestDTO();
+                testDTO.setTopicId(testRs.getInt("topic_id"));
+                testDTO.setTestName(testRs.getString("test_name"));
+                testDTO.setTestId(testRs.getInt("test_id"));
+                testDTO.setTestTime(testRs.getInt("test_time"));
+                testDTO.setEasy(testRs.getInt("easy"));
+                testDTO.setMedium(testRs.getInt("medium"));
+                testDTO.setDifficult(testRs.getInt("difficult"));
+                testDTO.setTotalQuestion(testRs.getInt("number_of_questions"));
+                res.getTestLists().add(testDTO);
+            }
+            for (TestDTO test : res.getTestLists()) {
+                String sqlgetExam = "SELECT * FROM exams WHERE test_id = ? AND is_deleted = false";
+                PreparedStatement examStmt = conn.prepareStatement(sqlgetExam);
+                examStmt.setInt(1, test.getTestId());
+                ResultSet rs = examStmt.executeQuery();
+                while (rs.next()) {
+                    ExamDTO examDTO = new ExamDTO();
+                    examDTO.setTestId(test.getTestId());
+                    examDTO.setExamId(rs.getInt("exam_id"));
+                    examDTO.setExamCode(rs.getString("exam_code"));
+                    res.getExamList().add(examDTO);
                 }
-                 if(topicId !=-1) {
-                   sql+=" AND topic_id = " +topicId;
-                 }
-                PreparedStatement testStmt = conn.prepareStatement(sql);
-                testStmt.setBoolean(1,status==1);
-                
-               
-                ResultSet testRs = testStmt.executeQuery();
-                while (testRs.next()) {                
-                    TestDTO testDTO = new TestDTO();
-                    testDTO.setTopicId(testRs.getInt("topic_id"));
-                    testDTO.setTestName(testRs.getString("test_name"));
-                    testDTO.setTestId(testRs.getInt("test_id"));
-                    testDTO.setTestTime(testRs.getInt("test_time"));
-                      testDTO.setEasy(testRs.getInt("easy"));
-                    testDTO.setMedium(testRs.getInt("medium"));
-                    testDTO.setDifficult(testRs.getInt("difficult"));
-                    testDTO.setTotalQuestion(testRs.getInt("number_of_questions"));
-                   res.getTestLists().add(testDTO);
             }
-           for(TestDTO test:res.getTestLists()) {
-            String sqlgetExam = "SELECT * FROM exams WHERE test_id = ?";
-            PreparedStatement examStmt = conn.prepareStatement(sqlgetExam);
-            examStmt.setInt(1, test.getTestId());
-            ResultSet rs= examStmt.executeQuery();
-            while(rs.next()) {
-               ExamDTO examDTO = new ExamDTO();
-               examDTO.setTestId(test.getTestId());
-               examDTO.setExamId(rs.getInt("exam_id"));
-               examDTO.setExamCode(rs.getString("exam_code"));
-               res.getExamList().add(examDTO);
-            }
-           }
-         res.setMessage("Lấy dữ liệu thành công!");
-         res.setIsSuccess(true);
-         return  res;
+            res.setMessage("Lấy dữ liệu thành công!");
+            res.setIsSuccess(true);
+            return res;
         } catch (SQLException e) {
             res.setIsSuccess(false);
             res.setMessage("Lỗi lấy dữ liệu: " + e.getMessage());
-        } 
+        }
 
-        return res;   
-       }
-      
-     public Response.ExamResult getTestByIdAndExamCode(int id, String examCode) {
+        return res;
+    }
+
+    public Response.ExamResult getExamDeleteResult() {
+        Response.ExamResult res = new Response.ExamResult();
+        res.setTestLists(new ArrayList<>());
+        res.setExamList(new ArrayList<>());
+
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(
+                "SELECT t.*, e.exam_id, e.exam_code "
+                + "FROM tests t "
+                + "JOIN exams e ON t.test_id = e.test_id "
+                + "WHERE t.is_deleted = false AND e.is_deleted = true"
+        )) {
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    TestDTO testDTO = new TestDTO();
+                    testDTO.setTopicId(rs.getInt("topic_id"));
+                    testDTO.setTestName(rs.getString("test_name"));
+                    testDTO.setTestId(rs.getInt("test_id"));
+                    testDTO.setTestTime(rs.getInt("test_time"));
+                    testDTO.setEasy(rs.getInt("easy"));
+                    testDTO.setMedium(rs.getInt("medium"));
+                    testDTO.setDifficult(rs.getInt("difficult"));
+                    testDTO.setTotalQuestion(rs.getInt("number_of_questions"));
+                    res.getTestLists().add(testDTO);
+
+                    ExamDTO examDTO = new ExamDTO();
+                    examDTO.setTestId(rs.getInt("test_id"));
+                    examDTO.setExamId(rs.getInt("exam_id"));
+                    examDTO.setExamCode(rs.getString("exam_code"));
+                    res.getExamList().add(examDTO);
+                }
+            }
+
+            res.setMessage("Lấy dữ liệu thành công!");
+            res.setIsSuccess(true);
+
+        } catch (SQLException e) {
+            res.setIsSuccess(false);
+            res.setMessage("Lỗi lấy dữ liệu: " + e.getMessage());
+        }
+
+        return res;
+    }
+
+    public Response.ExamResult getTestResultById(int status, int id) {
+        Connection conn = null;
+        Response.ExamResult res = new Response.ExamResult();
+        res.setTestLists(new ArrayList<>());
+        res.setExamList(new ArrayList<>());
+        try {
+            conn = DatabaseConnection.getConnection();
+            String sql = " SELECT * FROM tests WHERE is_deleted =  ? AND test_id = ? ";
+            PreparedStatement testStmt = conn.prepareStatement(sql);
+            testStmt.setBoolean(1, status == 1);
+            testStmt.setInt(2, id);
+            ResultSet testRs = testStmt.executeQuery();
+            while (testRs.next()) {
+                TestDTO testDTO = new TestDTO();
+                testDTO.setTopicId(testRs.getInt("topic_id"));
+                testDTO.setTestName(testRs.getString("test_name"));
+                testDTO.setTestId(testRs.getInt("test_id"));
+                testDTO.setTestTime(testRs.getInt("test_time"));
+                testDTO.setEasy(testRs.getInt("easy"));
+                testDTO.setMedium(testRs.getInt("medium"));
+                testDTO.setDifficult(testRs.getInt("difficult"));
+                testDTO.setTotalQuestion(testRs.getInt("number_of_questions"));
+                res.getTestLists().add(testDTO);
+            }
+            for (TestDTO test : res.getTestLists()) {
+                String sqlgetExam = "SELECT * FROM exams WHERE test_id = ?";
+                PreparedStatement examStmt = conn.prepareStatement(sqlgetExam);
+                examStmt.setInt(1, test.getTestId());
+                ResultSet rs = examStmt.executeQuery();
+                while (rs.next()) {
+                    ExamDTO examDTO = new ExamDTO();
+                    examDTO.setTestId(test.getTestId());
+                    examDTO.setExamId(rs.getInt("exam_id"));
+                    examDTO.setExamCode(rs.getString("exam_code"));
+                    res.getExamList().add(examDTO);
+                }
+            }
+            res.setMessage("Lấy dữ liệu thành công!");
+            res.setIsSuccess(true);
+            return res;
+        } catch (SQLException e) {
+            res.setIsSuccess(false);
+            res.setMessage("Lỗi lấy dữ liệu: " + e.getMessage());
+        }
+
+        return res;
+    }
+
+    public Response.ExamResult searchExam(int status, String title, int topicId) {
+        Connection conn = null;
+        Response.ExamResult res = new Response.ExamResult();
+        res.setTestLists(new ArrayList<>());
+        res.setExamList(new ArrayList<>());
+        try {
+            conn = DatabaseConnection.getConnection();
+            String searchText = "%" + title + "%";
+            String sql = " SELECT * FROM tests WHERE is_deleted =  ?  ";
+            if (title.length() != 0 || !title.trim().isEmpty()) {
+                sql += " AND test_name LIKE " + searchText;
+            }
+            if (topicId != -1) {
+                sql += " AND topic_id = " + topicId;
+            }
+            PreparedStatement testStmt = conn.prepareStatement(sql);
+            testStmt.setBoolean(1, status == 1);
+
+            ResultSet testRs = testStmt.executeQuery();
+            while (testRs.next()) {
+                TestDTO testDTO = new TestDTO();
+                testDTO.setTopicId(testRs.getInt("topic_id"));
+                testDTO.setTestName(testRs.getString("test_name"));
+                testDTO.setTestId(testRs.getInt("test_id"));
+                testDTO.setTestTime(testRs.getInt("test_time"));
+                testDTO.setEasy(testRs.getInt("easy"));
+                testDTO.setMedium(testRs.getInt("medium"));
+                testDTO.setDifficult(testRs.getInt("difficult"));
+                testDTO.setTotalQuestion(testRs.getInt("number_of_questions"));
+                res.getTestLists().add(testDTO);
+            }
+            for (TestDTO test : res.getTestLists()) {
+                String sqlgetExam = "SELECT * FROM exams WHERE test_id = ? AND is_deleted = false";
+                PreparedStatement examStmt = conn.prepareStatement(sqlgetExam);
+                examStmt.setInt(1, test.getTestId());
+                ResultSet rs = examStmt.executeQuery();
+                while (rs.next()) {
+                    ExamDTO examDTO = new ExamDTO();
+                    examDTO.setTestId(test.getTestId());
+                    examDTO.setExamId(rs.getInt("exam_id"));
+                    examDTO.setExamCode(rs.getString("exam_code"));
+                    res.getExamList().add(examDTO);
+                }
+            }
+            res.setMessage("Lấy dữ liệu thành công!");
+            res.setIsSuccess(true);
+            return res;
+        } catch (SQLException e) {
+            res.setIsSuccess(false);
+            res.setMessage("Lỗi lấy dữ liệu: " + e.getMessage());
+        }
+
+        return res;
+    }
+
+    public Response.ExamResult getTestByIdAndExamCode(int id, String examCode) {
         Response.ExamResult res = new Response.ExamResult();
         res.setTestLists(new ArrayList<>());
         res.setExamList(new ArrayList<>());
@@ -190,16 +238,15 @@ public class ExamDAL {
         questions.setQuestionList(new ArrayList<>());
         questions.setAnswerList(new ArrayList<>());
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement testStmt = conn.prepareStatement("SELECT tests.topic_id, tests.test_name, tests.test_id, tests.test_time, tests.easy, tests.medium,tests.difficult,tests.number_of_questions"
-                     + ", exams.exam_id, exams.exam_code, questions.question_text, questions.image_url,"
-                     + " questions.updater, questions.question_id,questions.difficulty, questions.updated_at,"
-                     + " questions.create_at, options.option_id, options.option_text, options.is_correct, options.image_url FROM tests"
-                     + " JOIN exams ON tests.test_id = exams.test_id"
-                     + " JOIN exam_questions ON exams.exam_id = exam_questions.exam_id"
-                     + " JOIN questions ON exam_questions.question_id = questions.question_id"
-                     + " JOIN options ON questions.question_id = options.question_id"
-                     + " WHERE tests.test_id = ? AND exams.exam_code = ?")) {
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement testStmt = conn.prepareStatement("SELECT tests.topic_id, tests.test_name,tests.num_limit, tests.test_id, tests.test_time, tests.easy, tests.medium,tests.difficult,tests.number_of_questions"
+                + ", exams.exam_id, exams.exam_code, questions.question_text, questions.image_url,"
+                + " questions.updater, questions.question_id,questions.difficulty, questions.updated_at,"
+                + " questions.create_at, options.option_id, options.option_text, options.is_correct, options.image_url FROM tests"
+                + " JOIN exams ON tests.test_id = exams.test_id"
+                + " JOIN exam_questions ON exams.exam_id = exam_questions.exam_id"
+                + " JOIN questions ON exam_questions.question_id = questions.question_id"
+                + " JOIN options ON questions.question_id = options.question_id"
+                + " WHERE tests.test_id = ? AND exams.exam_code = ?")) {
 
             testStmt.setInt(1, id);
             testStmt.setString(2, examCode);
@@ -210,7 +257,8 @@ public class ExamDAL {
                     testDTO.setTestName(rs.getString("test_name"));
                     testDTO.setTestId(rs.getInt("test_id"));
                     testDTO.setTestTime(rs.getInt("test_time"));
-                      testDTO.setEasy(rs.getInt("easy"));
+                    testDTO.setNumLimit(rs.getInt("num_limit"));
+                    testDTO.setEasy(rs.getInt("easy"));
                     testDTO.setMedium(rs.getInt("medium"));
                     testDTO.setDifficult(rs.getInt("difficult"));
                     testDTO.setTotalQuestion(rs.getInt("number_of_questions"));
@@ -231,14 +279,14 @@ public class ExamDAL {
                     questionDTO.setDifficulty(rs.getString("difficulty"));
                     questionDTO.setUpdated_at(convertTimestampToLocalDateTime(rs.getTimestamp("updated_at")));
                     questionDTO.setCreate_ar(convertTimestampToLocalDateTime(rs.getTimestamp("create_at")));
-                    boolean check =true;
-                    for(QuestionDTO question:questions.getQuestionList()) {
-                        if(question.getQuestionId() ==questionDTO.getQuestionId())  {
-                        check = false;
+                    boolean check = true;
+                    for (QuestionDTO question : questions.getQuestionList()) {
+                        if (question.getQuestionId() == questionDTO.getQuestionId()) {
+                            check = false;
                         }
-                     }
-                    if(check) {
-                     questions.getQuestionList().add(questionDTO);
+                    }
+                    if (check) {
+                        questions.getQuestionList().add(questionDTO);
                     }
 
                     OptionDTO optionDTO = new OptionDTO();
@@ -258,19 +306,19 @@ public class ExamDAL {
         } catch (SQLException e) {
             res.setIsSuccess(false);
             res.setMessage("Lỗi lấy dữ liệu: " + e.getMessage());
-        
+
         }
 
         return res;
     }
 
-     public Response.ExamResult addQuestionToTheTest(int examQuestionId,int QuestionId) {
-         Response.ExamResult res = new Response.ExamResult();
-          try {
-             Connection conn = DatabaseConnection.getConnection();
-             String check = "SELECT * FROM exam_questions WHERE exam_id = ? AND question_id = ?";
-             PreparedStatement checkStmt = conn.prepareStatement(check);
-             
+    public Response.ExamResult addQuestionToTheTest(int examQuestionId, int QuestionId) {
+        Response.ExamResult res = new Response.ExamResult();
+        try {
+            Connection conn = DatabaseConnection.getConnection();
+            String check = "SELECT * FROM exam_questions WHERE exam_id = ? AND question_id = ?";
+            PreparedStatement checkStmt = conn.prepareStatement(check);
+
             checkStmt.setInt(1, examQuestionId);
             checkStmt.setInt(2, QuestionId);
 
@@ -281,152 +329,180 @@ public class ExamDAL {
                     return res;
                 }
             }
-             String insert = "INSERT INTO exam_questions (exam_id, question_id) VALUES (?, ?)";
-              PreparedStatement stmt = conn.prepareStatement(insert);
-              stmt.setInt(1, examQuestionId);
-              stmt.setInt(2, QuestionId);
-              stmt.executeUpdate();
-              res.setMessage("Thêm thành công!");
-              res.setIsSuccess(true);
-                return res;
-         } catch (Exception e) {
-             res.setMessage("Lỗi Thêm câu hỏi vào đề thi"+ e.getMessage());
+            String insert = "INSERT INTO exam_questions (exam_id, question_id) VALUES (?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(insert);
+            stmt.setInt(1, examQuestionId);
+            stmt.setInt(2, QuestionId);
+            stmt.executeUpdate();
+            res.setMessage("Thêm thành công!");
+            res.setIsSuccess(true);
+            return res;
+        } catch (Exception e) {
+            res.setMessage("Lỗi Thêm câu hỏi vào đề thi" + e.getMessage());
             res.setIsSuccess(false);
-         }
-          return  res;
-     }
-     public  Response.ExamResult updateNametestAndTimeTest(String name,int time ,int id) {
-         Response.ExamResult res = new Response.ExamResult();
-         try {
-             Connection conn = DatabaseConnection.getConnection();
-             String sql = "UPDATE tests SET test_name = ? ,test_time = ?  WHERE test_id = ?";
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             stmt.setString(1, name);
-             stmt.setInt(2, time);
-             stmt.setInt(3, id);
-             stmt.executeUpdate();
-             res.setMessage("Cập nhật thành công!");
-             res.setIsSuccess(true);
-         } catch (SQLException e) {
-             res.setMessage("Lỗi cập nhật :"+ e.getMessage());
-             res.setIsSuccess(false);
-         }
-         return  res;
-     }
-     
-      public Response.BaseResponse deleteTest(int testId) {
-    Response.BaseResponse res = new Response.BaseResponse();
-    res.setIsSuccess(false);
-
-    try (Connection conn = DatabaseConnection.getConnection();
-         PreparedStatement updateTestsStmt = conn.prepareStatement(
-                 "UPDATE Tests SET is_deleted = true WHERE test_id = ?")) {
-
-        updateTestsStmt.setInt(1, testId);
-        int rowsUpdated = updateTestsStmt.executeUpdate();
-
-        if (rowsUpdated > 0) {
-            res.setIsSuccess(true);
-            res.setMessage("Xóa bài thi thành công!");
-        } else {
-            res.setMessage("Không tìm thấy bài thi với test_id: " + testId);
         }
-
-    } catch (SQLException e) {
-        res.setMessage("Lỗi xóa bài thi: " + e.getMessage());
-        e.printStackTrace();
+        return res;
     }
 
-    return res;
-}
-          public Response.BaseResponse recoverTest(int testId) {
-    Response.BaseResponse res = new Response.BaseResponse();
-    res.setIsSuccess(false);
-
-    try (Connection conn = DatabaseConnection.getConnection();
-         PreparedStatement updateTestsStmt = conn.prepareStatement(
-                 "UPDATE Tests SET is_deleted = false WHERE test_id = ?")) {
-
-        updateTestsStmt.setInt(1, testId);
-        int rowsUpdated = updateTestsStmt.executeUpdate();
-
-        if (rowsUpdated > 0) {
+    public Response.ExamResult updateNametestAndTimeTest(String name, int num, int time, int id) {
+        Response.ExamResult res = new Response.ExamResult();
+        try {
+            Connection conn = DatabaseConnection.getConnection();
+            String sql = "UPDATE tests SET test_name = ? ,test_time = ? ,num_limit = ? WHERE test_id = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, name);
+            stmt.setInt(2, time);
+            stmt.setInt(3, num);
+            stmt.setInt(4, id);
+            stmt.executeUpdate();
+            res.setMessage("Cập nhật thành công!");
             res.setIsSuccess(true);
-            res.setMessage("Xóa bài thi thành công!");
-        } else {
-            res.setMessage("Không tìm thấy bài thi với test_id: " + testId);
+        } catch (SQLException e) {
+            res.setMessage("Lỗi cập nhật :" + e.getMessage());
+            res.setIsSuccess(false);
         }
-
-    } catch (SQLException e) {
-        res.setMessage("Lỗi xóa bài thi: " + e.getMessage());
-        e.printStackTrace();
+        return res;
     }
 
-    return res;
-}
-          
-           public Response.ExamResult getTestResult() {
+    public Response.BaseResponse deleteExam(int examId) {
+        Response.BaseResponse res = new Response.BaseResponse();
+        res.setIsSuccess(false);
+
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement updateTestsStmt = conn.prepareStatement(
+                "UPDATE exams SET is_deleted = true WHERE exam_id = ?")) {
+
+            updateTestsStmt.setInt(1, examId);
+            int rowsUpdated = updateTestsStmt.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                res.setIsSuccess(true);
+                res.setMessage("Xóa đề thi thi thành công!");
+            } else {
+                res.setMessage("Không tìm thấy bài thi với test_id: " + examId);
+            }
+
+        } catch (SQLException e) {
+            res.setMessage("Lỗi xóa bài thi: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return res;
+    }
+
+    public Response.BaseResponse recoverTest(int testId) {
+        Response.BaseResponse res = new Response.BaseResponse();
+        res.setIsSuccess(false);
+
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement updateTestsStmt = conn.prepareStatement(
+                "UPDATE Tests SET is_deleted = false WHERE test_id = ?")) {
+
+            updateTestsStmt.setInt(1, testId);
+            int rowsUpdated = updateTestsStmt.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                res.setIsSuccess(true);
+                res.setMessage("khôi phục bài thi thành công!");
+            } else {
+                res.setMessage("Không tìm thấy bài thi với test_id: " + testId);
+            }
+
+        } catch (SQLException e) {
+            res.setMessage("Lỗi xóa bài thi: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return res;
+    }
+
+    public Response.BaseResponse recoverExam(int examId) {
+        Response.BaseResponse res = new Response.BaseResponse();
+        res.setIsSuccess(false);
+
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement updateTestsStmt = conn.prepareStatement(
+                "UPDATE exams SET is_deleted = false WHERE exam_id = ?")) {
+
+            updateTestsStmt.setInt(1, examId);
+            int rowsUpdated = updateTestsStmt.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                res.setIsSuccess(true);
+                res.setMessage("khôi phục đề thi thành công!");
+            } else {
+                res.setMessage("Không tìm thấy bài thi với test_id: " + examId);
+            }
+
+        } catch (SQLException e) {
+            res.setMessage("Lỗi xóa bài thi: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return res;
+    }
+
+    public Response.ExamResult getTestResult() {
         Connection conn = null;
         PreparedStatement testStmt = null;
-     
+
         Response.ExamResult res = new Response.ExamResult();
-         try {
+        try {
             conn = DatabaseConnection.getConnection();
             String sql = "SELECT * FROM tests WHERE is_deleted = 0";
-             testStmt = conn.prepareStatement(sql);
-             ResultSet testRs = testStmt.executeQuery();
-             ArrayList<TestDTO> listTest = new ArrayList<>();
-             while (testRs.next()) {                 
-                  TestDTO test = new TestDTO();
-                   test.setTestId(testRs.getInt("test_id"));
-                   test.setTestName(testRs.getString("test_name"));
-                   test.setTestTime(testRs.getInt("test_time"));
-                   listTest.add(test);
-             }
-             res.setTestLists(listTest);
-             res.setMessage("Lấy danh sách bài thi thành công");
-             res.setIsSuccess(true);
-               return  res;
-             
-         } catch (Exception e) {
-             res.setIsSuccess(false);
-             res.setMessage("Lỗi tải dữ liệu!");
-         }
-         return  res;
-       
-     }
-               public Response.ExamResult getExamById(int id) {
+            testStmt = conn.prepareStatement(sql);
+            ResultSet testRs = testStmt.executeQuery();
+            ArrayList<TestDTO> listTest = new ArrayList<>();
+            while (testRs.next()) {
+                TestDTO test = new TestDTO();
+                test.setTestId(testRs.getInt("test_id"));
+                test.setTestName(testRs.getString("test_name"));
+                test.setTestTime(testRs.getInt("test_time"));
+                listTest.add(test);
+            }
+            res.setTestLists(listTest);
+            res.setMessage("Lấy danh sách bài thi thành công");
+            res.setIsSuccess(true);
+            return res;
+
+        } catch (Exception e) {
+            res.setIsSuccess(false);
+            res.setMessage("Lỗi tải dữ liệu!");
+        }
+        return res;
+
+    }
+
+    public Response.ExamResult getExamById(int id) {
         Connection conn = null;
         PreparedStatement testStmt = null;
-     
+
         Response.ExamResult res = new Response.ExamResult();
         res.setExamList(new ArrayList<>());
-         try {
+        try {
             conn = DatabaseConnection.getConnection();
             String sql = "SELECT * FROM exams WHERE exam_id = ?";
-             testStmt = conn.prepareStatement(sql);
-             testStmt.setInt(1, id);
-             ResultSet examRs = testStmt.executeQuery();
-                      
-             while (examRs.next()) {                 
+            testStmt = conn.prepareStatement(sql);
+            testStmt.setInt(1, id);
+            ResultSet examRs = testStmt.executeQuery();
+
+            while (examRs.next()) {
                 ExamDTO examDTO = new ExamDTO();
-                 examDTO.setExamCode(examRs.getString("exam_code"));
-                 examDTO.setExamId(examRs.getInt("exam_id"));
-                 res.getExamList().add(examDTO);
-             }
-             
-             res.setMessage("Lấy bài thi thành công!");
-             res.setIsSuccess(true);
-               return  res;
-             
-         } catch (Exception e) {
-             res.setIsSuccess(false);
-             res.setMessage("Lỗi tải dữ liệu!");
-         }
-         return  res;
-       
-     }
-      public Response.BaseResponse createNewTest(TestDTO test, String topic_name, ArrayList<String> examCodeList, int easyQ, int mediumQ, int diffQ) {
+                examDTO.setExamCode(examRs.getString("exam_code"));
+                examDTO.setExamId(examRs.getInt("exam_id"));
+                res.getExamList().add(examDTO);
+            }
+
+            res.setMessage("Lấy bài thi thành công!");
+            res.setIsSuccess(true);
+            return res;
+
+        } catch (Exception e) {
+            res.setIsSuccess(false);
+            res.setMessage("Lỗi tải dữ liệu!");
+        }
+        return res;
+
+    }
+
+    public Response.BaseResponse createNewTest(TestDTO test, String topic_name, ArrayList<String> examCodeList, int easyQ, int mediumQ, int diffQ) {
         Response.BaseResponse res = new Response.BaseResponse();
         try (Connection conn = DatabaseConnection.getConnection()) {
             String checkTopicId = "SELECT * FROM topics WHERE topic_id = ?";
@@ -451,9 +527,9 @@ public class ExamDAL {
                 testStmt.setInt(3, test.getTestTime());
                 testStmt.setInt(4, test.getNumLimit());
                 testStmt.setInt(5, easyQ);
-               testStmt.setInt(6, mediumQ);
-               testStmt.setInt(7, diffQ);
-               testStmt.setInt(8, diffQ+mediumQ+easyQ);
+                testStmt.setInt(6, mediumQ);
+                testStmt.setInt(7, diffQ);
+                testStmt.setInt(8, diffQ + mediumQ + easyQ);
                 testStmt.executeUpdate();
 
                 try (ResultSet generatedKeys = testStmt.getGeneratedKeys()) {
@@ -477,7 +553,7 @@ public class ExamDAL {
                             int ExamId = generatedKey.getInt(1);
 
                             if (easyQ > 0) {
-                                Response.QuestoinResult resulteasyQ = questionModel.filterQuestionBydifficulty(QuestionDTO.EASY,test.getTopicId());
+                                Response.QuestoinResult resulteasyQ = questionModel.filterQuestionBydifficulty(QuestionDTO.EASY, test.getTopicId());
                                 for (int i = 1; i <= easyQ; i++) {
                                     String insEasyQ = "INSERT INTO exam_questions(exam_id,question_id) VALUES(?,?)";
                                     try (PreparedStatement insEasyQStmt = conn.prepareStatement(insEasyQ)) {
@@ -491,7 +567,7 @@ public class ExamDAL {
                             }
 
                             if (mediumQ > 0) {
-                                Response.QuestoinResult resultMediumQ = questionModel.filterQuestionBydifficulty(QuestionDTO.MEDIUM,test.getTopicId());
+                                Response.QuestoinResult resultMediumQ = questionModel.filterQuestionBydifficulty(QuestionDTO.MEDIUM, test.getTopicId());
                                 for (int i = 1; i <= mediumQ; i++) {
                                     String insMediumQ = "INSERT INTO exam_questions(exam_id,question_id) VALUES(?,?)";
                                     try (PreparedStatement insMediumQStmt = conn.prepareStatement(insMediumQ)) {
@@ -505,7 +581,7 @@ public class ExamDAL {
                             }
 
                             if (diffQ > 0) {
-                                Response.QuestoinResult resultdiffQ = questionModel.filterQuestionBydifficulty(QuestionDTO.DIFFICULT,test.getTopicId());
+                                Response.QuestoinResult resultdiffQ = questionModel.filterQuestionBydifficulty(QuestionDTO.DIFFICULT, test.getTopicId());
                                 for (int i = 1; i <= diffQ; i++) {
                                     String insdiffQ = "INSERT INTO exam_questions(exam_id,question_id) VALUES(?,?)";
                                     try (PreparedStatement insdiffQStmt = conn.prepareStatement(insdiffQ)) {
@@ -533,11 +609,12 @@ public class ExamDAL {
         }
         return res;
     }
-     public Response.BaseResponse addNewExamCode(TestDTO test, ArrayList<String> examCodeList, int easyQ, int mediumQ, int diffQ) {
-           Response.BaseResponse res = new Response.BaseResponse();
-         try {
-             Connection conn = DatabaseConnection.getConnection();
-             for (String examCode : examCodeList) {
+
+    public Response.BaseResponse addNewExamCode(TestDTO test, ArrayList<String> examCodeList, int easyQ, int mediumQ, int diffQ) {
+        Response.BaseResponse res = new Response.BaseResponse();
+        try {
+            Connection conn = DatabaseConnection.getConnection();
+            for (String examCode : examCodeList) {
                 String insEx = "INSERT INTO exams(test_id,exam_code) VALUES(?,?)";
                 try (PreparedStatement stmt = conn.prepareStatement(insEx, Statement.RETURN_GENERATED_KEYS)) {
                     stmt.setInt(1, test.getTestId());
@@ -548,7 +625,7 @@ public class ExamDAL {
                             int ExamId = generatedKey.getInt(1);
 
                             if (easyQ > 0) {
-                                Response.QuestoinResult resulteasyQ = questionModel.filterQuestionBydifficulty(QuestionDTO.EASY,test.getTopicId());
+                                Response.QuestoinResult resulteasyQ = questionModel.filterQuestionBydifficulty(QuestionDTO.EASY, test.getTopicId());
                                 for (int i = 1; i <= easyQ; i++) {
                                     String insEasyQ = "INSERT INTO exam_questions(exam_id,question_id) VALUES(?,?)";
                                     try (PreparedStatement insEasyQStmt = conn.prepareStatement(insEasyQ)) {
@@ -562,7 +639,7 @@ public class ExamDAL {
                             }
 
                             if (mediumQ > 0) {
-                                Response.QuestoinResult resultMediumQ = questionModel.filterQuestionBydifficulty(QuestionDTO.MEDIUM,test.getTopicId());
+                                Response.QuestoinResult resultMediumQ = questionModel.filterQuestionBydifficulty(QuestionDTO.MEDIUM, test.getTopicId());
                                 for (int i = 1; i <= mediumQ; i++) {
                                     String insMediumQ = "INSERT INTO exam_questions(exam_id,question_id) VALUES(?,?)";
                                     try (PreparedStatement insMediumQStmt = conn.prepareStatement(insMediumQ)) {
@@ -576,7 +653,7 @@ public class ExamDAL {
                             }
 
                             if (diffQ > 0) {
-                                Response.QuestoinResult resultdiffQ = questionModel.filterQuestionBydifficulty(QuestionDTO.DIFFICULT,test.getTopicId());
+                                Response.QuestoinResult resultdiffQ = questionModel.filterQuestionBydifficulty(QuestionDTO.DIFFICULT, test.getTopicId());
                                 for (int i = 1; i <= diffQ; i++) {
                                     String insdiffQ = "INSERT INTO exam_questions(exam_id,question_id) VALUES(?,?)";
                                     try (PreparedStatement insdiffQStmt = conn.prepareStatement(insdiffQ)) {
@@ -594,26 +671,48 @@ public class ExamDAL {
                     }
                 }
             }
-             res.setIsSuccess(true);
-             res.setMessage("Thêm mã đề thành công!");
-         } catch (SQLException e) {
-             res.setIsSuccess(false);
-             res.setMessage("Lỗi thêm mã đề:"+e.getMessage());
-         }
-         return res;
-     }
-     
-          public Response.TestResult getTestsResult(int examId) {
+            res.setIsSuccess(true);
+            res.setMessage("Thêm mã đề thành công!");
+        } catch (SQLException e) {
+            res.setIsSuccess(false);
+            res.setMessage("Lỗi thêm mã đề:" + e.getMessage());
+        }
+        return res;
+    }
+
+    public Response.BaseResponse deleteQuestionFromExam(int examId, int questionId) {
+        Response.BaseResponse res = new Response.BaseResponse();
+
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement("DELETE FROM exam_questions WHERE exam_id = ? AND question_id = ?")) {
+
+            pstmt.setInt(1, examId);
+            pstmt.setInt(2, questionId);
+
+            pstmt.executeUpdate();
+            res.setIsSuccess(true);
+
+            res.setMessage("xóa câu hỏi thành công!");
+
+            return res;
+
+        } catch (SQLException e) {
+            res.setMessage("Lỗi xóa câu hỏi");
+            res.setIsSuccess(false);
+            return res;
+        }
+    }
+
+    public Response.TestResult getTestsResult(int examId) {
         Response.TestResult res = new Response.TestResult();
         res.setTestResultList(new ArrayList<>());
-        res.setTestResultDetailList(new HashMap<>()); 
+        res.setTestResultDetailList(new HashMap<>());
 
         try (Connection conn = DatabaseConnection.getConnection()) {
             StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM results ");
             if (examId != -1) {
                 sqlBuilder.append(" WHERE exam_id = ?");
             }
-             sqlBuilder.append("  ORDER BY correct DESC");
+            sqlBuilder.append("  ORDER BY correct DESC");
             try (PreparedStatement stmt = conn.prepareStatement(sqlBuilder.toString())) {
                 if (examId != -1) {
                     stmt.setInt(1, examId);
@@ -631,7 +730,6 @@ public class ExamDAL {
                         resultDTO.setExamId(rs.getInt("exam_id"));
                         res.getTestResultList().add(resultDTO);
 
-                  
                     }
                 }
             }
@@ -662,33 +760,37 @@ public class ExamDAL {
 
         return res;
     }
-    public Response.ContestAntResult getContestAntResult(int testId){
+
+    public Response.ContestAntResult getContestAntResult(int testId) {
         Response.ContestAntResult res = new Response.ContestAntResult();
         try {
             String sql = "SELECT t.test_id, COUNT(DISTINCT r.user_id) AS total_users, SUM(CASE WHEN r.correct > 50 THEN 1 ELSE 0 END) AS users_above_50_percent"
                     + " FROM Tests t"
-                    + " JOIN Exams e ON t.test_id = e.test_id JOIN Results r ON e.exam_id = r.exam_id WHERE t.test_id = ? GROUP BY t.test_id"  ;
-           Connection conn = DatabaseConnection.getConnection();
-           PreparedStatement stmt = conn.prepareStatement(sql);
-           stmt.setInt(1, testId);
-           ResultSet rs = stmt.executeQuery();
-           if(rs.next()) {
-              res.setTotal(rs.getInt("total_users"));
-              res.setCompleted(rs.getInt("users_above_50_percent"));
-           }
-           res.setIsSuccess(true);
-           
+                    + " JOIN Exams e ON t.test_id = e.test_id JOIN Results r ON e.exam_id = r.exam_id WHERE t.test_id = ? GROUP BY t.test_id";
+            Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, testId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                res.setTotal(rs.getInt("total_users"));
+                res.setCompleted(rs.getInt("users_above_50_percent"));
+            }
+            res.setIsSuccess(true);
+
         } catch (SQLException e) {
             res.setIsSuccess(false);
         }
-        return  res;
+        return res;
     }
-    
-    private  int getRadomNumber(int upperBound) {
-        if(upperBound <=0 ) return  0 ;
+
+    private int getRadomNumber(int upperBound) {
+        if (upperBound <= 0) {
+            return 0;
+        }
         Random random = new Random();
-        return  random.nextInt(upperBound);
+        return random.nextInt(upperBound);
     }
+
     private LocalDateTime convertTimestampToLocalDateTime(Timestamp timestamp) {
         if (timestamp != null) {
             LocalDateTime localDateTime = timestamp.toLocalDateTime();
@@ -700,5 +802,5 @@ public class ExamDAL {
         }
         return null;
     }
-   
+
 }
