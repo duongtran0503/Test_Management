@@ -30,148 +30,130 @@ public class AdminManagerTest extends javax.swing.JFrame {
     /**
      * Creates new form AdminCreateTest
      */
-    private final  ExamBLL examBLL;
-   private  ActionPanelEditor actionPanelEditor;
-   private final  QuestionBLL questionBLL;
-   private  Response.ExamResult examData;
+    private final ExamBLL examBLL;
+    private ActionPanelEditor actionPanelEditor;
+    private final QuestionBLL questionBLL;
+    private Response.ExamResult examData;
+
     public AdminManagerTest() {
         this.examData = new Response.ExamResult();
-        this.questionBLL = new  QuestionBLL();
+        this.questionBLL = new QuestionBLL();
         this.examBLL = new ExamBLL();
         this.actionPanelEditor = new ActionPanelEditor();
         initComponents();
-         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-     model.addElement("Tất cả chủ đề");
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        model.addElement("Tất cả chủ đề");
         model.addElement("Lập trình");
         model.addElement("Du lịch");
         model.addElement("Toán học");
         selectTopic.setModel(model);
         loadExams();
         jTable1.setRowHeight(60);
-          jTable1.setSelectionBackground(Color.WHITE);
-    jTable1.setSelectionForeground(Color.BLACK);
-     jTable1.setFocusable(false);
-      this.actionPanelEditor.getPanel().getButtonEdit().addActionListener((e) -> {
-                       int row  = this.actionPanelEditor.getRow();
-                      int idTest =   this.examData.getExamList().get(row).getTestId();
-                      String examCode = this.examData.getExamList().get(row).getExamCode();
-                          AdminModalExam adminModalExam = new AdminModalExam();
-                          adminModalExam.displayDataEdit(idTest, examCode);
-                          adminModalExam.setVisible(true);
-                           this.actionPanelEditor.fireEditStop();
-                       
-                            
-                      
-                });
-      this.actionPanelEditor.getPanel().getButtonDelete().addActionListener((e) -> {
-                       int row  = this.actionPanelEditor.getRow();
-                      int idTest =   this.examData.getExamList().get(row).getTestId();
-                          int confirm = JOptionPane.showConfirmDialog(
-        this, 
-        "Bạn có chắc chắn muốn xóa bài thi không?", 
-        "Xác nhận", 
-        JOptionPane.YES_NO_OPTION
-    );
+        jTable1.setSelectionBackground(Color.WHITE);
+        jTable1.setSelectionForeground(Color.BLACK);
+        jTable1.setFocusable(false);
+        this.actionPanelEditor.getPanel().getButtonEdit().addActionListener((e) -> {
+            int row = this.actionPanelEditor.getRow();
+            int idTest = this.examData.getExamList().get(row).getTestId();
+            String examCode = this.examData.getExamList().get(row).getExamCode();
+            AdminModalExam adminModalExam = new AdminModalExam();
+            adminModalExam.displayDataEdit(idTest, examCode);
+            adminModalExam.setVisible(true);
+            this.actionPanelEditor.fireEditStop();
 
-    if (confirm == JOptionPane.YES_OPTION) { 
-          Response.BaseResponse res = examBLL.deleteTest(idTest);
-          if(res.isIsSuccess()) {
-           JOptionPane.showMessageDialog(null, res.getMessage());
-        
-          } else {
-            JOptionPane.showMessageDialog(null, res.getMessage());
-          }
-    }
-                     
-                       
-              this.actionPanelEditor.fireEditStop();
-                 loadExams();
-                      
-                });
-    }
-   private  void loadExams() {
-       Response.ExamResult res = examBLL.getExamResult();
-       Response.TopicResult topicResult = questionBLL.getTopic();
-       if(res.isIsSuccess()) {
-           displayDataOnTable(res, topicResult);
-       }else {
-          JOptionPane.showMessageDialog(null, res.getMessage());
-       }
-   }
-    private  void  displayDataOnTable(Response.ExamResult result,Response.TopicResult  topicResult) {
-       ArrayList<TestDTO> testList = result.getTestLists();
-       ArrayList<ExamDTO> exmList = result.getExamList();
-        this.examData = result;
-             DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
-             tableModel.setRowCount(0);
-             jTable1.getColumnModel().getColumn(5).setCellRenderer(new ActionPanelRenderer());
-             jTable1.getColumnModel().getColumn(5).setCellEditor(this.actionPanelEditor);
-            
-             
-              
-         
-               for (ExamDTO exam:exmList) {
-                String topic = "";
-                String testName ="";
-                String testTime = "";
-                int  topicID =1;
-                 for(TestDTO test:testList) {
-                    if(test.getTestId() ==exam.getTestId()) {
-                      testName = test.getTestName();
-                      testTime =test.getTestTime()+"";
-                      topicID = test.getTopicId();
-                    }
-                 }
-                 for(TopicDTO top: topicResult.getTopicList()) {
-                   if(top.getTopicId()==topicID) {
-                    topic = top.getTopicName();
-                   }
-                 }
-                tableModel.addRow(new Object[]{exam.getExamId()+"",exam.getExamCode(), testName, topic, testTime +" phút",""});
+        });
+        this.actionPanelEditor.getPanel().getButtonDelete().addActionListener((e) -> {
+            int row = this.actionPanelEditor.getRow();
+            int examId = this.examData.getExamList().get(row).getExamId();
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "Bạn có chắc chắn muốn xóa đề thi không?",
+                    "Xác nhận",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                Response.BaseResponse res = examBLL.deleteExam(examId);
+                if (res.isIsSuccess()) {
+                    JOptionPane.showMessageDialog(null, res.getMessage());
+
+                } else {
+                    JOptionPane.showMessageDialog(null, res.getMessage());
+                }
             }
-               
-            
-         
-    
-             
-     
+
+            this.actionPanelEditor.fireEditStop();
+            loadExams();
+
+        });
+          
+        
     }
-     private  void searchTest() {
-       String selectedValue  =(String)  this.selectTopic.getSelectedItem();
-        String searchKey = inputSearch.getText().trim();
-          Response.TopicResult topicResult = questionBLL.getTopic();
-       if(selectedValue.equalsIgnoreCase("Tất cả chủ đề")) {
-         Response.ExamResult res = examBLL.search(0, searchKey, -1);
-         if(res.isIsSuccess()) {
-             displayDataOnTable(res, topicResult);
-         }else {
-           JOptionPane.showInternalMessageDialog(null, res.getMessage());
-         }
-       } else {
-         if(selectedValue.equalsIgnoreCase("Lập trình")) {
-            Response.ExamResult res = examBLL.search(0, searchKey, 1);
-            if(res.isIsSuccess()) {
-          displayDataOnTable(res, topicResult);
-         }else {
-           JOptionPane.showInternalMessageDialog(null, res.getMessage());
-         }
-         } else if(selectedValue.equalsIgnoreCase("Du lịch")) {
-         Response.ExamResult res = examBLL.search(0, searchKey, 2);
-           if(res.isIsSuccess()) {
+
+    private void loadExams() {
+        Response.ExamResult res = examBLL.getExamResult();
+        Response.TopicResult topicResult = questionBLL.getTopic();
+        if (res.isIsSuccess()) {
             displayDataOnTable(res, topicResult);
-         }else {
-           JOptionPane.showInternalMessageDialog(null, res.getMessage());
-         }
-         } else {
-           Response.ExamResult res = examBLL.search(0, searchKey, 3);
-           if(res.isIsSuccess()) {
-                 displayDataOnTable(res, topicResult);
-         }else {
-           JOptionPane.showInternalMessageDialog(null, res.getMessage());
-         }
-         }
-       }
+        } else {
+            JOptionPane.showMessageDialog(null, res.getMessage());
+        }
     }
+
+    private void displayDataOnTable(Response.ExamResult result, Response.TopicResult topicResult) {
+        ArrayList<TestDTO> testList = result.getTestLists();
+        ArrayList<ExamDTO> exmList = result.getExamList();
+        this.examData = result;
+        DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
+        tableModel.setRowCount(0);
+        jTable1.getColumnModel().getColumn(5).setCellRenderer(new ActionPanelRenderer());
+        jTable1.getColumnModel().getColumn(5).setCellEditor(this.actionPanelEditor);
+
+        for (ExamDTO exam : exmList) {
+            String topic = "";
+            String testName = "";
+            String testTime = "";
+            int topicID = 1;
+            for (TestDTO test : testList) {
+                if (test.getTestId() == exam.getTestId()) {
+                    testName = test.getTestName();
+                    testTime = test.getTestTime() + "";
+                    topicID = test.getTopicId();
+                }
+            }
+            for (TopicDTO top : topicResult.getTopicList()) {
+                if (top.getTopicId() == topicID) {
+                    topic = top.getTopicName();
+                }
+            }
+            tableModel.addRow(new Object[]{exam.getExamId() + "", exam.getExamCode(), testName, topic, testTime + " phút", ""});
+        }
+
+    }
+
+    private void searchTest() {
+        String selectedValue = (String) this.selectTopic.getSelectedItem();
+        String searchKey = inputSearch.getText().trim();
+        Response.TopicResult topicResult = questionBLL.getTopic();
+        if (selectedValue.equalsIgnoreCase("Tất cả chủ đề")) {
+            Response.ExamResult res = examBLL.search(0, searchKey, -1);
+            if (res.isIsSuccess()) {
+                displayDataOnTable(res, topicResult);
+            } else {
+                JOptionPane.showInternalMessageDialog(null, res.getMessage());
+            }
+        } else {
+
+            Response.ExamResult res = examBLL.search(0, searchKey, this.selectTopic.getSelectedIndex());
+            if (res.isIsSuccess()) {
+                displayDataOnTable(res, topicResult);
+            } else {
+                JOptionPane.showInternalMessageDialog(null, res.getMessage());
+            }
+
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -305,19 +287,19 @@ public class AdminManagerTest extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-         AdminHomeScreen adminHomeScreen = new AdminHomeScreen();
-          adminHomeScreen.setVisible(true);
-          dispose();
+        AdminHomeScreen adminHomeScreen = new AdminHomeScreen();
+        adminHomeScreen.setVisible(true);
+        dispose();
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void buttonCreateTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCreateTestActionPerformed
-       AdminCreateTestScreen adminCreateTestScreen = new AdminCreateTestScreen();
+        AdminCreateTestScreen adminCreateTestScreen = new AdminCreateTestScreen();
         adminCreateTestScreen.setLocationRelativeTo(null);
         adminCreateTestScreen.setVisible(true);
     }//GEN-LAST:event_buttonCreateTestActionPerformed
 
     private void buttonSearchjActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSearchjActionPerformed
-       searchTest();
+        searchTest();
     }//GEN-LAST:event_buttonSearchjActionPerformed
 
     /**

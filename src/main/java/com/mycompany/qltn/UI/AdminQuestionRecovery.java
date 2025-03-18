@@ -34,234 +34,222 @@ public class AdminQuestionRecovery extends javax.swing.JFrame {
     /**
      * Creates new form AdminQuestionRecovery
      */
-    private  QuestionBLL    questionBLL;
-    private  ButtonRecoverEdit buttonRecoverEdit;
-    private  ButtonRecoverEdit buttonRecoverAccount;
-    private   ArrayList<QuestionDTO> questionsData  ;
-    private  UserBLL userBLL;
-    private  Response.ExamResult examData;
-    private  ExamBLL examBLL;
-    private  ButtonRecoverEdit buttonRecoverTest;
-    private   Response.UserResult userData;
+    private QuestionBLL questionBLL;
+    private ButtonRecoverEdit buttonRecoverEdit;
+    private ButtonRecoverEdit buttonRecoverAccount;
+    private ArrayList<QuestionDTO> questionsData;
+    private UserBLL userBLL;
+    private Response.ExamResult examData;
+    private ExamBLL examBLL;
+    private ButtonRecoverEdit buttonRecoverTest;
+    private Response.UserResult userData;
+
     public AdminQuestionRecovery() {
         this.userBLL = new UserBLL();
         this.userData = new Response.UserResult();
         this.examBLL = new ExamBLL();
         this.examData = new Response.ExamResult();
         this.questionsData = new ArrayList<>();
-        this.   questionBLL = new QuestionBLL();
-        this.buttonRecoverAccount =new ButtonRecoverEdit();
+        this.questionBLL = new QuestionBLL();
+        this.buttonRecoverAccount = new ButtonRecoverEdit();
         this.buttonRecoverEdit = new ButtonRecoverEdit();
-        this.buttonRecoverTest = new  ButtonRecoverEdit();
+        this.buttonRecoverTest = new ButtonRecoverEdit();
         initComponents();
         jTable1.setSelectionBackground(Color.WHITE);
-    jTable1.setSelectionForeground(Color.BLACK);
+        jTable1.setSelectionForeground(Color.BLACK);
         loadQuestions();
-          jTable1.setRowHeight(60);
-         TableColumn questionColumn = this.jTable1.getColumnModel().getColumn(0); 
+        jTable1.setRowHeight(60);
+        TableColumn questionColumn = this.jTable1.getColumnModel().getColumn(0);
         questionColumn.setPreferredWidth(400);
-         this.buttonRecoverEdit.getPanel().getjButton1().addActionListener((ActionEvent e) -> {
-             int row= this.buttonRecoverEdit.getRow();
-          QuestionDTO questionDTO = new QuestionDTO();
-              questionDTO.setQuestionId(this.questionsData.get(row).getQuestionId());
-               int confirm = JOptionPane.showConfirmDialog(
-        this, 
-        "Bạn có chắc chắn muốn khôi phục câu hỏi?", 
-        "Xác nhận", 
-        JOptionPane.YES_NO_OPTION
-    );
+        this.buttonRecoverEdit.getPanel().getjButton1().addActionListener((ActionEvent e) -> {
+            int row = this.buttonRecoverEdit.getRow();
+            QuestionDTO questionDTO = new QuestionDTO();
+            questionDTO.setQuestionId(this.questionsData.get(row).getQuestionId());
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "Bạn có chắc chắn muốn khôi phục câu hỏi?",
+                    "Xác nhận",
+                    JOptionPane.YES_NO_OPTION
+            );
 
-    if (confirm == JOptionPane.YES_OPTION) {
-         Response.QuestoinResult res =    questionBLL.recoverQuestion(questionDTO.getQuestionId());
-         if(res.isIsSuccess()) {
-           JOptionPane.showMessageDialog(null, res.getMessage());
-    
-         }else {
+            if (confirm == JOptionPane.YES_OPTION) {
+                Response.QuestoinResult res = questionBLL.recoverQuestion(questionDTO.getQuestionId());
+                if (res.isIsSuccess()) {
                     JOptionPane.showMessageDialog(null, res.getMessage());
 
-          }
+                } else {
+                    JOptionPane.showMessageDialog(null, res.getMessage());
+
+                }
+            }
+
+            this.buttonRecoverEdit.fireEditStop();
+            loadQuestions();
+        });
+
+        this.buttonRecoverTest.getPanel().getjButton1().addActionListener((ActionEvent e) -> {
+            int row = this.buttonRecoverTest.getRow();
+            int examId = this.examData.getExamList().get(row).getExamId();
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "Bạn có chắc chắn muốn khôi phục đề thi ?",
+                    "Xác nhận",
+                    JOptionPane.YES_NO_OPTION
+            );
+            if (confirm == JOptionPane.YES_OPTION) {
+                Response.BaseResponse res = examBLL.recoverExam(examId);
+                if (res.isIsSuccess()) {
+                    JOptionPane.showMessageDialog(null, res.getMessage());
+                } else {
+                    JOptionPane.showMessageDialog(null, res.getMessage());
+                }
+            }
+            this.buttonRecoverTest.fireEditStop();
+            loadExams();
+        });
+        this.buttonRecoverAccount.getPanel().getjButton1().addActionListener((ActionEvent e) -> {
+            int row = this.buttonRecoverTest.getRow();
+            int userId = this.userData.getUserList().get(row).getUserId();
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "Bạn có chắc chắn muốn khôi phục tài khoản ?",
+                    "Xác nhận",
+                    JOptionPane.YES_NO_OPTION
+            );
+            if (confirm == JOptionPane.YES_OPTION) {
+                Response.BaseResponse res = this.userBLL.recoverUser(userId);
+                if (res.isIsSuccess()) {
+                    JOptionPane.showMessageDialog(null, res.getMessage());
+                } else {
+                    JOptionPane.showMessageDialog(null, res.getMessage());
+                }
+            }
+            this.buttonRecoverAccount.fireEditStop();
+            loadUsers();
+        });
+
     }
-               
-               this.buttonRecoverEdit.fireEditStop();
-               loadQuestions();
-     });
-         
-       this.buttonRecoverTest.getPanel().getjButton1().addActionListener((ActionEvent e) -> { 
-          int row = this.buttonRecoverTest.getRow();
-          int testid = this.examData.getExamList().get(row).getTestId();
-         int confirm = JOptionPane.showConfirmDialog(
-        this, 
-        "Bạn có chắc chắn muốn khôi phục đề thi ?", 
-        "Xác nhận", 
-        JOptionPane.YES_NO_OPTION
-    );
-         if(confirm ==JOptionPane.YES_OPTION) {
-           Response.BaseResponse res = examBLL.recoverTest(testid);
-           if(res.isIsSuccess()) {
-             JOptionPane.showMessageDialog(null, res.getMessage()); 
-           }else {
-            JOptionPane.showMessageDialog(null, res.getMessage());
-           }
-         }
-         this.buttonRecoverTest.fireEditStop();
-         loadExams();
-       });
-        this.buttonRecoverAccount.getPanel().getjButton1().addActionListener((ActionEvent e) -> { 
-          int row = this.buttonRecoverTest.getRow();
-          int userId =this.userData.getUserList().get(row).getUserId();
-         int confirm = JOptionPane.showConfirmDialog(
-        this, 
-        "Bạn có chắc chắn muốn khôi phục tài khoản ?", 
-        "Xác nhận", 
-        JOptionPane.YES_NO_OPTION
-    );
-         if(confirm ==JOptionPane.YES_OPTION) {
-           Response.BaseResponse res = this.userBLL.recoverUser(userId);
-           if(res.isIsSuccess()) {
-             JOptionPane.showMessageDialog(null, res.getMessage()); 
-           }else {
-            JOptionPane.showMessageDialog(null, res.getMessage());
-           }
-         }
-         this.buttonRecoverAccount.fireEditStop();
-         loadUsers();
-       });
-      
-       
-    }
- private  void  displayDataOnTable(Response.QuestoinResult result,Response.TopicResult  topicResult) {
-     ArrayList<QuestionDTO> questions = result.getQuestionList();
-       this.questionsData =questions;
-       ArrayList<OptionDTO> options = result.getAnswerList();
+
+    private void displayDataOnTable(Response.QuestoinResult result, Response.TopicResult topicResult) {
+        ArrayList<QuestionDTO> questions = result.getQuestionList();
+        this.questionsData = questions;
+        ArrayList<OptionDTO> options = result.getAnswerList();
         jTable1.getColumnModel().getColumn(4).setCellRenderer(new ButtonRecoverRender());
-             jTable1.getColumnModel().getColumn(4).setCellEditor(this.buttonRecoverEdit);
-       System.out.println("item1:"+questions.size());
-          
-             DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
-             tableModel.setRowCount(0);     
-               for (QuestionDTO question : questions) {
-                StringBuilder answers = new StringBuilder();
-                String topicText = "";
-                for (OptionDTO option : options) {
-                   
-                    if (option.getQuestionId() == question.getQuestionId() && option.isIsCorrect()) {
-                        answers.append(option.getOptionText()).append(", ");
-                    }
+        jTable1.getColumnModel().getColumn(4).setCellEditor(this.buttonRecoverEdit);
+        System.out.println("item1:" + questions.size());
+
+        DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
+        tableModel.setRowCount(0);
+        for (QuestionDTO question : questions) {
+            StringBuilder answers = new StringBuilder();
+            String topicText = "";
+            for (OptionDTO option : options) {
+
+                if (option.getQuestionId() == question.getQuestionId() && option.isIsCorrect()) {
+                    answers.append(option.getOptionText()).append(", ");
                 }
-                for(TopicDTO topic: topicResult.getTopicList()) {
-                 if(topic.getTopicId()==question.getTopicId()) {
-                   topicText = topic.getTopicName();
-                 }
-                }
-                   System.out.println("title:"+topicText);
-                if (answers.length() > 2) {
-                    answers.setLength(answers.length() - 2);
-                }
-                
-                tableModel.addRow(new Object[]{question.getQuestionText(), answers,topicText, question.getDifficulty()});
             }
-          
-           
-           
-     
+            for (TopicDTO topic : topicResult.getTopicList()) {
+                if (topic.getTopicId() == question.getTopicId()) {
+                    topicText = topic.getTopicName();
+                }
+            }
+            System.out.println("title:" + topicText);
+            if (answers.length() > 2) {
+                answers.setLength(answers.length() - 2);
+            }
+
+            tableModel.addRow(new Object[]{question.getQuestionText(), answers, topicText, question.getDifficulty()});
+        }
+
     }
-    private  void  displayDataOnTableTest(Response.ExamResult result,Response.TopicResult  topicResult) {
-       ArrayList<TestDTO> testList = result.getTestLists();
-       ArrayList<ExamDTO> exmList = result.getExamList();
+
+    private void displayDataOnTableTest(Response.ExamResult result, Response.TopicResult topicResult) {
+        ArrayList<TestDTO> testList = result.getTestLists();
+        ArrayList<ExamDTO> exmList = result.getExamList();
         this.examData = result;
-           String[] columnNames = { "Mã đề", "Tên bài thi","Chủ đề","Thời gian thi", "Khôi phục"};
-             DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
-                tableModel.setColumnIdentifiers(columnNames);
-             tableModel.setRowCount(0);
-                   jTable1.getColumnModel().getColumn(4).setCellRenderer(new ButtonRecoverRender());
-             jTable1.getColumnModel().getColumn(4).setCellEditor(this.buttonRecoverTest);
-              
-            
-              
-         
-               for (ExamDTO exam:exmList) {
-                String topic = "";
-                String testName ="";
-                String testTime = "";
-                int  topicID =1;
-                 for(TestDTO test:testList) {
-                    if(test.getTestId() ==exam.getTestId()) {
-                      testName = test.getTestName();
-                      testTime =test.getTestTime()+"";
-                      topicID = test.getTopicId();
-                    }
-                 }
-                 for(TopicDTO top: topicResult.getTopicList()) {
-                   if(top.getTopicId()==topicID) {
+        String[] columnNames = {"Mã đề", "Tên bài thi", "Chủ đề", "Thời gian thi", "Khôi phục"};
+        DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
+        tableModel.setColumnIdentifiers(columnNames);
+        tableModel.setRowCount(0);
+        jTable1.getColumnModel().getColumn(4).setCellRenderer(new ButtonRecoverRender());
+        jTable1.getColumnModel().getColumn(4).setCellEditor(this.buttonRecoverTest);
+
+        for (ExamDTO exam : exmList) {
+            String topic = "";
+            String testName = "";
+            String testTime = "";
+            int topicID = 1;
+            for (TestDTO test : testList) {
+                if (test.getTestId() == exam.getTestId()) {
+                    testName = test.getTestName();
+                    testTime = test.getTestTime() + "";
+                    topicID = test.getTopicId();
+                }
+            }
+            for (TopicDTO top : topicResult.getTopicList()) {
+                if (top.getTopicId() == topicID) {
                     topic = top.getTopicName();
-                   }
-                 }
-                tableModel.addRow(new Object[]{exam.getExamCode(), testName, topic, testTime +" phút"});
+                }
             }
-               
-            
-         
-    
-             
-     
+            tableModel.addRow(new Object[]{exam.getExamCode(), testName, topic, testTime + " phút"});
+        }
+
     }
-     private  void  displayDataOnTableAccount(Response.UserResult userResult) {
-        
-       ArrayList<UserDTO> users = userResult.getUserList();
-         System.out.println("size:"+userResult.getUserList().size());
+
+    private void displayDataOnTableAccount(Response.UserResult userResult) {
+
+        ArrayList<UserDTO> users = userResult.getUserList();
+        System.out.println("size:" + userResult.getUserList().size());
         this.userData = userResult;
-           String[] columnNames = { "ID", "Tên ","Email","Quyền", "Khôi phục"};
-             DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
-                tableModel.setColumnIdentifiers(columnNames);
-             tableModel.setRowCount(0);
-                   jTable1.getColumnModel().getColumn(4).setCellRenderer(new ButtonRecoverRender());
-             jTable1.getColumnModel().getColumn(4).setCellEditor(this.buttonRecoverAccount);
-              
-            
-              
-         
-               for (UserDTO user:users) {
-               
-                tableModel.addRow(new Object[]{user.getUserId()+"", user.getUsername(), user.getEmail(), user.getRole()});
-            }
-               
-            
-         
-    
-             
-     
+        String[] columnNames = {"ID", "Tên ", "Email", "Quyền", "Khôi phục"};
+        DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
+        tableModel.setColumnIdentifiers(columnNames);
+        tableModel.setRowCount(0);
+        jTable1.getColumnModel().getColumn(4).setCellRenderer(new ButtonRecoverRender());
+        jTable1.getColumnModel().getColumn(4).setCellEditor(this.buttonRecoverAccount);
+
+        for (UserDTO user : users) {
+
+            tableModel.addRow(new Object[]{user.getUserId() + "", user.getUsername(), user.getEmail(), user.getRole()});
+        }
+
     }
-     private  void loadUsers() {
-     Response.UserResult res = this.userBLL.getUser(1);
-       if(res.isIsSuccess()) {
-           displayDataOnTableAccount(res);
-       }else {
-          JOptionPane.showMessageDialog(null, res.getMessage());
-       }
+
+    private void loadUsers() {
+        this.jLabel1.setText("Khôi phục tài khoản");
+        Response.UserResult res = this.userBLL.getUser(1);
+        if (res.isIsSuccess()) {
+            displayDataOnTableAccount(res);
+        } else {
+            JOptionPane.showMessageDialog(null, res.getMessage());
+        }
     }
-    
-    private  void loadExams() {
-       Response.ExamResult res = examBLL.getExamDeletedResult();
-       Response.TopicResult topicResult =    questionBLL.getTopic();
-       if(res.isIsSuccess()) {
-           displayDataOnTableTest(res, topicResult);
-       }else {
-          JOptionPane.showMessageDialog(null, res.getMessage());
-       }
+
+    private void loadExams() {
+        this.jLabel1.setText("Khôi phục đề thi");
+        Response.ExamResult res = examBLL.getExamDeletedResult();
+        Response.TopicResult topicResult = questionBLL.getTopic();
+        if (res.isIsSuccess()) {
+            displayDataOnTableTest(res, topicResult);
+        } else {
+            JOptionPane.showMessageDialog(null, res.getMessage());
+        }
     }
-  private  void loadQuestions() {
-    Response.QuestoinResult result  =    questionBLL.getQuestionDeleted();
-        Response.TopicResult topicResult =    questionBLL.getTopic();
-        
-        if(result.isIsSuccess() && topicResult.isIsSuccess()) {
-              displayDataOnTable(result, topicResult);
-            
+
+    private void loadQuestions() {
+        Response.QuestoinResult result = questionBLL.getQuestionDeleted();
+        Response.TopicResult topicResult = questionBLL.getTopic();
+
+        if (result.isIsSuccess() && topicResult.isIsSuccess()) {
+            displayDataOnTable(result, topicResult);
+
         } else {
             JOptionPane.showMessageDialog(this, result.getMessage());
 
-           
         }
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -398,11 +386,11 @@ public class AdminQuestionRecovery extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-          loadExams();
+        loadExams();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void buttonAccountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAccountActionPerformed
-     loadUsers();
+        loadUsers();
     }//GEN-LAST:event_buttonAccountActionPerformed
 
     /**

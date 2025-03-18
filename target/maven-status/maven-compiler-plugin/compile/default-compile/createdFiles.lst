@@ -23,6 +23,7 @@ com\mycompany\qltn\component\PopupSelectAddQuestion$2.class
 com\mycompany\qltn\UI\AdminQuestionSelectScreen$2.class
 com\mycompany\qltn\UI\StudenHistoryExamScreen.class
 com\mycompany\qltn\UI\AdminModalExam$4.class
+com\mycompany\qltn\UI\AdminModalExam$6.class
 com\mycompany\qltn\UI\AdminManagerAccount.class
 com\mycompany\qltn\UI\StudenHomeScreen$2.class
 com\mycompany\qltn\UI\AdminModalQuestion$1.class

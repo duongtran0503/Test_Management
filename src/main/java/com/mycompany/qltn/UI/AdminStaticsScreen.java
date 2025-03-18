@@ -30,12 +30,13 @@ public class AdminStaticsScreen extends javax.swing.JFrame {
     /**
      * Creates new form AdminStaticsScreen
      */
-    private    Response.ExamResult examResultData;
-    private final  ExamBLL examBLL;
-    private final  QuestionBLL questionBLL;
-    private final  UserBLL userBLL;
-    private  ExamDTO examDTOData;
-    private  ArrayList<TestDTO> testData;
+    private Response.ExamResult examResultData;
+    private final ExamBLL examBLL;
+    private final QuestionBLL questionBLL;
+    private final UserBLL userBLL;
+    private ExamDTO examDTOData;
+    private ArrayList<TestDTO> testData;
+
     public AdminStaticsScreen() {
         this.testData = new ArrayList<>();
         this.examDTOData = new ExamDTO();
@@ -48,127 +49,134 @@ public class AdminStaticsScreen extends javax.swing.JFrame {
         setValueTestNameSelectResult(1);
         setValueStaticsView(1);
         loadDataOnTable();
-           jTable1.setRowHeight(50);
+        jTable1.setRowHeight(50);
         jTable1.setFocusable(false);
-       addEventOnChangeForSelect();
-       addEventOnChangeForTestNameSelect();
+        addEventOnChangeForSelect();
+        addEventOnChangeForTestNameSelect();
     }
-   private  void addEventOnChangeForTestNameSelect() {
-     this.testNameSelect.addItemListener(((e) -> {
-        if(e.getStateChange() ==ItemEvent.SELECTED) {
-           int index = this.testNameSelect.getSelectedIndex();
-            displayDataOnTable(this.testData.get(index).getTestId());
-            
+
+    private void addEventOnChangeForTestNameSelect() {
+        this.testNameSelect.addItemListener(((e) -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                int index = this.testNameSelect.getSelectedIndex();
+                displayDataOnTable(this.testData.get(index).getTestId());
+
+            }
+        }));
+    }
+
+    private void addEventOnChangeForSelect() {
+        this.topicSelect.addItemListener(((e) -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                int index = this.topicSelect.getSelectedIndex();
+                System.out.println("item slec" + index);
+                Response.ExamResult resultExam = examBLL.search(0, "", index + 1);
+
+                updateValueTestNameSelect(resultExam.getTestLists());
+
+            }
+        }));
+    }
+
+    private void setValueStaticsView(int topicId) {
+        Response.ExamResult resultExam = examBLL.search(0, "", topicId);
+        int examId = 0;
+        for (ExamDTO exam : resultExam.getExamList()) {
+            if (exam.getTestId() == resultExam.getTestLists().getFirst().getTestId()) {
+                examId = exam.getExamId();
+            }
         }
-     }));
-   }
-   private  void addEventOnChangeForSelect() {
-    this.topicSelect.addItemListener(((e) -> {
-        if (e.getStateChange() == ItemEvent.SELECTED) {
-            int index = this.topicSelect.getSelectedIndex();
-            System.out.println("item slec"+index);
-            Response.ExamResult resultExam = examBLL.search(0,"", index+1);
-           
-            updateValueTestNameSelect(resultExam.getTestLists());
-           
+        this.examDTOData.setExamId(examId);
+        Response.TestResult result = examBLL.getTestsResult(examId);
+        this.totalStudent.setText(result.getTestResultList().size() + "");
+        int totalCompleted = 0;
+        int totalUnfinished = 0;
+        for (ResultDTO resultDTO : result.getTestResultList()) {
+            if (resultDTO.getCorrect() < 50) {
+                totalUnfinished++;
+            }
+            totalCompleted++;
         }
-    }));
-   }
-   private void setValueStaticsView(int topicId){
-      Response.ExamResult resultExam = examBLL.search(0,"", topicId);
-      int examId =0;
-      for(ExamDTO exam:resultExam.getExamList()){
-         if(exam.getTestId()==resultExam.getTestLists().getFirst().getTestId()) {
-           examId = exam.getExamId();
-         }
-      }
-       this.examDTOData.setExamId(examId);
-      Response.TestResult result = examBLL.getTestsResult(examId);
-       this.totalStudent.setText(result.getTestResultList().size()+"");
-       int totalCompleted = 0;
-       int totalUnfinished = 0;
-      for(ResultDTO resultDTO:result.getTestResultList()) {
-          if(resultDTO.getCorrect() <50) {
-             totalUnfinished++;
-          }
-          totalCompleted++;
-      }
-      this.totalCompleted.setText(totalCompleted+"");
-      this.totalUnfinished.setText(totalUnfinished+"");
-   }  
- private void updateValueTestNameSelect(ArrayList<TestDTO> testList) {
-       DefaultComboBoxModel<String> modelTestName = new DefaultComboBoxModel<>();
-       this.testData = new ArrayList<>();
-     for(TestDTO test:testList) {
-        modelTestName.addElement(test.getTestName());
-        this.testData.add(test);
-     }
-     this.testNameSelect.setModel(modelTestName);
-      displayDataOnTable(testList.getFirst().getTestId());
-      setValueStaticsView(testList.getFirst().getTopicId());
- }
-  private  void setValueTestNameSelectResult(int topicId){
-           DefaultComboBoxModel<String> modelTopic = new DefaultComboBoxModel<>();
-          DefaultComboBoxModel<String> modelTestName = new DefaultComboBoxModel<>();
-  Response.TopicResult topics = this.questionBLL.getTopic();
-  for(TopicDTO topic: topics.getTopicList()) {
-       modelTopic.addElement(topic.getTopicName());
-  }
-   Response.ExamResult result = examBLL.search(0,"",topicId );
-      System.out.println("le:"+result.getTestLists().size());
-   for(TestDTO test: result.getTestLists()) {
-       
-     modelTestName.addElement(test.getTestName());
-     this.testData.add(test);
-   }
-   this.topicSelect.setModel(modelTopic);
-   this.testNameSelect.setModel(modelTestName);
-  }
-  
-  private void displayDataOnTable(int testId){
+        this.totalCompleted.setText(totalCompleted + "");
+        this.totalUnfinished.setText(totalUnfinished + "");
+    }
+
+    private void updateValueTestNameSelect(ArrayList<TestDTO> testList) {
+        DefaultComboBoxModel<String> modelTestName = new DefaultComboBoxModel<>();
+        this.testData = new ArrayList<>();
+        for (TestDTO test : testList) {
+            modelTestName.addElement(test.getTestName());
+            this.testData.add(test);
+        }
+        this.testNameSelect.setModel(modelTestName);
+        displayDataOnTable(testList.getFirst().getTestId());
+        setValueStaticsView(testList.getFirst().getTopicId());
+    }
+
+    private void setValueTestNameSelectResult(int topicId) {
+        DefaultComboBoxModel<String> modelTopic = new DefaultComboBoxModel<>();
+        DefaultComboBoxModel<String> modelTestName = new DefaultComboBoxModel<>();
+        Response.TopicResult topics = this.questionBLL.getTopic();
+        for (TopicDTO topic : topics.getTopicList()) {
+            modelTopic.addElement(topic.getTopicName());
+        }
+        Response.ExamResult result = examBLL.search(0, "", topicId);
+        System.out.println("le:" + result.getTestLists().size());
+        for (TestDTO test : result.getTestLists()) {
+
+            modelTestName.addElement(test.getTestName());
+            this.testData.add(test);
+        }
+        this.topicSelect.setModel(modelTopic);
+        this.testNameSelect.setModel(modelTestName);
+    }
+
+    private void displayDataOnTable(int testId) {
         DefaultTableModel tableModel = (DefaultTableModel) this.jTable1.getModel();
-             tableModel.setRowCount(0);
-             
-        Response.ExamResult  listExam= examBLL.getTestById(testId);
-        Response.TestResult  testResult = new Response.TestResult();
+        tableModel.setRowCount(0);
+
+        Response.ExamResult listExam = examBLL.getTestById(testId);
+        Response.TestResult testResult = new Response.TestResult();
         testResult.setTestResultList(new ArrayList<>());
         testResult.setTestResultDetailList(new HashMap<>());
         Response.ContestAntResult antResult = examBLL.getUserContestAntResult(testId);
-        int totalUser= antResult.getTotal();
+        int totalUser = antResult.getTotal();
         int totalCompleted = antResult.getCompleted();
-        int totalUnfinished = antResult.getTotal() -antResult.getCompleted();
-        this.totalStudent.setText(totalUser+"");
-        this.totalCompleted.setText(totalCompleted+"");
-        this.totalUnfinished.setText(totalUnfinished+"");
-        for(ExamDTO exam:listExam.getExamList()) {
+        int totalUnfinished = antResult.getTotal() - antResult.getCompleted();
+        this.totalStudent.setText(totalUser + "");
+        this.totalCompleted.setText(totalCompleted + "");
+        this.totalUnfinished.setText(totalUnfinished + "");
+        for (ExamDTO exam : listExam.getExamList()) {
             ArrayList<ResultDTO> listResult = examBLL.getTestsResult(exam.getExamId()).getTestResultList();
-           for(ResultDTO rs:listResult) {
-               testResult.getTestResultList().add(rs);
-           }
+            for (ResultDTO rs : listResult) {
+                testResult.getTestResultList().add(rs);
+            }
         }
-        
-       for(ResultDTO resultDTO:testResult.getTestResultList()){
-           System.out.println("id"+resultDTO.getUserId());
-         Response.UserResult user = userBLL.getUserById(resultDTO.getUserId());
-           System.out.println("ủe"+user.getUserList().getFirst().getUsername());
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-           Duration duration = Duration.between(resultDTO.getStartTime(), resultDTO.getEndTime());
-           String time = duration.toHours()+"h:"+duration.toMinutesPart()+"p:"+duration.toSecondsPart();
-           String examCode = "";
-           for(ExamDTO exam:listExam.getExamList()) {
-              if(exam.getExamId() == resultDTO.getExamId()){
-                examCode = exam.getExamCode();
-              }
-           }
-             tableModel.addRow(new Object[]{user.getUserList().getFirst().getUsername(),examCode,resultDTO.getCorrect() +"%",resultDTO.getScore()+"/100",time,resultDTO.getStartTime().format(formatter)});
-       }
-        
-  }  
-  private  void loadDataOnTable() {
-    Response.ExamResult resultExam = examBLL.search(0,"", 1);
-      
-      displayDataOnTable(resultExam.getTestLists().getFirst().getTestId());
-  }
+
+        for (ResultDTO resultDTO : testResult.getTestResultList()) {
+            System.out.println("id" + resultDTO.getUserId());
+            Response.UserResult user = userBLL.getUserById(resultDTO.getUserId());
+            System.out.println("ủe" + user.getUserList().getFirst().getUsername());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            Duration duration = Duration.between(resultDTO.getStartTime(), resultDTO.getEndTime());
+            String time = duration.toHours() + "h:" + duration.toMinutesPart() + "p:" + duration.toSecondsPart();
+            String examCode = "";
+            for (ExamDTO exam : listExam.getExamList()) {
+                if (exam.getExamId() == resultDTO.getExamId()) {
+                    examCode = exam.getExamCode();
+                }
+            }
+            tableModel.addRow(new Object[]{user.getUserList().getFirst().getUsername(), examCode, resultDTO.getCorrect() + "%", resultDTO.getScore() + "/100", time, resultDTO.getStartTime().format(formatter)});
+        }
+
+    }
+
+    private void loadDataOnTable() {
+        Response.ExamResult resultExam = examBLL.search(0, "", 1);
+
+        displayDataOnTable(resultExam.getTestLists().getFirst().getTestId());
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -390,14 +398,13 @@ public class AdminStaticsScreen extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       AdminHomeScreen adminHomeScreen = new AdminHomeScreen();
-       adminHomeScreen.setVisible(true);
+        AdminHomeScreen adminHomeScreen = new AdminHomeScreen();
+        adminHomeScreen.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
      */
-  
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
