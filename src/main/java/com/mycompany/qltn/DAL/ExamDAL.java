@@ -4,15 +4,6 @@
  */
 package com.mycompany.qltn.DAL;
 
-import com.mycompany.qltn.config.DatabaseConnection;
-import com.mycompany.qltn.BLL.Response;
-import com.mycompany.qltn.dto.ExamDTO;
-import com.mycompany.qltn.dto.ExamQuestionDTO;
-import com.mycompany.qltn.dto.OptionDTO;
-import com.mycompany.qltn.dto.QuestionDTO;
-import com.mycompany.qltn.dto.ResultDTO;
-import com.mycompany.qltn.dto.ResultDetailDTO;
-import com.mycompany.qltn.dto.TestDTO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,6 +14,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+
+import com.mycompany.qltn.BLL.Response;
+import com.mycompany.qltn.config.DatabaseConnection;
+import com.mycompany.qltn.dto.ExamDTO;
+import com.mycompany.qltn.dto.OptionDTO;
+import com.mycompany.qltn.dto.QuestionDTO;
+import com.mycompany.qltn.dto.ResultDTO;
+import com.mycompany.qltn.dto.ResultDetailDTO;
+import com.mycompany.qltn.dto.TestDTO;
 
 /**
  *
@@ -229,8 +229,8 @@ public class ExamDAL {
                     questionDTO.setUpdater(rs.getString("updater"));
                     questionDTO.setQuestionId(rs.getInt("question_id"));
                     questionDTO.setDifficulty(rs.getString("difficulty"));
-                    questionDTO.setUpdated_at(convertTimestampToLocalDateTime(rs.getTimestamp("updated_at")));
-                    questionDTO.setCreate_ar(convertTimestampToLocalDateTime(rs.getTimestamp("create_at")));
+                    questionDTO.setUpdatedAt(convertTimestampToLocalDateTime(rs.getTimestamp("updated_at")));
+                    questionDTO.setCreatedAt(convertTimestampToLocalDateTime(rs.getTimestamp("create_at")));
                     boolean check =true;
                     for(QuestionDTO question:questions.getQuestionList()) {
                         if(question.getQuestionId() ==questionDTO.getQuestionId())  {

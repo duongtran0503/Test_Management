@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 11, 2025 at 10:56 AM
+-- Generation Time: Mar 18, 2025 at 03:26 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -31,19 +31,22 @@ CREATE TABLE `exams` (
   `exam_id` int(11) NOT NULL,
   `test_id` int(11) DEFAULT NULL,
   `exam_code` varchar(255) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `is_deleted` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `exams`
 --
 
-INSERT INTO `exams` (`exam_id`, `test_id`, `exam_code`, `updated_at`) VALUES
-(1, 1, 'A', '2025-02-25 08:44:35'),
-(2, 2, 'B', '2025-02-25 08:44:35'),
-(3, 3, 'C', '2025-02-25 08:44:35'),
-(11, 1, '123', '2025-03-11 09:15:13'),
-(12, 7, 'a', '2025-03-11 09:29:46');
+INSERT INTO `exams` (`exam_id`, `test_id`, `exam_code`, `updated_at`, `is_deleted`) VALUES
+(1, 1, 'A', '2025-03-12 14:30:26', 1),
+(2, 2, 'B', '2025-02-25 08:44:35', 0),
+(3, 3, 'C', '2025-02-25 08:44:35', 0),
+(11, 1, '123', '2025-03-12 14:28:16', 0),
+(12, 7, 'a', '2025-03-11 09:29:46', 0),
+(13, 8, 'ss', '2025-03-11 14:02:05', 0),
+(14, 1, '2', '2025-03-12 14:41:16', 0);
 
 -- --------------------------------------------------------
 
@@ -74,12 +77,19 @@ INSERT INTO `exam_questions` (`exam_question_id`, `exam_id`, `question_id`) VALU
 (41, 11, 6),
 (42, 11, 16),
 (43, 11, 1),
-(44, 11, 22),
 (45, 12, 1),
 (46, 12, 6),
 (47, 12, 16),
 (48, 12, 123123128),
-(49, 12, 7);
+(49, 12, 7),
+(50, 13, 14),
+(51, 13, 3),
+(52, 13, 8),
+(53, 13, 4),
+(54, 14, 1),
+(55, 14, 6),
+(56, 14, 16),
+(57, 14, 123123128);
 
 -- --------------------------------------------------------
 
@@ -215,7 +225,11 @@ INSERT INTO `options` (`option_id`, `question_id`, `option_text`, `is_correct`, 
 (161, 123123128, 'sdfsdfas', 1, NULL),
 (162, 123123128, 'asdfasdfasf', 0, NULL),
 (163, 123123128, 'fsadfasdfas', 0, NULL),
-(164, 123123128, 'fdasdfasf', 0, NULL);
+(164, 123123128, 'fdasdfasf', 0, NULL),
+(165, 123123129, '1', 1, NULL),
+(166, 123123129, '4', 0, NULL),
+(167, 123123129, '2', 0, NULL),
+(168, 123123129, '3', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -268,7 +282,8 @@ INSERT INTO `questions` (`question_id`, `topic_id`, `question_text`, `image_url`
 (123123125, 1, 'sdfsdfasdfasfdasfasffs', 'akhEx6hDW6_Cover.png', 'medium', '2025-02-25 08:03:03', 'tran duong', '2025-02-24 13:39:31', 1),
 (123123126, 1, 'update 222222', NULL, 'medium', '2025-02-25 08:03:01', 'tran duong', '2025-02-24 14:05:30', 1),
 (123123127, 1, ' int là kiểu dữ liêu gì', 'null', 'easy', '2025-02-25 08:02:58', 'tran duong', '2025-02-25 04:24:40', 1),
-(123123128, 1, 'sadASDFASDFSDFrsdfsdf', NULL, 'easy', '2025-02-28 06:38:15', 'tran duong', '2025-02-27 09:45:22', 0);
+(123123128, 1, 'sadASDFASDFSDFrsdfsdf', NULL, 'easy', '2025-02-28 06:38:15', 'tran duong', '2025-02-27 09:45:22', 0),
+(123123129, 1, 'cáu hỏi được thêm 1', NULL, 'easy', '2025-03-12 15:14:44', NULL, '2025-03-12 15:14:44', 0);
 
 -- --------------------------------------------------------
 
@@ -347,10 +362,11 @@ CREATE TABLE `tests` (
 --
 
 INSERT INTO `tests` (`test_id`, `topic_id`, `test_name`, `test_time`, `num_limit`, `updated_at`, `is_deleted`, `easy`, `medium`, `difficult`, `number_of_questions`) VALUES
-(1, 1, 'Bài kiểm tra lập trình cơ bản 1', 30, 3, '2025-03-11 09:07:46', 0, 4, 0, 0, 4),
+(1, 1, 'Bài kiểm tra lập trình cơ bản 1', 30, 3, '2025-03-11 13:42:45', 0, 4, 0, 0, 4),
 (2, 2, 'Bài kiểm tra kiến thức du lịch', 25, 2, '2025-03-11 09:08:15', 0, 2, 0, 0, 2),
 (3, 3, 'Bài kiểm tra toán học', 20, 5, '2025-03-11 09:08:20', 0, 3, 0, 0, 3),
-(7, 1, 'bai test co ban', 30, 1, '2025-03-11 09:29:46', 0, 4, 1, 0, 5);
+(7, 1, 'bai test co ban', 30, 1, '2025-03-11 09:29:46', 0, 4, 1, 0, 5),
+(8, 2, 'bai test 2', 20, 1, '2025-03-11 14:02:05', 0, 2, 2, 0, 4);
 
 -- --------------------------------------------------------
 
@@ -475,25 +491,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `exams`
 --
 ALTER TABLE `exams`
-  MODIFY `exam_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `exam_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `exam_questions`
 --
 ALTER TABLE `exam_questions`
-  MODIFY `exam_question_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `exam_question_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 --
 -- AUTO_INCREMENT for table `options`
 --
 ALTER TABLE `options`
-  MODIFY `option_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=165;
+  MODIFY `option_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=169;
 
 --
 -- AUTO_INCREMENT for table `questions`
 --
 ALTER TABLE `questions`
-  MODIFY `question_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=123123129;
+  MODIFY `question_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=123123130;
 
 --
 -- AUTO_INCREMENT for table `results`
@@ -511,7 +527,7 @@ ALTER TABLE `result_details`
 -- AUTO_INCREMENT for table `tests`
 --
 ALTER TABLE `tests`
-  MODIFY `test_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `test_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `topics`

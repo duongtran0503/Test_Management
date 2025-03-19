@@ -6,6 +6,14 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -25,9 +33,15 @@ public class StudentExamScreen extends JFrame {
     private String[] correctAnswers;
     private JButton[][] optionButtons;
     private String[] selectedAnswers;
+    private int userId;
+    private int examId;
+    private Timestamp startTime;
 
     public StudentExamScreen(String category) {
         this.category = category;
+        this.userId = userId;
+        this.examId = examId;
+        this.startTime = new Timestamp(System.currentTimeMillis()); // Record the start time
         setTitle("Bài kiểm tra - " + category);
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -77,7 +91,7 @@ public class StudentExamScreen extends JFrame {
         // Nút Nộp bài
         JButton submitButton = new JButton("Nộp bài");
         submitButton.setPreferredSize(new Dimension(150, 40)); // Kích thước nút
-        
+
         JPanel submitPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         submitPanel.setPreferredSize(new Dimension(200, 50)); // Giảm chiều cao
         submitPanel.setMaximumSize(new Dimension(200, 60)); // Hạn chế kích thước tối đa
@@ -106,83 +120,93 @@ public class StudentExamScreen extends JFrame {
     }
 
     private void loadQuestions(String category) {
-        if (category.equals("Lập trình Web")) {
-            questions = new String[]{
-                "HTML là viết tắt của gì?", "Thẻ nào dùng để tạo đường link?", "Ngôn ngữ nào là nền tảng của web?", 
-                "CSS viết tắt của?", "Thẻ nào dùng để chèn ảnh?", "JS là viết tắt của?", 
-                "API là gì?", "Flexbox là gì?", "Bootstrap là gì?", "SEO có nghĩa là?"
-            };
-            options = new String[][]{
-                {"Hyper Text Markup Language", "Hyperlink Text Markup Language", "High Text Machine Learning", "Home Tool Markup Language"},
-                {"<link>", "<a>", "<url>", "<href>"},
-                {"HTML", "Java", "Python", "C++"},
-                {"Cascading Style Sheets", "Computer Style Sheets", "Colorful Style Sheets", "Creative Style Sheets"},
-                {"<image>", "<img>", "<src>", "<picture>"},
-                {"JavaScript", "JavaServer", "JScript", "JsonScript"},
-                {"Application Programming Interface", "Advanced Programming Interface", "Automated Programming Interface", "Applied Protocol Integration"},
-                {"A layout module in CSS", "A JavaScript library", "A backend framework", "A database"},
-                {"A CSS framework", "A JavaScript library", "A backend framework", "A CMS"},
-                {"Search Engine Optimization", "System Engine Optimization", "Structured Engine Operation", "Site Evaluation Optimization"}
-            };
-            correctAnswers = new String[]{
-                "Hyper Text Markup Language", "<a>", "HTML", "Cascading Style Sheets", "<img>", 
-                "JavaScript", "Application Programming Interface", "A layout module in CSS", "A CSS framework", "Search Engine Optimization"
-            };
-        } else if (category.equals("Toán học")) {
-            questions = new String[]{
-                "2 + 2 = ?", "5 * 6 = ?", "12 / 4 = ?", "Căn bậc hai của 16 là gì?", "7 - 3 = ?", 
-                "9 + 10 = ?", "6 * 7 = ?", "Số Pi gần đúng là bao nhiêu?", "12 + 8 = ?", "Số nguyên tố nhỏ nhất là?"
-            };
-            options = new String[][]{
-                {"3", "4", "5", "6"},
-                {"20", "30", "40", "50"},
-                {"2", "3", "4", "5"},
-                {"2", "3", "4", "5"},
-                {"3", "4", "5", "6"},
-                {"19", "20", "21", "22"},
-                {"40", "42", "44", "46"},
-                {"3.14", "3.15", "3.16", "3.17"},
-                {"18", "19", "20", "21"},
-                {"1", "2", "3", "5"}
-            };
-            correctAnswers = new String[]{"4", "30", "3", "4", "4", "19", "42", "3.14", "20", "2"};
-        } else if (category.equals("Du lịch")) {
-            questions = new String[]{
-                "Thủ đô của Việt Nam là?", "Thành phố nào có Nhà hát Con Sò?", "Nơi nào nổi tiếng với Kim tự tháp?", 
-                "Thành phố nào là kinh đô ánh sáng?", "Nơi nào có tượng Nữ thần Tự do?", 
-                "Kỳ quan thế giới nằm ở Trung Quốc là gì?", "Thành phố nào có đấu trường La Mã?", 
-                "Thành phố nào có cầu cổng vàng?", "Đất nước nào nổi tiếng với sushi?", "Vạn lý trường thành dài khoảng bao nhiêu?"
-            };
-            options = new String[][]{
-                {"Hà Nội", "Hồ Chí Minh", "Đà Nẵng", "Huế"},
-                {"Sydney", "Melbourne", "Brisbane", "Perth"},
-                {"Ai Cập", "Mexico", "Ấn Độ", "Mỹ"},
-                {"Paris", "London", "New York", "Rome"},
-                {"New York", "Los Angeles", "Chicago", "Miami"},
-                {"Vạn Lý Trường Thành", "Đền Taj Mahal", "Đấu Trường La Mã", "Kim Tự Tháp"},
-                {"Rome", "Madrid", "Athens", "Berlin"},
-                {"San Francisco", "Los Angeles", "Seattle", "Chicago"},
-                {"Nhật Bản", "Hàn Quốc", "Trung Quốc", "Thái Lan"},
-                {"21.000 km", "10.000 km", "15.000 km", "8.000 km"}
-            };
-            correctAnswers = new String[]{"Hà Nội", "Sydney", "Ai Cập", "Paris", "New York", 
-                "Vạn Lý Trường Thành", "Rome", "San Francisco", "Nhật Bản", "21.000 km"};
+        String jdbcUrl = "jdbc:mysql://localhost:3306/quanlytracnghiem"; // Cập nhật thông tin CSDL
+        String dbUser = "root";
+        String dbPassword = "Khactuong1402";
+    
+        List<String> questionList = new ArrayList<>();
+        List<String[]> optionList = new ArrayList<>();
+        List<String> correctAnswerList = new ArrayList<>();
+    
+        try (Connection conn = DriverManager.getConnection(jdbcUrl, dbUser, dbPassword)) {
+            // Truy vấn danh sách câu hỏi dựa trên category
+            String sql = "SELECT q.question_id, q.question_text " +
+                         "FROM questions q " +
+                         "JOIN topics t ON q.topic_id = t.topic_id " +
+                         "WHERE t.topic_name = ? LIMIT 10";
+    
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, category);
+                ResultSet rs = stmt.executeQuery();
+    
+                while (rs.next()) {
+                    int questionId = rs.getInt("question_id");
+                    String questionText = rs.getString("question_text");
+    
+                    questionList.add(questionText);
+                    System.out.println("Loaded Question: " + questionText);
+    
+                    // Lấy danh sách đáp án cho câu hỏi này
+                    String[] options = new String[4]; // Mặc định 4 đáp án
+                    String correctAnswer = null;
+    
+                    String answerSql = "SELECT answer_text, is_correct FROM answers WHERE question_id = ?";
+                    try (PreparedStatement answerStmt = conn.prepareStatement(answerSql)) {
+                        answerStmt.setInt(1, questionId);
+                        ResultSet answerRs = answerStmt.executeQuery();
+    
+                        int index = 0;
+                        while (answerRs.next() && index < 4) {
+                            options[index] = answerRs.getString("answer_text");
+                            System.out.println("Option: " + options[index]);
+    
+                            if (answerRs.getBoolean("is_correct")) {
+                                correctAnswer = options[index];
+                            }
+                            index++;
+                        }
+    
+                        // Kiểm tra nếu không có đủ đáp án, tránh lỗi ArrayIndexOutOfBoundsException
+                        if (index < 4) {
+                            for (int i = index; i < 4; i++) {
+                                options[i] = "N/A"; // Gán giá trị mặc định
+                            }
+                        }
+                    }
+    
+                    optionList.add(options);
+                    correctAnswerList.add(correctAnswer != null ? correctAnswer : "N/A");
+                }
+            }
+    
+            // Kiểm tra nếu danh sách câu hỏi rỗng
+            if (questionList.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Không có câu hỏi nào trong danh mục này!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+    
+            // Chuyển dữ liệu từ danh sách về mảng
+            questions = questionList.toArray(new String[0]);
+            options = optionList.toArray(new String[0][0]);
+            correctAnswers = correctAnswerList.toArray(new String[0]);
+    
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi tải câu hỏi từ CSDL!", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-    }
+    }    
 
     private void checkAnswers() {
-        // Check if all questions are answered
         for (int i = 0; i < 10; i++) {
-            if (selectedAnswers[i] == null) { // If any question is unanswered
-                JOptionPane.showMessageDialog(this, 
-                    "Bạn phải trả lời tất cả các câu hỏi trước khi nộp bài!", 
-                    "Cảnh báo", 
-                    JOptionPane.WARNING_MESSAGE);
-                return; // Stop execution
+            if (selectedAnswers[i] == null) {
+                JOptionPane.showMessageDialog(this,
+                        "Bạn phải trả lời tất cả các câu hỏi trước khi nộp bài!",
+                        "Cảnh báo",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
             }
         }
     
-        // If all questions are answered, proceed to check answers
         int score = 0;
         for (int i = 0; i < 10; i++) {
             if (selectedAnswers[i].equals(correctAnswers[i])) {
@@ -190,15 +214,35 @@ public class StudentExamScreen extends JFrame {
             }
         }
     
-        // Show result and return to home screen
-        JOptionPane.showMessageDialog(this, 
-            "Bạn đạt: " + score + "/10", 
-            "Kết quả", 
-            JOptionPane.INFORMATION_MESSAGE);
-        
-        this.dispose(); // Close exam screen
-        SwingUtilities.invokeLater(() -> {
-            new StudentHomeMenuScreen().setVisible(true);
-        });
+        Timestamp endTime = new Timestamp(System.currentTimeMillis());
+    
+        String jdbcUrl = "jdbc:mysql://localhost:3306/quanlytracnghiem";
+        String dbUser = "root";
+        String dbPassword = "Khactuong1402";
+    
+        String insertSql = "INSERT INTO results (user_id, exam_id, start_time, end_time, score, correct) VALUES (?, ?, ?, ?, ?, ?)";
+    
+        try (Connection conn = DriverManager.getConnection(jdbcUrl, dbUser, dbPassword);
+             PreparedStatement stmt = conn.prepareStatement(insertSql)) {
+    
+            stmt.setInt(1, userId);
+            stmt.setInt(2, examId);
+            stmt.setTimestamp(3, startTime);
+            stmt.setTimestamp(4, endTime);
+            stmt.setInt(5, score);
+            stmt.setDouble(6, (double) score / 10 * 100);
+    
+            stmt.executeUpdate();
+            System.out.println("Result saved successfully.");
+    
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi lưu kết quả vào CSDL!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    
+        JOptionPane.showMessageDialog(this, "Bạn đạt: " + score + "/10", "Kết quả", JOptionPane.INFORMATION_MESSAGE);
+    
+        this.dispose();
+        SwingUtilities.invokeLater(() -> new StudentHomeMenuScreen().setVisible(true));
     }    
 }

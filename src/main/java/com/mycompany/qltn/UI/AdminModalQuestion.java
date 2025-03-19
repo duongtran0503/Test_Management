@@ -97,9 +97,9 @@ public class AdminModalQuestion extends javax.swing.JPanel {
         if (questionDTO.getImageUrl() != null) {
             displayImagePreviewFromResource(questionDTO.getImageUrl());
         }
-        this.update_at.setText("Cập nhật lúc:" + questionDTO.getUpdated_at().toString());
+        this.update_at.setText("Cập nhật lúc:" + questionDTO.getUpdatedAt().toString());
         this.updater.setText("Người cập nhật:" + questionDTO.getUpdater());
-        this.create_at.setText("Ngày tạo:" + questionDTO.getCreate_ar().toString());
+        this.create_at.setText("Ngày tạo:" + questionDTO.getCreatedAt().toString());
         this.buttonAdd.setText("Cập nhật");
         this.questionId = questionDTO.getQuestionId();
 

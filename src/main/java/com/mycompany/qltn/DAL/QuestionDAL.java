@@ -4,12 +4,6 @@
  */
 package com.mycompany.qltn.DAL;
 
-import com.mycompany.qltn.App;
-import com.mycompany.qltn.config.DatabaseConnection;
-import com.mycompany.qltn.BLL.Response;
-import com.mycompany.qltn.dto.OptionDTO;
-import com.mycompany.qltn.dto.QuestionDTO;
-import com.mycompany.qltn.dto.TopicDTO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,6 +11,13 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+
+import com.mycompany.qltn.App;
+import com.mycompany.qltn.BLL.Response;
+import com.mycompany.qltn.config.DatabaseConnection;
+import com.mycompany.qltn.dto.OptionDTO;
+import com.mycompany.qltn.dto.QuestionDTO;
+import com.mycompany.qltn.dto.TopicDTO;
 
 /**
  *
@@ -61,8 +62,8 @@ public class QuestionDAL {
                 questionDTO.setUpdater(questionRs.getString("updater"));
                 System.out.println("errr");
 
-                questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
-                questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
+                questionDTO.setUpdatedAt(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
+                questionDTO.setCreatedAt(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
                 questionList.add(questionDTO);
             }
             res.setQuestionList(questionList);
@@ -185,8 +186,8 @@ public class QuestionDAL {
                 questionDTO.setDifficulty(questionRs.getString("difficulty"));
                 questionDTO.setTopicId(questionRs.getInt("topic_id"));
                 questionDTO.setUpdater(questionRs.getString("updater"));
-                questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
-                questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
+                questionDTO.setUpdatedAt(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
+                questionDTO.setCreatedAt(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
                 questionList.add(questionDTO);
             }
             res.setQuestionList(questionList);
@@ -260,8 +261,8 @@ public class QuestionDAL {
                 questionDTO.setDifficulty(questionRs.getString("difficulty"));
                 questionDTO.setTopicId(questionRs.getInt("topic_id"));
                 questionDTO.setUpdater(questionRs.getString("updater"));
-                questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
-                questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
+                questionDTO.setUpdatedAt(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
+                questionDTO.setCreatedAt(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
                 questionList.add(questionDTO);
             }
             res.setQuestionList(questionList);
@@ -354,8 +355,8 @@ public class QuestionDAL {
                 questionDTO.setDifficulty(questionRs.getString("difficulty"));
                 questionDTO.setTopicId(questionRs.getInt("topic_id"));
                 questionDTO.setUpdater(questionRs.getString("updater"));
-                questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
-                questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
+                questionDTO.setUpdatedAt(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
+                questionDTO.setCreatedAt(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
                 questionList.add(questionDTO);
             }
             res.setQuestionList(questionList);
@@ -653,8 +654,8 @@ public class QuestionDAL {
                 questionDTO.setDifficulty(questionRs.getString("difficulty"));
                 questionDTO.setTopicId(questionRs.getInt("topic_id"));
                 questionDTO.setUpdater(questionRs.getString("updater"));
-                questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
-                questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
+                questionDTO.setUpdatedAt(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
+                questionDTO.setCreatedAt(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
 
                 questionList.add(questionDTO);
             }
@@ -786,8 +787,8 @@ public class QuestionDAL {
                 questionDTO.setDifficulty(questionRs.getString("difficulty"));
                 questionDTO.setTopicId(questionRs.getInt("topic_id"));
                 questionDTO.setUpdater(questionRs.getString("updater"));
-                questionDTO.setUpdated_at(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
-                questionDTO.setCreate_ar(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
+                questionDTO.setUpdatedAt(convertTimestampToLocalDateTime(questionRs.getTimestamp("updated_at")));
+                questionDTO.setCreatedAt(convertTimestampToLocalDateTime(questionRs.getTimestamp("create_at")));
 
                 questionList.add(questionDTO);
             }
