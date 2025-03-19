@@ -24,12 +24,14 @@ public class QuestionDTO {
 
     // Danh sách phương án và đáp án đúng
     private List<String> options;
+    private List<AnswerDTO> answers; // Danh sách các đáp án
     private String correctAnswer;
 
     public QuestionDTO() {
         this.options = new ArrayList<>();
+        this.answers = new ArrayList<>();
     }
-
+    
     public QuestionDTO(int questionId, int topicId, String questionText, String imageUrl, String difficulty) {
         this.questionId = questionId;
         this.topicId = topicId;
@@ -37,6 +39,7 @@ public class QuestionDTO {
         this.imageUrl = imageUrl;
         this.difficulty = difficulty;
         this.options = new ArrayList<>();
+        this.answers = new ArrayList<>();
     }
 
     // Getters & Setters
@@ -132,4 +135,13 @@ public class QuestionDTO {
     public void setCorrectAnswer(String correctAnswer) {
         this.correctAnswer = correctAnswer;
     }
+
+    public List<AnswerDTO> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(List<AnswerDTO> answers) {
+        this.answers = answers;
+    }
+
 }

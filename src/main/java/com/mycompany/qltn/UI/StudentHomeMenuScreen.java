@@ -1,6 +1,10 @@
 package com.mycompany.qltn.UI;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
+import com.mycompany.qltn.DAL.QuestionDAL;
+import com.mycompany.qltn.utils.UserSession;
 
 /**
  * Student Home Menu Screen
@@ -95,22 +99,53 @@ public class StudentHomeMenuScreen extends javax.swing.JFrame {
     }
 
     private void openWebProgramming(java.awt.event.ActionEvent evt) {                                        
-        StudentExamScreen studentExamScreen = new StudentExamScreen("Lập trình Web");
+        String loggedInEmail = UserSession.getEmail();
+        int userId = QuestionDAL.getUserIdByEmail(loggedInEmail);
+
+        int examId = 101; // ID bài kiểm tra Web (Thay bằng giá trị thực tế)
+        
+        if (userId == -1) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy người dùng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        StudentExamScreen studentExamScreen = new StudentExamScreen("Lập trình Web", userId, examId);
         studentExamScreen.setVisible(true);
         this.dispose();
     }    
 
     private void openMath(java.awt.event.ActionEvent evt) {                                        
-        StudentExamScreen studentExamScreen = new StudentExamScreen("Toán học");
+        String loggedInEmail = UserSession.getEmail();
+        int userId = QuestionDAL.getUserIdByEmail(loggedInEmail);
+
+        int examId = 102; // ID bài kiểm tra Toán học
+
+        if (userId == -1) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy người dùng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        StudentExamScreen studentExamScreen = new StudentExamScreen("Toán học", userId, examId);
         studentExamScreen.setVisible(true);
         this.dispose();
     }   
 
     private void openTravel(java.awt.event.ActionEvent evt) {                                        
-        StudentExamScreen studentExamScreen = new StudentExamScreen("Du lịch");
+        String loggedInEmail = UserSession.getEmail();
+        int userId = QuestionDAL.getUserIdByEmail(loggedInEmail);
+
+        int examId = 103; // ID bài kiểm tra Du lịch
+
+        if (userId == -1) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy người dùng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        StudentExamScreen studentExamScreen = new StudentExamScreen("Du lịch", userId, examId);
         studentExamScreen.setVisible(true);
         this.dispose();
     }   
+
 
     private void goBack() {
         new StudenHomeScreen().setVisible(true);

@@ -6,6 +6,7 @@ package com.mycompany.qltn.UI;
 
 import com.mycompany.qltn.App;
 import com.mycompany.qltn.component.RoundedFlatBorder;
+import com.mycompany.qltn.utils.UserSession;
 import com.mycompany.qltn.BLL.AuthBLL;
 import com.mycompany.qltn.BLL.Response;
 import java.awt.Color;
@@ -51,6 +52,11 @@ public class Login extends javax.swing.JFrame {
             Response.loginResult res = authBLL.login(email, password);
             App.user = res.getUser();
             if (res.isIsSuccess()) {
+                UserSession.setUserSession(
+                    res.getUser().getUserId(),
+                    res.getUser().getEmail(),
+                    res.getUser().getRole()
+                );
                 if (res.getUser().getRole().equalsIgnoreCase("admin")) {
                     AdminHomeScreen adminHomeScreen = new AdminHomeScreen();
                     adminHomeScreen.setVisible(true);
